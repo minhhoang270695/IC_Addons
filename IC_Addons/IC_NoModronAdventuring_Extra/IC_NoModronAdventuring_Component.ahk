@@ -5,8 +5,13 @@ GUIFunctions.AddTab("No Modron Adventuring")
 global g_NMAHeroDefines
 global g_NMAChampsToLevel := {}
 global g_NMAResetZone := 500
+global g_NMAWallTime := 300000 ; 5 minutes
 global g_NMADoAdventuring := True
 global g_NMAlvlObj
+global NMA_WallRestart
+global g_NMAHighestZone := 1
+global g_NMATimeAtWall := 0
+global g_NMAWallTime
 
 global g_NMASpecSettings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\SpecSettings.json" )
 if !IsObject(g_NMASpecSettings)
@@ -41,15 +46,29 @@ GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, vNMA_RestartZone x15 y+10 w50, % g_NMAResetZone
 GUIFunctions.UseThemeTextColor()
 Gui, ICScriptHub:Add, Checkbox, vNMA_CB1 x15 y+5 Checked Hidden, "Q"
+Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_WallRestart , Reset at Wall
+Gui, ICScriptHub:Add, Text, x15 y+10, Time (ms) on highest zone to determine wall:
+GUIFunctions.UseThemeTextColor("InputBoxTextColor")
+Gui, ICScriptHub:Add, Edit, vNMA_WallTimer x15 y+10 w50, % g_NMAWallTime
+GUIFunctions.UseThemeTextColor()
+Gui, ICScriptHub:Add, Checkbox, x15 y+20 vNMA_ChooseSpecs , Choose Specialisations
 Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_LevelClick , Upgrade Click Damage
 Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_FireUlts , Fire Ultimates
 Gui, ICScriptHub:Add, Button, x15 y+10 w160 gNMA_RunAdventuring, Start Modronless Adventuring
 Gui, ICScriptHub:Add, Text, x15 y+15 w300, Stop Adventuring button may need to be pushed multple times. Click until box pops up.
 Gui, ICScriptHub:Add, Button, x15 y+10 w100 gNMA_StopAdventuring, Stop Adventuring
+Gui, ICScriptHub:Font, w700
+Gui, ICScriptHub:Add, Text, vNMA_Stats x15 y+25 w300, 
+Gui, ICScriptHub:Font, w400
+Gui, ICScriptHub:Add, Text, vNMA_WallZone x15 y+10 w300,  
+Gui, ICScriptHub:Add, Text, vNMA_TimeAtWall x15 y+5 w300,  
 
 NMA_StopAdventuring()
 {
     global g_NMADoAdventuring := False
+	GuiControl,,NMA_Stats, 
+	GuiControl,,NMA_WallZone, 
+	GuiControl,,NMA_TimeAtWall, 
 }
 
 NMA_RunAdventuring()
@@ -76,8 +95,14 @@ NMA_RunAdventuring()
     g_NMAchampsToLevel := g_NMAlvlObj.NMA_GetChampionsToLevel(formationKey)
     g_SF.PatronID := 0
     g_ServerCall.activePatronID := 0
+	startTime := A_TickCount
+	g_NMATimeAtWall := 0
+	g_NMAHighestZone := 1
+	g_NMAWallTime := NMA_WallTimer
     while (g_NMADoAdventuring)
     {
+		if (NMA_WallRestart)
+			NMA_UpdateSettings()
         g_NMAlvlObj.DirectedInputNoCritical(,, formationKey[favoriteFormation])
         for k, v in g_NMAChampsToLevel
         { 
@@ -94,6 +119,13 @@ NMA_RunAdventuring()
         g_SF.ToggleAutoProgress(1,false)
         if(NMA_FireUlts)
             g_NMAlvlObj.NMA_UseUltimates(favoriteFormation)
+		g_NMATimeAtWall := A_TickCount - startTime
+		if (g_SF.Memory.ReadHighestZone() > g_NMAHighestZone)
+		{
+			startTime := A_TickCount
+			g_NMATimeAtWall := 0
+			g_NMAHighestZone := g_SF.Memory.ReadHighestZone()
+		}
         isReset := g_NMAlvlObj.NMA_CheckForReset()
         if(isReset)
         {
@@ -106,6 +138,13 @@ NMA_RunAdventuring()
     }
     MsgBox, Adventuring Stopped.
     return
+}
+
+NMA_UpdateSettings()
+{
+	GuiControl,,NMA_Stats,Wall Info:
+	GuiControl,,NMA_WallZone,Wall Zone: %g_NMAHighestZone%
+	GuiControl,,NMA_TimeAtWall,Time at Wall: %g_NMATimeAtWall%
 }
 
 NMA_SpecSettings()

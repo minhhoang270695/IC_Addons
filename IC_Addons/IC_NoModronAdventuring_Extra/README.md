@@ -1,20 +1,19 @@
 # No Modron Adventuring
 ## Description:
-An add on based on mikebaldi's No Modron Leveling that will level and specialize champions, spam ultimates, and reset adventures with no modron automation. It is meant to help automate progress to get to the point where the player has automation on their core and can get Briv, at which point it is *highly* recommended to swap to using Briv Gem Farm.
+This is a slight modification of antilectual's [No Modron Adventuring](https://github.com/antilectual/IC_Addons/tree/main/IC_Addons/IC_NoModronAdventuring_Extra) addon.
 
-#
-## Instructions:
-Instructions:
-1. If it is your first time using, press the 'Select/Create Spec. Settings' button and select the desired specializations for each champion.
-2. If it is your first time using, press the 'Load Max. Lvl Data' button.
-3. In game, load the desires formation to formation favorites 1/Q. (The script levels Q formation)
-4. Enter the last area you want the adventure to restart at.
-5. Check boxes for leveling click damage or automatic ult firing. (Settings do not save after Script Hub is closed)
-6. Press the 'Start Modronless Adventuring' Button.
-7. Press ``Stop Adventuring`` when done. 
-   > Note: This script makes Script Hub very unresponsive while running. ``Stop Adventuring`` may need multiple presses to stop. A popup will let you know when the script has successfully stopped.
+Please see the original addon for instructions.
 
-> Note: If a champion rework or rebalance results in different or new upgrades you may need to repeat Instruction steps 1 and 2.
+There are two additions:
 
-Known Issues:
-1. The script can click before the specialization window appears or after it is gone, resulting in a champion formation dialogue opening. This should not interfere with the script functionality.
+## Wall Resetting
+
+You should see a new checkbox called `Reset at Wall`. As the name implies - this will restart the adventure if you reach a wall. If this is off - it will not do that.
+
+The script determines whether it's at a wall simply by how long you've remained on your highest zone. This time is determined by the edit box just below it (in milliseconds).
+
+This does **NOT** supersede the original Reset Zone setting. If you reach the reset zone you've set then you will restart there instead of at your wall.
+
+## Choose Specialisations
+
+This checkbox will determine whether the script chooses specialisations or not. I found that once I had a modron with automation I didn't need it to do so any more.

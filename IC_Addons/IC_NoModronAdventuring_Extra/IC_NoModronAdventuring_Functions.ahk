@@ -275,6 +275,7 @@ class IC_NMA_Functions
         inputKey := "{F" . seat . "}"
         if !targetLvl
             targetLvl := maxLvlData[champID]
+		global NMA_ChooseSpecs
         while (targetLvl > (currChampLevel := g_SF.Memory.ReadChampLvlByID(champID)) AND !(this.endScript))
         {
             if(currChampLevel == lastChampLevel) ; leveling failed, wait for next call
@@ -283,7 +284,7 @@ class IC_NMA_Functions
             this.DirectedInputNoCritical(,, inputKey)
             for k, v in specSettings[champID]
             {
-                if (v.RequiredLvl == g_SF.Memory.ReadChampLvlByID(champID))
+                if (v.RequiredLvl == g_SF.Memory.ReadChampLvlByID(champID) AND NMA_ChooseSpecs)
                     this.PickSpec(v.Choice, v.Choices, v.UpgradeID)
             }
         }
@@ -345,7 +346,7 @@ class IC_NMA_Functions
         
     NMA_CheckForReset()
     {
-        if(g_SF.Memory.ReadCurrentZone() > g_NMAResetZone)
+        if(g_SF.Memory.ReadCurrentZone() > g_NMAResetZone OR (NMA_WallRestart AND g_NMATimeAtWall >= g_NMAWallTime))
         {
             g_SF.ResetServerCall()
             g_SF.CurrentAdventure := g_SF.Memory.ReadCurrentObjID()
@@ -382,7 +383,8 @@ class IC_NMA_Functions
         this.DirectedInputNoCritical(,, inputKey)
         sleep, 33
         global g_NMAlvlObj
-        if (g_NMAlvlObj.IsSpec(champID, champLvl, g_NMASpecSettings))
+		global NMA_ChooseSpecs
+        if (g_NMAlvlObj.IsSpec(champID, champLvl, g_NMASpecSettings) AND NMA_ChooseSpecs)
             g_NMAlvlObj.PickSpec(champID, champLvl, g_NMASpecSettings)
         if (!(g_NMAMaxLvl[champID] > champLvl))
             g_NMAChampsToLevel[champID] := True
