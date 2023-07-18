@@ -129,14 +129,14 @@ NMA_RunAdventuring()
         isReset := g_NMAlvlObj.NMA_CheckForReset()
         if(isReset)
         {
-            g_SF.SafetyCheck()
-            g_SF.Memory.OpenProcessReader()
-            g_NMAchampsToLevel := g_NMAlvlObj.NMA_GetChampionsToLevel(formationKey)
-            isReset := False
 			startTime := A_TickCount
 			g_NMATimeAtWall := 0
 			g_NMAHighestZone := 1
 			g_NMAWallTime := NMA_WallTimer
+            g_SF.SafetyCheck()
+            g_SF.Memory.OpenProcessReader()
+            g_NMAchampsToLevel := g_NMAlvlObj.NMA_GetChampionsToLevel(formationKey)
+            isReset := False
         }
         Sleep, 100
     }
