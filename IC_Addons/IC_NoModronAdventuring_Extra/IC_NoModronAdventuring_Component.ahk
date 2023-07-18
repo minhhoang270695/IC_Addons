@@ -133,6 +133,10 @@ NMA_RunAdventuring()
             g_SF.Memory.OpenProcessReader()
             g_NMAchampsToLevel := g_NMAlvlObj.NMA_GetChampionsToLevel(formationKey)
             isReset := False
+			startTime := A_TickCount
+			g_NMATimeAtWall := 0
+			g_NMAHighestZone := 1
+			g_NMAWallTime := NMA_WallTimer
         }
         Sleep, 100
     }
