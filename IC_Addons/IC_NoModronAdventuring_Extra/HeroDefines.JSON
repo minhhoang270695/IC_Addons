@@ -716,7 +716,6 @@
 		"Seat":9,
 		"SpecDefines":{
 			"ddlList":[
-				"",
 				""
 			],
 			"setList":[
@@ -726,47 +725,26 @@
 						"0":1
 					},
 					"reqLvl":180
-				},
-				{
-					"listCount":1,
-					"listIndex":{
-						"9999":2
-					},
-					"reqLvl":9999
 				}
 			],
-			"setListSize":2,
+			"setListSize":1,
 			"specList":[
 				[
 					{
 						"RequiredLvl":180,
 						"RequiredUpgradeID":0,
 						"SpecName":"Leader of the Companions",
-						"UpgradeID":635
+						"UpgradeID":11516
 					},
 					{
 						"RequiredLvl":180,
 						"RequiredUpgradeID":0,
 						"SpecName":"Drow Stalker",
-						"UpgradeID":636
-					}
-				],
-				[
-					{
-						"RequiredLvl":9999,
-						"RequiredUpgradeID":9999,
-						"SpecName":"Leader of the Companions",
-						"UpgradeID":11516
-					},
-					{
-						"RequiredLvl":9999,
-						"RequiredUpgradeID":9999,
-						"SpecName":"Drow Stalker",
 						"UpgradeID":11517
 					}
 				]
 			],
-			"specListSize":2
+			"specListSize":1
 		}
 	},
 	"19":{
@@ -816,7 +794,7 @@
 	"20":{
 		"HeroID":20,
 		"HeroName":"Regis",
-		"MaxLvl":2485,
+		"MaxLvl":2490,
 		"Seat":2,
 		"SpecDefines":{
 			"ddlList":[
@@ -829,50 +807,50 @@
 					"listIndex":{
 						"0":1
 					},
-					"reqLvl":50
+					"reqLvl":20
 				},
 				{
 					"listCount":1,
 					"listIndex":{
 						"0":2
 					},
-					"reqLvl":250
+					"reqLvl":150
 				}
 			],
 			"setListSize":2,
 			"specList":[
 				[
 					{
-						"RequiredLvl":50,
+						"RequiredLvl":20,
 						"RequiredUpgradeID":0,
 						"SpecName":"Ruby Encouragement (Ahead)",
-						"UpgradeID":695
+						"UpgradeID":11530
 					},
 					{
-						"RequiredLvl":50,
+						"RequiredLvl":20,
 						"RequiredUpgradeID":0,
 						"SpecName":"Ruby Encouragement (Behind)",
-						"UpgradeID":696
+						"UpgradeID":11531
 					}
 				],
 				[
 					{
-						"RequiredLvl":250,
+						"RequiredLvl":150,
 						"RequiredUpgradeID":0,
 						"SpecName":"Ruby Weakness (Ranged)",
-						"UpgradeID":697
+						"UpgradeID":11532
 					},
 					{
-						"RequiredLvl":250,
+						"RequiredLvl":150,
 						"RequiredUpgradeID":0,
 						"SpecName":"Ruby Weakness (Melee)",
-						"UpgradeID":698
+						"UpgradeID":11533
 					},
 					{
-						"RequiredLvl":250,
+						"RequiredLvl":150,
 						"RequiredUpgradeID":0,
 						"SpecName":"Ruby Weakness (Magic)",
-						"UpgradeID":699
+						"UpgradeID":11534
 					}
 				]
 			],
@@ -1090,7 +1068,7 @@
 	"25":{
 		"HeroID":25,
 		"HeroName":"Catti-brie",
-		"MaxLvl":2940,
+		"MaxLvl":2960,
 		"Seat":7,
 		"SpecDefines":{
 			"ddlList":[
@@ -1102,23 +1080,29 @@
 					"listIndex":{
 						"0":1
 					},
-					"reqLvl":200
+					"reqLvl":220
 				}
 			],
 			"setListSize":1,
 			"specList":[
 				[
 					{
-						"RequiredLvl":200,
+						"RequiredLvl":220,
 						"RequiredUpgradeID":0,
-						"SpecName":"Follow-Up",
-						"UpgradeID":1037
+						"SpecName":"Piercing Arrow",
+						"UpgradeID":11312
 					},
 					{
-						"RequiredLvl":200,
+						"RequiredLvl":220,
 						"RequiredUpgradeID":0,
-						"SpecName":"In The Zone",
-						"UpgradeID":1038
+						"SpecName":"Big Push",
+						"UpgradeID":11313
+					},
+					{
+						"RequiredLvl":220,
+						"RequiredUpgradeID":0,
+						"SpecName":"Critical Family",
+						"UpgradeID":11314
 					}
 				]
 			],
@@ -1380,23 +1364,29 @@
 					"listIndex":{
 						"0":1
 					},
-					"reqLvl":265
+					"reqLvl":140
 				}
 			],
 			"setListSize":1,
 			"specList":[
 				[
 					{
-						"RequiredLvl":265,
+						"RequiredLvl":140,
 						"RequiredUpgradeID":0,
 						"SpecName":"Heavy Blows",
-						"UpgradeID":1511
+						"UpgradeID":11508
 					},
 					{
-						"RequiredLvl":265,
+						"RequiredLvl":140,
 						"RequiredUpgradeID":0,
 						"SpecName":"Flag Bearer",
-						"UpgradeID":1512
+						"UpgradeID":11509
+					},
+					{
+						"RequiredLvl":140,
+						"RequiredUpgradeID":0,
+						"SpecName":"Moradin's Will",
+						"UpgradeID":11510
 					}
 				]
 			],
@@ -2104,7 +2094,7 @@
 	"50":{
 		"HeroID":50,
 		"HeroName":"Pwent",
-		"MaxLvl":2110,
+		"MaxLvl":2120,
 		"Seat":5,
 		"SpecDefines":{
 			"ddlList":[
@@ -2116,29 +2106,29 @@
 					"listIndex":{
 						"0":1
 					},
-					"reqLvl":360
+					"reqLvl":200
 				}
 			],
 			"setListSize":1,
 			"specList":[
 				[
 					{
-						"RequiredLvl":360,
+						"RequiredLvl":200,
 						"RequiredUpgradeID":0,
-						"SpecName":"Counting Class",
-						"UpgradeID":3035
+						"SpecName":"Recruiting Drive",
+						"UpgradeID":11496
 					},
 					{
-						"RequiredLvl":360,
+						"RequiredLvl":200,
 						"RequiredUpgradeID":0,
-						"SpecName":"Bloodstained Armor",
-						"UpgradeID":3036
+						"SpecName":"Scents of Mithral Hall",
+						"UpgradeID":11497
 					},
 					{
-						"RequiredLvl":360,
+						"RequiredLvl":200,
 						"RequiredUpgradeID":0,
-						"SpecName":"Dwarven Hair Grease",
-						"UpgradeID":3043
+						"SpecName":"Critical Wound",
+						"UpgradeID":11498
 					}
 				]
 			],
@@ -5756,40 +5746,112 @@
 	},
 	"126":{
 		"HeroID":126,
-		"HeroName":"Y4E15",
-		"MaxLvl":1,
-		"Seat":0,
+		"HeroName":"Strongheart",
+		"MaxLvl":1480,
+		"Seat":11,
 		"SpecDefines":{
 			"ddlList":[
-				
+				""
 			],
 			"setList":[
-				
+				{
+					"listCount":1,
+					"listIndex":{
+						"0":1
+					},
+					"reqLvl":80
+				}
 			],
-			"setListSize":0,
+			"setListSize":1,
 			"specList":[
-				
+				[
+					{
+						"RequiredLvl":80,
+						"RequiredUpgradeID":0,
+						"SpecName":"Valor's Call",
+						"UpgradeID":11740
+					},
+					{
+						"RequiredLvl":80,
+						"RequiredUpgradeID":0,
+						"SpecName":"A Just Quest",
+						"UpgradeID":11741
+					},
+					{
+						"RequiredLvl":80,
+						"RequiredUpgradeID":0,
+						"SpecName":"Honorary Member",
+						"UpgradeID":11742
+					}
+				]
 			],
-			"specListSize":0
+			"specListSize":1
 		}
 	},
 	"127":{
 		"HeroID":127,
-		"HeroName":"Y4E15",
-		"MaxLvl":1,
-		"Seat":0,
+		"HeroName":"Vin Ursa",
+		"MaxLvl":90,
+		"Seat":7,
 		"SpecDefines":{
 			"ddlList":[
-				
+				"",
+				""
 			],
 			"setList":[
-				
+				{
+					"listCount":1,
+					"listIndex":{
+						"0":1
+					},
+					"reqLvl":10
+				},
+				{
+					"listCount":1,
+					"listIndex":{
+						"0":2
+					},
+					"reqLvl":30
+				}
 			],
-			"setListSize":0,
+			"setListSize":2,
 			"specList":[
-				
+				[
+					{
+						"RequiredLvl":10,
+						"RequiredUpgradeID":0,
+						"SpecName":"Front Deck",
+						"UpgradeID":12090
+					},
+					{
+						"RequiredLvl":10,
+						"RequiredUpgradeID":0,
+						"SpecName":"Rear Deck",
+						"UpgradeID":12091
+					}
+				],
+				[
+					{
+						"RequiredLvl":30,
+						"RequiredUpgradeID":0,
+						"SpecName":"Friends in Low Places",
+						"UpgradeID":12092
+					},
+					{
+						"RequiredLvl":30,
+						"RequiredUpgradeID":0,
+						"SpecName":"Friends in Meh Places",
+						"UpgradeID":12093
+					},
+					{
+						"RequiredLvl":30,
+						"RequiredUpgradeID":0,
+						"SpecName":"Friends in High Places",
+						"UpgradeID":12094
+					}
+				]
 			],
-			"specListSize":0
+			"specListSize":2
 		}
 	},
 	"128":{
@@ -5906,6 +5968,25 @@
 			"specListSize":0
 		}
 	},
-	"LoadTime":17141,
-	"TimeStamp":"May 19, 2023 at 07:43:23"
+	"134":{
+		"HeroID":134,
+		"HeroName":"Y4E15",
+		"MaxLvl":1,
+		"Seat":0,
+		"SpecDefines":{
+			"ddlList":[
+				
+			],
+			"setList":[
+				
+			],
+			"setListSize":0,
+			"specList":[
+				
+			],
+			"specListSize":0
+		}
+	},
+	"LoadTime":2594,
+	"TimeStamp":"July 18, 2023 at 14:24:49"
 }
