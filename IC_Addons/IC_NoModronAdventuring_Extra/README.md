@@ -16,4 +16,4 @@ This does **NOT** supersede the original Reset Zone setting. If you reach the re
 
 ## Choose Specialisations
 
-This checkbox will determine whether the script chooses specialisations or not. I found that once I had a modron with automation I didn't need it to do so any more.
+This checkbox will determine whether the script chooses specialisations or not. I found that once I had a modron with automation I didn't need it to do so any more - but I still needed the script to level champions because of a lack of familiars.
