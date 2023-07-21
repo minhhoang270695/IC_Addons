@@ -10,7 +10,7 @@ There are two additions:
 
 You should see a new checkbox called `Reset at Wall`. As the name implies - this will restart the adventure if you reach a wall. If this is off - it will not do that.
 
-The script determines whether it's at a wall simply by how long you've remained on your highest zone. This time is determined by the edit box just below it (in milliseconds).
+The script determines whether it's at a wall simply by how long you've remained on your highest zone. This time is determined by the edit box just below it (in milliseconds). Default is 5 minutes (300,000).
 
 This does **NOT** supersede the original Reset Zone setting. If you reach the reset zone you've set then you will restart there instead of at your wall.
 
