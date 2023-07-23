@@ -6,12 +6,13 @@ global g_NMAHeroDefines
 global g_NMAChampsToLevel := {}
 global g_NMAResetZone := 500
 global g_NMAWallTime := 300000 ; 5 minutes
+global g_NMAAlertZone := 201
 global g_NMADoAdventuring := True
 global g_NMAlvlObj
 global NMA_WallRestart
 global g_NMAHighestZone := 1
 global g_NMATimeAtWall := 0
-global g_NMAWallTime
+global NMA_CompleteAlert
 
 global g_NMASpecSettings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\SpecSettings.json" )
 if !IsObject(g_NMASpecSettings)
@@ -43,14 +44,19 @@ Gui, ICScriptHub:Add, Text, x+5 vNMA_MaxLvl w300, % g_NMAMaxLvl.TimeStamp ? "Loa
 Gui, ICScriptHub:Add, Button, x15 y+10 w160 gNMA_BuildMaxLvlData, Load Max. Level Data
 Gui, ICScriptHub:Add, Text, x15 y+15, Choose area to restart the adventure at:
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
-Gui, ICScriptHub:Add, Edit, vNMA_RestartZone x15 y+10 w50, % g_NMAResetZone
+Gui, ICScriptHub:Add, Edit, vNMA_RestartZone x210 y+-17 w60, % g_NMAResetZone
 GUIFunctions.UseThemeTextColor()
-Gui, ICScriptHub:Add, Checkbox, vNMA_CB1 x15 y+5 Checked Hidden, "Q"
-Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_WallRestart , Reset at Wall
-Gui, ICScriptHub:Add, Text, x15 y+10, Time (ms) on highest zone to determine wall:
+Gui, ICScriptHub:Add, Checkbox, vNMA_CB1 x15 y+-5 Checked Hidden, "Q"
+Gui, ICScriptHub:Add, Checkbox, x15 y+10 vNMA_WallRestart , Reset at Wall after
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
-Gui, ICScriptHub:Add, Edit, vNMA_WallTimer x15 y+10 w50, % g_NMAWallTime
+Gui, ICScriptHub:Add, Edit, vNMA_WallTimer x125 y+-17 w60, % g_NMAWallTime
 GUIFunctions.UseThemeTextColor()
+Gui, ICScriptHub:Add, Text, x190 y+-17, (ms) has passed on the highest zone
+Gui, ICScriptHub:Add, Checkbox, x15 y+10 vNMA_CompleteAlert , Popup when zone
+GUIFunctions.UseThemeTextColor("InputBoxTextColor")
+Gui, ICScriptHub:Add, Edit, vNMA_AlertZone x125 y+-17 w60, % g_NMAAlertZone
+GUIFunctions.UseThemeTextColor()
+Gui, ICScriptHub:Add, Text, x190 y+-17, has been reached (it will only do this once)
 Gui, ICScriptHub:Add, Checkbox, x15 y+20 vNMA_ChooseSpecs , Choose Specialisations
 Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_LevelClick , Upgrade Click Damage
 Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_FireUlts , Fire Ultimates
@@ -99,6 +105,7 @@ NMA_RunAdventuring()
 	g_NMATimeAtWall := 0
 	g_NMAHighestZone := 1
 	g_NMAWallTime := NMA_WallTimer
+	g_NMAAlertZone := NMA_AlertZone
     while (g_NMADoAdventuring)
     {
 		if (NMA_WallRestart)
@@ -112,6 +119,11 @@ NMA_RunAdventuring()
             name := g_SF.Memory.ReadChampNameByID(k)
             g_NMAlvlObj.NMA_LevelAndSpec(favoriteFormation, k)
         }
+		if (NMA_CompleteAlert AND g_SF.Memory.ReadHighestZone() >= g_NMAAlertZone)
+		{
+			msgbox, No Modron Adventuring:`n`nYou've reached zone %g_NMAAlertZone%.
+			NMA_CompleteAlert := false
+		}
         if (NMA_LevelClick)
             g_NMAlvlObj.DirectedInputNoCritical(,, "{ClickDmg}")
         if (!Mod( g_SF.Memory.ReadCurrentZone(), 5 ) AND Mod( g_SF.Memory.ReadHighestZone(), 5 ) AND !g_SF.Memory.ReadTransitioning())

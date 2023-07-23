@@ -4,16 +4,22 @@ This is a slight modification of antilectual's [No Modron Adventuring](https://g
 
 Please see the original addon for instructions.
 
-There are two additions:
+There are three additions:
 
 ## Wall Resetting
 
-You should see a new checkbox called `Reset at Wall`. As the name implies - this will restart the adventure if you reach a wall. If this is off - it will not do that.
+You should see a new checkbox that starts with `Reset at Wall`. When turned on while the script is running - this will reset the adventure if you reach a zone and cannot progress further - your wall.
 
-The script determines whether it's at a wall simply by how long you've remained on your highest zone. This time is determined by the edit box just below it (in milliseconds). Default is 5 minutes (300,000).
+The script determines whether it's your wall simply by how long you've remained on your highest zone. This time is determined by the edit box in the setting. Default is 5 minutes (300,000 ms).
 
 This does **NOT** supersede the original Reset Zone setting. If you reach the reset zone you've set then you will restart there instead of at your wall.
 
+## Zone Alert Popup
+
+The next checkbox added starts with `Popup after zone`. Simply put - it will send a message box popup when you have reached the input zone.
+
+The idea behind this is that it will alert you when you've reached the completion zone of an adventure so you can swap over and start another. Helpful if you get caught up doing other things and forget to check on the game.
+
 ## Choose Specialisations
 
-This checkbox will determine whether the script chooses specialisations or not. I found that once I had a modron with automation I didn't need it to do so any more - but I still needed the script to level champions because of a lack of familiars.
+The third will determine whether the script chooses specialisations or not. I found that once I had a modron with automation I didn't need the script to do so any more - but I still needed the script to level champions because of a lack of familiars.
