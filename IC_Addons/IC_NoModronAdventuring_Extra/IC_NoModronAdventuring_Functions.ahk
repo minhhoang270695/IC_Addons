@@ -393,8 +393,13 @@ class IC_NMA_Functions
     NMA_UseUltimates(formation)
     {
         global NMA_FireUlts
+        global NMA_UltsIgnoreSelise
+        global NMA_UltsIgnoreHavilar
+        global NMA_UltsIgnoreNERDs
         for k,v in g_NMAChampsToLevel
         {
+            if ((NMA_UltsIgnoreSelise AND k == 81) OR (NMA_UltsIgnoreHavilar AND k == 56) OR (NMA_UltsIgnoreNERDs AND k == 87))
+                continue
             if(k AND k != -1 AND NMA_FireUlts)
             {
                 ultButton := g_SF.GetUltimateButtonByChampID(k)

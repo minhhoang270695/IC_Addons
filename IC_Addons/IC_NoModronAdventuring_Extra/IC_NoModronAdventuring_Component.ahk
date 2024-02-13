@@ -59,7 +59,10 @@ GUIFunctions.UseThemeTextColor()
 Gui, ICScriptHub:Add, Text, x190 y+-17, has been reached (it will only do this once)
 Gui, ICScriptHub:Add, Checkbox, x15 y+20 vNMA_ChooseSpecs , Choose Specialisations
 Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_LevelClick , Upgrade Click Damage
-Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_FireUlts , Fire Ultimates
+Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_FireUlts , Fire Ultimates     Ignore Ults:
+Gui, ICScriptHub:Add, Checkbox, x170 y+-13 vNMA_UltsIgnoreSelise , Selise
+Gui, ICScriptHub:Add, Checkbox, x230 y+-13 vNMA_UltsIgnoreHavilar , Havilar
+Gui, ICScriptHub:Add, Checkbox, x290 y+-13 vNMA_UltsIgnoreNERDs , NERDs
 Gui, ICScriptHub:Add, Button, x15 y+10 w160 gNMA_RunAdventuring, Start Modronless Adventuring
 Gui, ICScriptHub:Add, Text, x15 y+15 w300, Stop Adventuring button may need to be pushed multple times. Click until box pops up.
 Gui, ICScriptHub:Add, Button, x15 y+10 w100 gNMA_StopAdventuring, Stop Adventuring
