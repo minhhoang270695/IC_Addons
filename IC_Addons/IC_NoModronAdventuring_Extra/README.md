@@ -4,7 +4,7 @@ This is a slight modification of antilectual's [No Modron Adventuring](https://g
 
 Please see the original addon for instructions.
 
-There are three additions:
+There are four additional features:
 
 ## Wall Resetting
 
@@ -23,3 +23,7 @@ The idea behind this is that it will alert you when you've reached the completio
 ## Choose Specialisations
 
 The third will determine whether the script chooses specialisations or not. I found that once I had a modron with automation I didn't need the script to do so any more - but I still needed the script to level champions because of a lack of familiars.
+
+## Ignore Ultimates
+
+The last feature includes a few checkboxes next to the `Fire Ultimates` setting which allows it to optionally ignore firing Selise / Havilar / NERDs ultimates - as doing so can sometimes be problematic.
