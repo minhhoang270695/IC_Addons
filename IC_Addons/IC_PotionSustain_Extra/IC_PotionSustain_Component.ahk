@@ -25,7 +25,7 @@ GUIFunctions.UseThemeTextColor()
 Gui, ICScriptHub:Add, Text, x30 y+10, Small Potion Count:
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotCountStatus x130 y+-13, Unknown
 
-if(IsObject(IC_BrivGemFarm_Component) AND IsObject(IC_InventoryView_Component))
+if(IsObject(IC_BrivGemFarm_Component))
     g_PotionSustain.InjectAddon()
 else
 {
