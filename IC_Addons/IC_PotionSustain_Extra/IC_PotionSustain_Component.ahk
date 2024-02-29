@@ -17,7 +17,7 @@ Gui, ICScriptHub:Add, Button, x128 y+-15 w100 vg_PotionSustainSave_Clicked, `Sav
 buttonFunc := ObjBindMethod(g_PotionSustain, "SaveSettings")
 GuiControl,ICScriptHub: +g, g_PotionSustainSave_Clicked, % buttonFunc
 Gui, ICScriptHub:Add, Text, x90 y+10, Status:
-Gui, ICScriptHub:Add, Text, vg_PS_StatusText x130 y+-13, Waiting for Gem Farm to start
+Gui, ICScriptHub:Add, Text, vg_PS_StatusText x130 y+-13 w250, Waiting for Gem Farm to start
 Gui, ICScriptHub:Add, Text, x15 y+20, Small Potion Theshold:
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, vg_PS_SmallThresh x130 y+-17 w60, 
