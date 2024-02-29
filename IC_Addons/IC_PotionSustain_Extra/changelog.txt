@@ -1,0 +1,2 @@
+February 29, 2024 - v0.0.1
+ - An add on that will try to sustain small potions by buying silvers when it needs to.

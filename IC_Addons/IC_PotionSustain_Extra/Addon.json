@@ -1,0 +1,14 @@
+{
+	"Name":"Potion Sustain",
+	"Version": "v0.0.1",
+    "Includes" : "IC_PotionSustain_Component.ahk",
+    "Author" : "Emmote",
+    "Url" : "https://github.com/emmotes/IC_Addons/tree/main/IC_Addons/IC_PotionSustain_Extra",
+    "Info" : "An add on that will try to sustain small potions by buying silvers when it needs to.",
+    "Dependencies" : [
+        {
+            "Name":"Briv Gem Farm",
+            "Version":"v1.4.6"
+        }
+    ]
+}
