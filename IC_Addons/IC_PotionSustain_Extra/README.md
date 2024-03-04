@@ -60,9 +60,9 @@ Below z655 (or z475 with Gem Hunter) you can't permanently sustain any potion. B
 
 | Alternatives | Uptime | Speed<br>No Shandie | Speed<br>Shandie |
 |---|--:|--:|--:|
-| Large | 23.27%+ | x4.64 | x6.96 |
-| Huge | 0.82%+ | x5.67 | x8.51 |
-| Medium | 58.17%+ | 3.61x | x5.41 |
-| Small | 100% | x2.58 | x3.87 |
+| Large | 0%+ | x4.64 | x6.96 |
+| Huge | 0%+ | x5.67 | x8.51 |
+| Medium | 0%+ | 3.61x | x5.41 |
+| Small | 0%+ | x2.58 | x3.87 |
 
 *All of this is of course assuming there aren't any bugs. Spoiler alert - there will be bugs.*
