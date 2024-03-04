@@ -76,10 +76,10 @@ class IC_PotionSustain_BrivGemFarm_Class extends IC_BrivSharedFunctions_Class
                 this.BuyChests( chestID := 2, effectiveStartTime, amount )
             ; OPENCHESTS
             amount := Min(g_SF.TotalSilverChests, serverRateOpen)
-            if (g_BrivUserSettings[ "OpenSilvers" ] AND amount > 0)
+            if (amount > 0)
                 this.OpenChests( chestID := 1, effectiveStartTime, amount)
             amount := Min(g_SF.TotalGoldChests, serverRateOpen)
-            if (g_BrivUserSettings[ "OpenGolds" ] AND amount > 0)
+            if (amount > 0)
                 this.OpenChests( chestID := 2, effectiveStartTime, amount )
 
             updatedTallies := g_SharedData.PurchasedSilverChests + g_SharedData.PurchasedGoldChests + g_SharedData.OpenedGoldChests + g_SharedData.OpenedSilverChests
