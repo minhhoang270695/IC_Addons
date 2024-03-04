@@ -1,22 +1,32 @@
-Global g_PSBGF_SmallPotThresh := -1
-Global g_PSBGF_SmallPotCount := -1
+Global g_PSBGF_BuySilvers := false
+Global g_PSBGF_ModronCallParams := ""
+Global g_PSBGF_InstanceId := ""
 
 class IC_PotionSustain_SharedData_Class extends IC_SharedData_Class
 {
-	PSBGF_SetData(thresh,count)
+	PSBGF_SetBuySilvers(set)
 	{
-		g_PSBGF_SmallPotThresh := thresh
-		g_PSBGF_SmallPotCount := count
+		g_PSBGF_BuySilvers := set
 	}
 	
-	PSBGF_GetSmallPotThresh()
+	PSBGF_GetBuySilvers()
 	{
-		return g_PSBGF_SmallPotThresh
+		return g_PSBGF_BuySilvers
 	}
 	
-	PSBGF_GetSmallPotCount()
+	PSBGF_SetModronCallParams(set)
 	{
-		return g_PSBGF_SmallPotCount
+		g_PSBGF_ModronCallParams := set
+	}
+	
+	PSBGF_GetModronCallParams()
+	{
+		return g_PSBGF_ModronCallParams
+	}
+	
+	PSBGF_SetInstanceId(set)
+	{
+		g_PSBGF_InstanceId := set
 	}
 	
     PSBGF_Running()
@@ -29,9 +39,7 @@ class IC_PotionSustain_BrivGemFarm_Class extends IC_BrivSharedFunctions_Class
 {
 	DoChests(numSilverChests, numGoldChests)
     {
-		buySilvers := false
-		if (g_PSBGF_SmallPotThresh >= 0 AND g_PSBGF_SmallPotCount >= 0 AND g_PSBGF_SmallPotCount < g_PSBGF_SmallPotThresh)
-			buySilvers = true
+		buySilvers := g_PSBGF_BuySilvers
         serverRateBuy := 250
         serverRateOpen := 1000
 
@@ -44,6 +52,12 @@ class IC_PotionSustain_BrivGemFarm_Class extends IC_BrivSharedFunctions_Class
         startingOpenedSilverChests := g_SharedData.OpenedSilverChests
         currentChestTallies := startingPurchasedSilverChests + startingPurchasedGoldChests + startingOpenedGoldChests + startingOpenedSilverChests
         ElapsedTime := 0
+		
+		if (g_PSBGF_ModronCallParams != "" AND g_PSBGF_InstanceId != "")
+		{
+			this.SendModronSaveCall(g_PSBGF_ModronCallParams)
+			g_PSBGF_ModronCallParams := ""
+		}
 
         doHybridStacking := ( g_BrivUserSettings[ "ForceOfflineGemThreshold" ] > 0 ) OR ( g_BrivUserSettings[ "ForceOfflineRunThreshold" ] > 1 )
         while( ( g_BrivUserSettings[ "RestartStackTime" ] > ElapsedTime ) OR doHybridStacking)
@@ -81,4 +95,10 @@ class IC_PotionSustain_BrivGemFarm_Class extends IC_BrivSharedFunctions_Class
         }
         return loopString
     }
+	
+	SendModronSaveCall(params)
+	{
+		params .= "&instance_id=" . g_PSBGF_InstanceId
+		response := g_ServerCall.ServerCall("savemodron",params)
+	}
 }
