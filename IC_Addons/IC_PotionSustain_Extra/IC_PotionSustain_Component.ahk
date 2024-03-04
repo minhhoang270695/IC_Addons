@@ -215,7 +215,7 @@ Class IC_PotionSustain_Component
 	{
 		Global
 		this.Settings := {}
-		this.Settings["SmallThreshMin"] := 100
+		this.Settings["SmallThreshMin"] := 150
 		this.Settings["SmallThreshMax"] := 200
 		this.Settings["AutomateThreshMin"] := 100
 		this.Settings["AutomateThreshMax"] := 150
