@@ -257,17 +257,10 @@ Class IC_PotionSustain_Component
 					}
 				}
 				smalls := g_PS_PotAmounts["s"]
-				if (smalls >= 0 AND g_PS_ChestSmallPotMinThresh >= 0 AND smalls < g_PS_ChestSmallPotMinThresh)
-				{
-					g_PS_ChestSmallPotBuying = true
-				} else if (smalls >= 0 AND g_PS_ChestSmallPotMinThresh >= 0 AND smalls > g_PS_ChestSmallPotMaxThresh)
-				{
-					g_PS_ChestSmallPotBuying = false
-				}
-			}
-			if (this.Testing)
-			{
-				g_PS_PotAmounts["l"] := 105 - this.TestIndex
+				if (smalls >= 0 AND g_PS_ChestSmallPotMinThresh >= 0 AND smalls <= g_PS_ChestSmallPotMinThresh)
+					g_PS_ChestSmallPotBuying := true
+				else
+					g_PS_ChestSmallPotBuying := false
 			}
 			needAChange := false
 			for k,v in g_PS_PotAmounts
@@ -375,7 +368,7 @@ Class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:Text, g_PS_HugePotWaxingStatus, % g_PS_WaxingPots["h"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, % g_PS_SustainSmallAbility
 		potBuy := % "No."
-		if (g_PS_ChestSmallPotBuying == true)
+		if (g_PS_ChestSmallPotBuying)
 			potBuy := % "Yes."
 		GuiControl, ICScriptHub:Text, g_PS_BuyingSilversStatus, % potBuy
 		Gui, Submit, NoHide
