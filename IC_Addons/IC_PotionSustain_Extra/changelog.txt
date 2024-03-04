@@ -1,3 +1,5 @@
+04    March 2024 - v0.0.4
+ - Fixed a bug that could cause an issue with sending the modron potion calls.
 04    March 2024 - v0.0.3
  - Fixed a bug where the script would always buy silvers.
 04    March 2024 - v0.0.2

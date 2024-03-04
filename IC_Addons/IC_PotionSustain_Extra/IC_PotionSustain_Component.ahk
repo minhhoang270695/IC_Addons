@@ -309,7 +309,7 @@ Class IC_PotionSustain_Component
 					SharedRunData.PSBGF_SetBuySilvers(g_PS_ChestSmallPotBuying)
 				if (g_PS_EnableAlternating AND saveModronParams != "" AND saveModronParams != g_PS_ModronCallParams)
 				{
-					g_PS_ModronCallParams = saveModronParams
+					g_PS_ModronCallParams := saveModronParams
 					SharedRunData.PSBGF_SetModronCallParams(saveModronParams)
 				}
 			}
