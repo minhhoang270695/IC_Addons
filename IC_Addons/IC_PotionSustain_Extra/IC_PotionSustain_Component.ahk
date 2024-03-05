@@ -108,7 +108,7 @@ Class IC_PotionSustain_Component
 	AutomatePotMinThresh := 50
 	AutomatePotMaxThresh := 500
 	ChestSmallPotBuying := false
-	SustainSmallAbility := false
+	SustainSmallAbility := "Unknown"
 	EnableAlternating := false
 	WaxingPots := {"s":false,"m":false,"l":false,"h":false}
 	Using := "Using"
@@ -408,14 +408,13 @@ Class IC_PotionSustain_Component
 	CalculateSmallPotionSustain()
 	{
 		smallSustain := this.GemHunter ? 475 : 655
-		status := ""
-		if (this.ModronResetZone < 1 OR this.ModronResetZone == "")
-			status := Unknown
+		rz := this.ModronResetZone
+		if (rz < 1 OR rz == "")
+			this.SustainSmallAbility := "Unknown"
 		else if (this.ModronResetZone < smallSustain)
-			status := "Modron reset of z" . (this.ModronResetZone) . " is too low to sustain. 655+ needed."
+			this.SustainSmallAbility := "Modron reset of z" . rz . " is too low to sustain. " . smallSustain . "+ needed."
 		else
-			status := "Modron reset of z" . (this.ModronResetZone) . " allows sustaining."
-		this.SustainSmallAbility := status
+			this.SustainSmallAbility := "Modron reset of z" . rz . " allows sustaining."
 	}
 	
 	CalculateAutomationBuffs()
