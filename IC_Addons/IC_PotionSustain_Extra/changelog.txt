@@ -1,3 +1,5 @@
+05    March 2024 - v0.0.6
+ - Added a status in Current Potion Amounts for the state of Gem Hunters.
 05    March 2024 - v0.0.5
  - Added the ability to block the automated use of Large or Huge potions.
  - Refactored my ridiculous amount of global variables into local variables.

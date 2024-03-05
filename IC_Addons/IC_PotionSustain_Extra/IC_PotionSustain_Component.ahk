@@ -54,7 +54,7 @@ GUIFunctions.UseThemeTextColor("TableTextColor")
 Gui, ICScriptHub:Add, ListView, xs300 ys15 w190 h100 vg_PS_AutomateList, Priority|Alternating|Status
 GUIFunctions.UseThemeListViewBackgroundColor("g_PS_AutomateList")
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, GroupBox, x15 ys185 Section w500 h115, Current Potion Amounts
+Gui, ICScriptHub:Add, GroupBox, x15 ys185 Section w500 h135, Current Potion Amounts
 Gui, ICScriptHub:Add, Text, xs20 ys+20 w130 +Right, Smalls:
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotCountStatus xs160 y+-13 w60 +Right, Unknown
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotWaxingStatus xs240 y+-13 w240, Unknown
@@ -67,6 +67,9 @@ Gui, ICScriptHub:Add, Text, vg_PS_LargePotWaxingStatus xs240 y+-13 w240, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Huges:
 Gui, ICScriptHub:Add, Text, vg_PS_HugePotCountStatus xs160 y+-13 w60 +Right, Unknown
 Gui, ICScriptHub:Add, Text, vg_PS_HugePotWaxingStatus xs240 y+-13 w240, Unknown
+Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Gem Hunters:
+Gui, ICScriptHub:Add, Text, vg_PS_GemHunterPotCountStatus xs160 y+-13 w60 +Right, Unknown
+Gui, ICScriptHub:Add, Text, vg_PS_GemHunterStatus xs240 y+-13 w240, Unknown
 ;Gui, ICScriptHub:Add, Button, x145 y+15 w100 vg_Test_Clicked, `Test
 ;buttonFunc := ObjBindMethod(g_PotionSustain, "Test")
 ;GuiControl,ICScriptHub: +g, g_Test_Clicked, % buttonFunc
@@ -98,8 +101,8 @@ Class IC_PotionSustain_Component
 	
 	RunsCount := -1
 	ModronResetZone := -1
-	PotIDs := {"s":74,"m":75,"l":76,"h":77}
-	PotAmounts := {"s":-1,"m":-1,"l":-1,"h":-1}
+	PotIDs := {"s":74,"m":75,"l":76,"h":77,"gh":1723}
+	PotAmounts := {"s":-1,"m":-1,"l":-1,"h":-1,"gh":0}
 	ChestSmallPotMinThresh := 50
 	ChestSmallPotMaxThresh := 100
 	AutomatePotMinThresh := 50
@@ -118,6 +121,7 @@ Class IC_PotionSustain_Component
 	FoundHighAreaPot := false
 	DisableLarge := false
 	DisableHuge := false
+	GemHunter := false
 
     InjectAddon()
     {
@@ -274,6 +278,11 @@ Class IC_PotionSustain_Component
 						if (buffID==v)
 							this.PotAmounts[k] := amount
 					}
+					for k,v in this.PotAmounts
+					{
+						if (v == -1)
+							this.PotAmounts[k] = 0
+					}
 				}
 				smalls := this.PotAmounts["s"]
 				if (smalls >= 0 AND this.ChestSmallPotMinThresh >= 0 AND smalls <= this.ChestSmallPotMinThresh)
@@ -296,11 +305,11 @@ Class IC_PotionSustain_Component
 				this.UpdateAutomationStatus("Recalculating...")
 				needAChange := false
 				this.ForceChange := false
-				gemHunter := false
+				this.GemHunter := false
 				userData := g_ServerCall.CallUserDetails()
 				if(IsObject(userData) AND userData.success)
-					gemHunter := this.CheckUserDataForGemHunter(userData.details.buffs)
-				calcAuto := this.CalculateAutomationBuffs(gemHunter)
+					this.GemHunter := this.CheckUserDataForGemHunter(userData.details.buffs)
+				calcAuto := this.CalculateAutomationBuffs()
 				if(IsObject(userData) AND userData.success)
 					saveModronParams := this.GetSaveModronParams(userData.details.modron_saves,calcAuto)
 			}
@@ -385,21 +394,20 @@ Class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:Text, g_PS_MediumPotCountStatus, % this.PotAmounts["m"]
 		GuiControl, ICScriptHub:Text, g_PS_LargePotCountStatus, % this.PotAmounts["l"]
 		GuiControl, ICScriptHub:Text, g_PS_HugePotCountStatus, % this.PotAmounts["h"]
+		GuiControl, ICScriptHub:Text, g_PS_GemHunterPotCountStatus, % this.PotAmounts["gh"]
 		GuiControl, ICScriptHub:Text, g_PS_SmallPotWaxingStatus, % this.WaxingPots["s"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_MediumPotWaxingStatus, % this.WaxingPots["m"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_LargePotWaxingStatus, % this.Settings["DisableLarges"] ? blocked : this.WaxingPots["l"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_HugePotWaxingStatus, % this.Settings["DisableHuges"] ? blocked : this.WaxingPots["h"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_GemHunterStatus, % this.GemHunter ? "Active." : "Inactive."
 		GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, % this.SustainSmallAbility
-		potBuy := % "No."
-		if (this.ChestSmallPotBuying)
-			potBuy := % "Yes."
-		GuiControl, ICScriptHub:Text, g_PS_BuyingSilversStatus, % potBuy
+		GuiControl, ICScriptHub:Text, g_PS_BuyingSilversStatus, % this.ChestSmallPotBuying ? "Yes." : "No."
 		Gui, Submit, NoHide
 	}
 	
 	CalculateSmallPotionSustain()
 	{
-		smallSustain := 655
+		smallSustain := this.GemHunter ? 475 : 655
 		status := ""
 		if (this.ModronResetZone < 1 OR this.ModronResetZone == "")
 			status := Unknown
@@ -410,7 +418,7 @@ Class IC_PotionSustain_Component
 		this.SustainSmallAbility := status
 	}
 	
-	CalculateAutomationBuffs(gemHunter)
+	CalculateAutomationBuffs()
 	{
         restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "g_PS_AutomateList")
         LV_Delete()
@@ -439,7 +447,7 @@ Class IC_PotionSustain_Component
 		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold.
 		mZone := 1175
 		sZone := 655
-		if (gemHunter)
+		if (this.GemHunter)
 		{
 			mZone := 885
 			sZone := 475
