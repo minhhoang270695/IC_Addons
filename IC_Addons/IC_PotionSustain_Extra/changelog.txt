@@ -1,3 +1,6 @@
+07    March 2024 - v0.0.8
+ - Adding duration to active Gem Hunter potion.
+ - Fixing an issue with the Max Threshold for buying Silvers being completely ignored.
 05    March 2024 - v0.0.7
  - Attempting a potential fix for 'Can Sustain Smalls' status text.
 05    March 2024 - v0.0.6
