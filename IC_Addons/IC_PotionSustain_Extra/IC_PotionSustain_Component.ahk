@@ -70,9 +70,9 @@ Gui, ICScriptHub:Add, Text, vg_PS_HugePotWaxingStatus xs240 y+-13 w240, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Gem Hunters:
 Gui, ICScriptHub:Add, Text, vg_PS_GemHunterPotCountStatus xs160 y+-13 w60 +Right, Unknown
 Gui, ICScriptHub:Add, Text, vg_PS_GemHunterStatus xs240 y+-13 w240, Unknown
-Gui, ICScriptHub:Add, Button, x145 y+15 w100 vg_Test_Clicked, `Test
-buttonFunc := ObjBindMethod(g_PotionSustain, "Test")
-GuiControl,ICScriptHub: +g, g_Test_Clicked, % buttonFunc
+;Gui, ICScriptHub:Add, Button, x145 y+15 w100 vg_Test_Clicked, `Test
+;buttonFunc := ObjBindMethod(g_PotionSustain, "Test")
+;GuiControl,ICScriptHub: +g, g_Test_Clicked, % buttonFunc
 
 if(IsObject(IC_BrivGemFarm_Component))
     g_PotionSustain.InjectAddon()
@@ -95,7 +95,7 @@ Class IC_PotionSustain_Component
     TempSettings := new IC_PotionSustain_Component._IC_PotionSustain_TempSettings
     TimerFunctions := ""
 	SanitySize := 5000
-	Testing := true
+	Testing := false
 	TestIndex := 0
 	TestResetZone := 1300
 	
@@ -285,8 +285,6 @@ Class IC_PotionSustain_Component
 							this.PotAmounts[k] = 0
 					}
 				}
-				if (this.Testing)
-					this.PotAmounts["s"] := 59 + (this.TestIndex*40)
 				smalls := this.PotAmounts["s"]
 				if (smalls >= 0 AND smalls <= this.ChestSmallPotMinThresh AND this.ChestSmallPotMinThresh >= 0)
 					this.ChestSmallPotWaxing := true
