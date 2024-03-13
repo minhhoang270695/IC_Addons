@@ -159,6 +159,10 @@ Class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:Text, BuyGoldsCheck, Buy gold chests? (Overridden by Potion Sustain)
 		GuiControl, ICScriptHub:Text, OpenSilversCheck, Open silver chests? (Overridden by Potion Sustain)
 		GuiControl, ICScriptHub:Text, OpenGoldsCheck, Open gold chests? (Overridden by Potion Sustain)
+		GuiControl, ICScriptHub:, BuySilversCheck, 1
+		GuiControl, ICScriptHub:, BuyGoldsCheck, 1
+		GuiControl, ICScriptHub:, OpenSilversCheck, 1
+		GuiControl, ICScriptHub:, OpenGoldsCheck, 1
 		GuiControl, ICScriptHub:Move, BuySilversCheck,w400
 		GuiControl, ICScriptHub:Move, BuyGoldsCheck,w400
 		GuiControl, ICScriptHub:Move, OpenSilversCheck,w400
