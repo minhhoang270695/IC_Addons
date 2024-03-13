@@ -1,3 +1,5 @@
+13    March 2024 - v0.0.10
+ - The addon can now grey out + disable + note overridden status on the Buy/Open settings in the gem farm.
 13    March 2024 - v0.0.9
  - Attempting to alleviate a memory leak.
  - Attempting to fix a potential issue with the script getting confused when you have 0 of a potion.

@@ -150,7 +150,24 @@ Class IC_PotionSustain_Component
 		this.CalculateSmallPotionSustain()
         this.Start()
 		this.ForceChange := true
+		this.OverrideGemFarmBuyOpenCheckboxes()
     }
+	
+	OverrideGemFarmBuyOpenCheckboxes()
+	{
+		GuiControl, ICScriptHub:Text, BuySilversCheck, Buy silver chests? (Overridden by Potion Sustain)
+		GuiControl, ICScriptHub:Text, BuyGoldsCheck, Buy gold chests? (Overridden by Potion Sustain)
+		GuiControl, ICScriptHub:Text, OpenSilversCheck, Open silver chests? (Overridden by Potion Sustain)
+		GuiControl, ICScriptHub:Text, OpenGoldsCheck, Open gold chests? (Overridden by Potion Sustain)
+		GuiControl, ICScriptHub:Move, BuySilversCheck,w400
+		GuiControl, ICScriptHub:Move, BuyGoldsCheck,w400
+		GuiControl, ICScriptHub:Move, OpenSilversCheck,w400
+		GuiControl, ICScriptHub:Move, OpenGoldsCheck,w400
+		GuiControl, ICScriptHub:Disable, BuySilversCheck
+		GuiControl, ICScriptHub:Disable, BuyGoldsCheck
+		GuiControl, ICScriptHub:Disable, OpenSilversCheck
+		GuiControl, ICScriptHub:Disable, OpenGoldsCheck
+	}
 	
     ; Loads settings from the addon's setting.json file.
     LoadSettings()
