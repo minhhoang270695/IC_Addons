@@ -99,6 +99,7 @@ Class IC_PotionSustain_Component
 	TestIndex := 0
 	TestResetZone := 1300
 	
+	UserData := ""
 	RunsCount := -1
 	ModronResetZone := -1
 	PotIDs := {"s":74,"m":75,"l":76,"h":77,"gh":1723}
@@ -116,6 +117,7 @@ Class IC_PotionSustain_Component
 	NotEnough := "Not Enough"
 	Blocked := "Blocked"
 	ListSize := 0
+	SaveModronParams := ""
 	ModronCallParams := ""
 	InstanceId := ""
 	ForceChange := false
@@ -243,7 +245,7 @@ Class IC_PotionSustain_Component
 	{
 		if (this.TestIndex == 0)
 		{
-			this.PotAmounts["s"] := 59
+			;this.PotAmounts["s"] := 59
 			;this.PotAmounts["m"] := 105
 			;this.PotAmounts["l"] := 105
 			;this.PotAmounts["h"] := 100
@@ -251,17 +253,17 @@ Class IC_PotionSustain_Component
 		}
 		;this.TestResetZone := 1500
 		;this.ModronResetZone := this.TestResetZone
-		this.Testing := true
-		g_PS_Running := true
-		this.TestIndex += 1
+		;this.Testing := true
+		;g_PS_Running := true
+		;this.TestIndex += 1
 	}
 
     ; Updates status on a timer
     UpdateTick()
     {
-		this.UpdateAutomationStatus("Idle")
+		this.UpdateAutomationStatus("Idle.")
 		currRuns := this.Testing ? this.TestIndex : g_SF.Memory.ReadResetsCount()
-		saveModronParams := ""
+		this.SaveModronParams := ""
 		if (currRuns > 0 AND (this.PotAmounts["s"] < 0 OR (this.ListSize == 0 AND this.EnableAlternating) OR this.RunsCount != currRuns))
 		{
 			this.RunsCount := currRuns
@@ -279,26 +281,22 @@ Class IC_PotionSustain_Component
 						if (buffID==v)
 							this.PotAmounts[k] := amount
 					}
-					for k,v in this.PotAmounts
-					{
-						if (v == -1)
-							this.PotAmounts[k] = 0
-					}
+				}
+				for k,v in this.PotAmounts
+				{
+					if (v == -1)
+						this.PotAmounts[k] = 0
 				}
 				smalls := this.PotAmounts["s"]
 				if (smalls >= 0 AND smalls <= this.ChestSmallPotMinThresh AND this.ChestSmallPotMinThresh >= 0)
-					this.ChestSmallPotWaxing := true
-				else if (smalls > this.ChestSmallPotMaxThresh)
-					this.ChestSmallPotWaxing := false
-				if (this.ChestSmallPotWaxing)
 					this.ChestSmallPotBuying := true
-				else
+				else if (smalls >= this.ChestSmallPotMaxThresh)
 					this.ChestSmallPotBuying := false
 			}
 			needAChange := false
 			for k,v in this.PotAmounts
 			{
-				if (((oldPotAmounts[k] > this.AutomatePotMinThresh AND v <= this.AutomatePotMinThresh) OR (oldPotAmounts[k] < this.AutomatePotMaxThresh AND v >= this.AutomatePotMaxThresh)) AND !this.AreObjectsEqual(oldPotAmounts, this.PotAmounts))
+				if (((oldPotAmounts[k] > this.AutomatePotMinThresh AND v <= this.AutomatePotMinThresh) OR (oldPotAmounts[k] < this.AutomatePotMaxThresh AND v >= this.AutomatePotMaxThresh) OR (v < oldPotAmounts[k] AND oldPotAmounts[k] <= this.AutomatePotMinThresh)) AND !this.AreObjectsEqual(oldPotAmounts, this.PotAmounts))
 				{
 					needAChange := true
 					break
@@ -311,12 +309,12 @@ Class IC_PotionSustain_Component
 				needAChange := false
 				this.ForceChange := false
 				this.GemHunter := 0
-				userData := g_ServerCall.CallUserDetails()
-				if(IsObject(userData) AND userData.success)
-					this.GemHunter := this.CheckUserDataForGemHunter(userData.details.buffs)
+				this.UserData := g_ServerCall.CallUserDetails()
+				if(IsObject(this.UserData) AND this.UserData.success)
+					this.GemHunter := this.CheckUserDataForGemHunter(this.UserData.details.buffs)
 				calcAuto := this.CalculateAutomationBuffs()
-				if(IsObject(userData) AND userData.success)
-					saveModronParams := this.GetSaveModronParams(userData.details.modron_saves,calcAuto)
+				if(IsObject(this.UserData) AND this.UserData.success)
+					this.SaveModronParams := this.GetSaveModronParams(this.UserData.details.modron_saves,calcAuto)
 			}
 		}
         try ; avoid thrown errors when comobject is not available.
@@ -324,11 +322,11 @@ Class IC_PotionSustain_Component
 			this.ModronResetZone := this.Testing ? this.TestResetZone : g_SF.Memory.GetModronResetArea()
 			this.CalculateSmallPotionSustain()
             SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-            if (SharedRunData.PSBGF_Running == "") ; Addon running check
+            if (SharedRunData.PSBGF_Running() == "") ; Addon running check
             {
                 GuiControl, ICScriptHub:Text, g_PS_StatusText, Not running. Loaded after Gem Farm script. Stop and Start.
             }
-			else if (SharedRunData.PSBGF_Running)
+			else if (SharedRunData.PSBGF_Running())
 			{
                 GuiControl, ICScriptHub:Text, g_PS_StatusText, Running.
 				g_PS_Running := true
@@ -340,11 +338,18 @@ Class IC_PotionSustain_Component
 				}
 				if (this.ChestSmallPotBuying != SharedRunData.PSBGF_GetBuySilvers())
 					SharedRunData.PSBGF_SetBuySilvers(this.ChestSmallPotBuying)
-				if (this.EnableAlternating AND saveModronParams != "" AND saveModronParams != this.ModronCallParams)
+				if (this.EnableAlternating AND this.SaveModronParams != "" AND this.SaveModronParams != this.ModronCallParams)
 				{
-					this.ModronCallParams := saveModronParams
-					SharedRunData.PSBGF_SetModronCallParams(saveModronParams)
+					this.ModronCallParams := this.SaveModronParams
+					SharedRunData.PSBGF_SetModronCallParams(this.SaveModronParams)
 				}
+			}
+			else
+			{
+				this.UpdateAutomationStatus("Connection to gem farm script is broken.")
+				GuiControl, ICScriptHub:Text, g_PS_StatusText, Connection to gem farm script is broken.
+				GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, Unknown
+				GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, Unknown
 			}
         }
         catch
@@ -361,7 +366,7 @@ Class IC_PotionSustain_Component
 	{
 		if (!this.EnableAlternating)
 			GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, Off
-		if (status == "Idle" AND this.FoundHighAreaPot)
+		if (status == "Idle." AND this.FoundHighAreaPot)
 			status := "Warning: A potion in the Modron has a zone greater than 1."
 		GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, % status
 		Gui, Submit, NoHide
@@ -610,6 +615,7 @@ Class IC_PotionSustain_Component
 		version := g_SF.Memory.ReadBaseGameVersion()
 		gameInstanceId := g_SF.Memory.ReadActiveGameInstance()
 		params := ""
+		this.FoundHighAreaPot := false
 		for k,v in saves
 		{
 			if (v.instance_id != gameInstanceId)
@@ -617,7 +623,6 @@ Class IC_PotionSustain_Component
 			if (!this.AreObjectsEqual(calcAuto,v.buffs))
 			{
 				; Add non speed pots that might be included.
-				this.FoundHighAreaPot := false
 				for j,w in v.buffs
 				{
 					if (w > 1 AND !this.FoundHighAreaPot)
