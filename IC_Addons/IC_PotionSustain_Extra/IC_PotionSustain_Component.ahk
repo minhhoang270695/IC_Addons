@@ -16,12 +16,12 @@ GUIFunctions.UseThemeTextColor()
 Gui, ICScriptHub:Font, w700
 Gui, ICScriptHub:Add, Text, x15 y+15, Potion Sustain:
 Gui, ICScriptHub:Font, w400
+GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Button, x145 y+-15 w100 vg_PotionSustainSave_Clicked, `Save Settings
 buttonFunc := ObjBindMethod(g_PotionSustain, "SaveSettings")
 GuiControl,ICScriptHub: +g, g_PotionSustainSave_Clicked, % buttonFunc
 Gui, ICScriptHub:Add, Text, x5 y+10 w130 +Right, Status:
 Gui, ICScriptHub:Add, Text, vg_PS_StatusText x145 y+-13 w400, Waiting for Gem Farm to start
-GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, GroupBox, x15 y+10 Section w500 h115, Sustain Smalls
 Gui, ICScriptHub:Add, Text, xs165 ys15 w50, Minimum
 Gui, ICScriptHub:Add, Text, xs235 y+-13 w50, Maximum
@@ -125,6 +125,7 @@ Class IC_PotionSustain_Component
 	DisableLarge := false
 	DisableHuge := false
 	GemHunter := 0
+	ModronSaveCallResponse := ""
 
     InjectAddon()
     {
@@ -360,6 +361,7 @@ Class IC_PotionSustain_Component
 					this.ModronCallParams := this.SaveModronParams
 					SharedRunData.PSBGF_SetModronCallParams(this.SaveModronParams)
 				}
+				this.ModronSaveCallResponse := SharedRunData.PSBGF_GetResponse()
 			}
 			else
 			{
@@ -383,8 +385,13 @@ Class IC_PotionSustain_Component
 	{
 		if (!this.EnableAlternating)
 			GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, Off
-		if (status == "Idle." AND this.FoundHighAreaPot)
-			status := "Warning: A potion in the Modron has a zone greater than 1."
+		if (status == "Idle.")
+		{
+			if (this.FoundHighAreaPot)
+				status := "Warning: A potion in the Modron has a zone greater than 1."
+			if (this.ModronSaveCallResponse != "")
+				status := "Warning: Modron save call seems to have failed. Check logs."
+		}
 		GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, % status
 		Gui, Submit, NoHide
 	}

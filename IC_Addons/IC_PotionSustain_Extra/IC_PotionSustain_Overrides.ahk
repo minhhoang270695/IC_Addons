@@ -1,6 +1,8 @@
 Global g_PSBGF_BuySilvers := false
 Global g_PSBGF_ModronCallParams := ""
 Global g_PSBGF_InstanceId := ""
+Global g_PSBGF_Response := ""
+Global g_PSBGF_LogFile := A_LineFile . "\..\logs.json"
 
 class IC_PotionSustain_SharedData_Class extends IC_SharedData_Class
 {
@@ -32,6 +34,11 @@ class IC_PotionSustain_SharedData_Class extends IC_SharedData_Class
     PSBGF_Running()
 	{
 		return true
+	}
+	
+	PSBGF_GetResponse()
+	{
+		return g_PSBGF_Response
 	}
 }
 
@@ -100,5 +107,19 @@ class IC_PotionSustain_BrivGemFarm_Class extends IC_BrivSharedFunctions_Class
 	{
 		params .= "&instance_id=" . g_PSBGF_InstanceId
 		response := g_ServerCall.ServerCall("savemodron",params)
+		if(IsObject(response) AND response.success)
+			g_PSBGF_Response := ""
+		else
+		{
+			if (!IsObject(response))
+				g_PSBGF_Response := % response
+			else
+				g_PSBGF_Response := % JSON.stringify(response)
+			FormatTime, CurrentTime, , yyyy-MM-dd HH:mm:ss
+			sanitisedParams := RegExReplace(params, "&user_id=[a-zA-Z0-9]+", "&user_id=____")
+			sanitisedParams := RegExReplace(sanitisedParams, "&hash=[a-zA-Z0-9]+", "&hash=____")
+			sanitisedParams := RegExReplace(sanitisedParams, "&instance_id=[a-zA-Z0-9]+", "&instance_id=____")
+			FileAppend, [%CurrentTime%] `nParams: %sanitisedParams%`nResponse: %g_PSBGF_Response%`n`n, %g_PSBGF_LogFile%
+		}
 	}
 }
