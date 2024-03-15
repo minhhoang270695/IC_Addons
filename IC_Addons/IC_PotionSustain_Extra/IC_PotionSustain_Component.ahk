@@ -12,11 +12,11 @@ global g_PS_AutomateThreshMin
 global g_PS_AutomateThreshMax
 
 Gui, ICScriptHub:Tab, Potion Sustain
-GUIFunctions.UseThemeTextColor()
+GUIFunctions.UseThemeTextColor("HeaderTextColor")
 Gui, ICScriptHub:Font, w700
 Gui, ICScriptHub:Add, Text, x15 y+15, Potion Sustain:
-Gui, ICScriptHub:Font, w400
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
+Gui, ICScriptHub:Font, w400
 Gui, ICScriptHub:Add, Button, x145 y+-15 w100 vg_PotionSustainSave_Clicked, `Save Settings
 buttonFunc := ObjBindMethod(g_PotionSustain, "SaveSettings")
 GuiControl,ICScriptHub: +g, g_PotionSustainSave_Clicked, % buttonFunc
