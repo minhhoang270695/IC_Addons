@@ -54,7 +54,7 @@ GUIFunctions.UseThemeTextColor("TableTextColor")
 Gui, ICScriptHub:Add, ListView, xs300 ys15 w190 h100 vg_PS_AutomateList, Priority|Alternating|Status
 GUIFunctions.UseThemeListViewBackgroundColor("g_PS_AutomateList")
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, GroupBox, x15 ys185 Section w500 h135, Current Potion Amounts
+Gui, ICScriptHub:Add, GroupBox, x15 ys185 Section w500 h140, Current Potion Amounts
 Gui, ICScriptHub:Add, Text, xs20 ys+20 w130 +Right, Smalls:
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotCountStatus xs160 y+-13 w60 +Right, Unknown
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotWaxingStatus xs240 y+-13 w240, Unknown
@@ -126,6 +126,7 @@ Class IC_PotionSustain_Component
 	DisableHuge := false
 	GemHunter := 0
 	ModronSaveCallResponse := ""
+	PendingCall := false
 
     InjectAddon()
     {
@@ -228,7 +229,7 @@ Class IC_PotionSustain_Component
 			try ; avoid thrown errors when comobject is not available.
 			{
 				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-				SharedRunData.PSBGF_SetModronCallParams("")
+				SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
 			}
 		}
         g_SF.WriteObjectToJSON(g_PS_SettingsPath, this.Settings )
@@ -321,7 +322,7 @@ Class IC_PotionSustain_Component
 				}
 			}
 			Random,randChance,1,100
-			if ((this.ListSize == 0 OR needAChange OR this.ForceChange OR randChance <= 20) AND g_PS_Running AND this.EnableAlternating)
+			if ((this.ListSize == 0 OR needAChange OR this.ForceChange OR randChance <= 25) AND g_PS_Running AND this.EnableAlternating)
 			{
 				this.UpdateAutomationStatus("Recalculating...")
 				needAChange := false
@@ -348,6 +349,7 @@ Class IC_PotionSustain_Component
 			{
                 GuiControl, ICScriptHub:Text, g_PS_StatusText, Running.
 				g_PS_Running := true
+				this.PendingCall := SharedRunData.PSBGF_GetIsDifferentCall()
 				instanceId := g_SF.Memory.ReadInstanceID()
 				if (instanceId != this.InstanceId AND instanceId != "" AND instanceId > 0)
 				{
@@ -360,6 +362,7 @@ Class IC_PotionSustain_Component
 				{
 					this.ModronCallParams := this.SaveModronParams
 					SharedRunData.PSBGF_SetModronCallParams(this.SaveModronParams)
+					this.PendingCall := SharedRunData.PSBGF_GetIsDifferentCall()
 				}
 				this.ModronSaveCallResponse := SharedRunData.PSBGF_GetResponse()
 			}
@@ -385,12 +388,14 @@ Class IC_PotionSustain_Component
 	{
 		if (!this.EnableAlternating)
 			GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, Off
-		if (status == "Idle.")
+		else if (status == "Idle.")
 		{
-			if (this.FoundHighAreaPot)
-				status := "Warning: A potion in the Modron has a zone greater than 1."
 			if (this.ModronSaveCallResponse != "")
 				status := "Warning: Modron save call seems to have failed. Check logs."
+			else if (this.FoundHighAreaPot)
+				status := "Warning: A potion in the Modron has a zone greater than 1."
+			else if (this.PendingCall)
+				status := "Pending potion swapping. Waiting for next offline stack."
 		}
 		GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, % status
 		Gui, Submit, NoHide
@@ -478,15 +483,23 @@ Class IC_PotionSustain_Component
 		}
 		; Sustaining mediums.
 		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold.
+		lZone := 3025
 		mZone := 1175
 		sZone := 655
 		if (this.GemHunter > 0)
 		{
+			lZone := 2290
 			mZone := 885
 			sZone := 475
 		}
 		calcAuto := {}
-		if (this.ModronResetZone >= mZone AND this.PotAmounts["m"] > this.AutomatePotMinThresh)
+		; Sustaining larges.
+		; Only use if modron reset is 3025+ (or 2290+GH) and large pots are above the minimum threshold and large pots are not disabled.
+		if (this.ModronResetZone >= lZone AND this.PotAmounts["l"] > this.AutomatePotMinThresh AND !this.DisableLarge)
+			calcAuto := this.CalculateSustainLarges()
+		; Sustaining mediums.
+		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold.
+		else if (this.ModronResetZone >= mZone AND this.PotAmounts["m"] > this.AutomatePotMinThresh)
 			calcAuto := this.CalculateSustainMediums()
 		; Sustaining smalls.
 		; Only use if modron reset is 655+ (or 475+GH) and small pots are above the minimum threshold.
@@ -500,6 +513,45 @@ Class IC_PotionSustain_Component
 		LV_ModifyCol(2, 65)
 		LV_ModifyCol(3, 75)
 		Gui, Submit, NoHide
+		return calcAuto
+	}
+	
+	CalculateSustainLarges()
+	{
+		; Set can use larges.
+		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, Larges + Others.
+		calcAuto := {this.PotIDs["l"]:1}
+		status := ["---","---","---","---"]
+		if (this.PotAmounts["m"] >= this.AutomatePotMinThresh AND !this.WaxingPots["m"])
+		{
+			calcAuto[this.PotIDs["m"]] := 1
+			status[1] := this.Using
+		}
+		else if (!this.DisableHuge AND this.PotAmounts["h"] >= this.AutomatePotMinThresh AND !this.WaxingPots["h"])
+		{
+			calcAuto[this.PotIDs["h"]] := 1
+			status[1] := this.NotEnough
+			status[2] := this.Using
+		}
+		else if (this.PotAmounts["s"] >= this.AutomatePotMinThresh AND !this.WaxingPots["s"])
+		{
+			calcAuto[this.PotIDs["s"]] := 1
+			status[1] := this.NotEnough
+			status[2] := this.DisableHuge ? this.Blocked : this.NotEnough
+			status[3] := this.Using
+		}
+		else
+		{
+			status[1] := this.NotEnough
+			status[2] := this.DisableHuge ? this.Blocked : this.NotEnough
+			status[3] := this.NotEnough
+			status[4] := this.Using
+		}
+		LV_Add(,1,"l + m",status[1])
+		LV_Add(,2,"l + h",status[2])
+		LV_Add(,3,"l + s",status[3])
+		LV_Add(,4,"l",status[4])
+		this.ListSize := 4
 		return calcAuto
 	}
 	

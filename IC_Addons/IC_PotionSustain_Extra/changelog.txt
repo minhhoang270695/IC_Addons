@@ -1,3 +1,6 @@
+16    March 2024 - v0.0.12
+ - Added support for sustaining larges beyond z2k. For if that ever happens.
+ - Added Automation Status for pending potion swap for better communication with user.
 15    March 2024 - v0.0.11
  - Added a warning and some logging for when the modron save server call fails.
 13    March 2024 - v0.0.10
