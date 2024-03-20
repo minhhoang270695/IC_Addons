@@ -262,19 +262,7 @@ Class IC_PotionSustain_Component
 	
 	Test()
 	{
-		if (this.TestIndex == 0)
-		{
-			;this.PotAmounts["s"] := 59
-			;this.PotAmounts["m"] := 105
-			;this.PotAmounts["l"] := 105
-			;this.PotAmounts["h"] := 100
-			;this.WaxingPots["l"] := true
-		}
-		;this.TestResetZone := 1500
-		;this.ModronResetZone := this.TestResetZone
-		;this.Testing := true
-		;g_PS_Running := true
-		;this.TestIndex += 1
+		; Testing stuff
 	}
 
     ; Updates status on a timer
@@ -286,6 +274,7 @@ Class IC_PotionSustain_Component
 		if (currRuns > 0 AND (this.PotAmounts["s"] < 0 OR (this.ListSize == 0 AND this.EnableAlternating) OR this.RunsCount != currRuns))
 		{
 			this.RunsCount := currRuns
+			;this.GemHunter := this.ReadActiveGemHunter()
 			oldPotAmounts := this.ObjFullyClone(this.PotAmounts)
 			size := g_SF.Memory.ReadInventoryItemsCount()
 			if (this.PotAmounts["s"] < 0 OR (size >= 1 AND size <= this.SanitySize))
@@ -709,34 +698,67 @@ Class IC_PotionSustain_Component
 			}
 			if (!this.AreObjectsEqual(calcAuto,v.buffs))
 				this.ForceChange := true
-			coreId := v.core_id
-			grid := JSON.stringify(v.grid)
-			formationSaves := JSON.stringify(v.formation_saves)
-			areaGoal := v.area_goal
-			buffs := JSON.stringify(calcAuto)
-			timestamp := this.GetNowEpoch() + 600000
-			properties := "{""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}"
-			params .= "&core_id=" . coreId
-			params .= "&grid=" . grid
-			params .= "&game_instance_id=" . gameInstanceId
-			params .= "&formation_saves=" . formationSaves
-			params .= "&area_goal=" . areaGoal
-			params .= "&buffs=" . buffs
-			params .= "&checkin_timestamp=" . timestamp
-			params .= "&properties=" . properties
+			params .= "&core_id=" . (v.core_id) . "&grid=" . (this.JsonifyArray(v.grid)) . "&game_instance_id=" . gameInstanceId . "&formation_saves=" . (this.JsonifyObject(v.formation_saves)) . "&area_goal=" . (v.area_goal) . "&buffs=" . (this.JsonifyObject(calcAuto)) . "&checkin_timestamp=" . (this.GetNowEpoch() + 600000) . "&properties={""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}"
+			break
 		}
-		params .= "&user_id=" . userID
-		params .= "&hash=" . userHash
-		params .= "&language_id=1"
-		params .= "&timestamp=0"
-		params .= "&request_id=0"
-		params .= "&network_id=" . networkId
-		params .= "&mobile_client_version=" . version
-		params .= "&include_free_play_objectives=true"
-		params .= "&instance_key=1"
-		params .= "&offline_v2_build=1"
-		params .= "&localization_aware=true"
+		params .= "&user_id=" . userID . "&hash=" . userHash . "&language_id=1&timestamp=0&request_id=0&network_id=" . networkId . "&mobile_client_version=" . version . "&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true"
 		return params
+	}
+	
+	GetSaveModronParamsFromMemory(calcAuto)
+	{
+		gameInstanceId := g_SF.Memory.ReadActiveGameInstance()
+		params := ""
+		
+		modronSaveIndex := g_SF.Memory.GetCurrentModronSaveSlot()
+		modronSaves := g_SF.Memory.GameManager.game.gameInstances[gameInstanceId].Controller.userData.ModronHandler.modronSaves[modronSaveIndex]
+		calcAuto := this.JsonifyObject(this.ModifyCallBuffsBasedOnCurrentBuffs(modronSaves.Buffs,calcAuto))
+		forms := this.JsonifyDictionary(modronSaves.FormationSaves)
+		if (calcAuto == "" OR calcAuto == "{}" OR forms == "" OR forms == "{}")
+			return ""
+		
+		params .= "&core_id=" . (modronSaves.CoreID.Read())
+		;params .= "&grid=" . (g_SF.ReadModronGridArray(modronSaves))
+		params .= "&game_instance_id=" . gameInstanceId
+		params .= "&formation_saves=" . forms
+		params .= "&area_goal=" . (modronSaves.targetArea.Read())
+		params .= "&buffs=" . calcAuto
+		params .= "&checkin_timestamp=" . (this.GetNowEpoch() + 600000)
+		params .= "&properties={""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}"
+		
+		params .= "&user_id=" . (g_SF.Memory.ReadUserID()) . "&hash=" . (g_SF.Memory.ReadUserHash()) . "&language_id=1&timestamp=0&request_id=0&network_id=" . (g_SF.Memory.ReadPlatform()) . "&mobile_client_version=" . (g_SF.Memory.ReadBaseGameVersion()) . "&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true"
+		return params
+	}
+	
+	ModifyCallBuffsBasedOnCurrentBuffs(currentBuffs,calcAuto)
+	{
+		buffsObj := this.ObjectifyDictionary(currentBuffs,,200)
+		this.FoundHighAreaPot := false
+		if (!this.AreObjectsEqual(buffsObj, calcAuto))
+		{
+			for j,w in buffsObj
+			{
+				if (w > 1 AND !this.FoundHighAreaPot)
+					this.FoundHighAreaPot := true
+				if (!this.HasValue(this.PotIDs,j))
+					calcAuto[j] := w
+			}
+		}
+		return calcAuto
+	}
+	
+	ReadActiveGemHunter()
+	{
+		buffs := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].BuffHandler.activeBuffs
+		buffsSize := buffs.size.Read()
+		if(buffsSize <= 0 OR buffsSize > 1000)
+            return 0
+		loop, %buffsSize%
+		{
+			if (buffs[A_Index - 1].BaseEffectString.Read() == "increase_boss_gems_percent,50")
+				return buffs[A_Index - 1].RemainingTime.Read()
+		}
+		return 0
 	}
 	
 	EncodeDecodeURI(str, encode := true, component := true) {
@@ -783,6 +805,84 @@ Class IC_PotionSustain_Component
 			if (v == val)
 				return true
 		return false
+	}
+	
+	JsonifyObject(obj)
+	{
+		if (!IsObject(obj))
+			return obj
+		jsonObj := "{"
+		first := true
+		for k,v in obj
+		{
+			if (first)
+				first := false
+			else
+				jsonObj .= ","
+			if (IsObject(v))
+				jsonObj .= """" k """:" (this.JsonifyObject(v))
+			else
+				jsonObj .= """" k """:" v
+		}
+		jsonObj .= "}"
+		return jsonObj
+	}
+	
+	JsonifyArray(arr)
+	{
+		if (!IsObject(arr))
+			return arr
+		size := arr.MaxIndex()
+		jsonArr := "["
+		loop, %size%
+		{
+			if (A_Index > 1)
+				jsonArr .= ","
+			if (IsObject(arr[A_Index]))
+				jsonArr .= (this.JsonifyArray(arr[A_Index]))
+			else
+				jsonArr .= arr[A_Index]
+		}
+		jsonArr .= "]"
+		return jsonArr
+	}
+	
+	JsonifyDictionary(dict, sanityMin := 0, sanityMax := 50000)
+	{
+		dictSize := dict.size.Read()
+		if (dictSize < sanityMin OR dictSize > sanityMax)
+			return ""
+		json := "{"
+		loop, %dictSize%
+		{
+			if (A_Index > 1)
+				json .= ","
+			key := dict["key", A_Index - 1, true].Read()
+			json .= """" key """:"
+			if (dict[key].size.Read() > 0)
+				json .= this.JsonifyDictionary(dict[key])
+			else
+				json .= dict[key].Read()
+		}
+		json .= "}"
+		return json
+	}
+	
+	ObjectifyDictionary(dict, sanityMin := 0, sanityMax := 50000)
+	{
+		dictSize := dict.size.Read()
+		if (dictSize < sanityMin OR dictSize > sanityMax)
+			return ""
+		obj := {}
+		loop, %dictSize%
+		{
+			key := dict["key", A_Index - 1, true].Read()
+			if (dict[key].size.Read() > 0)
+				obj[key] := this.ObjectifyDictionary(dict[key])
+			else
+				obj[key] := dict[key].Read()
+		}
+		return obj
 	}
 	
 	GetNowEpoch()

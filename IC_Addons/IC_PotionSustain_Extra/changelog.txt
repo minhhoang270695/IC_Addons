@@ -1,3 +1,5 @@
+19    March 2024 - v0.0.13
+ - Modified script to (hopefully) work with the new version of Script Hub in development.
 16    March 2024 - v0.0.12
  - Added support for sustaining larges beyond z2k. For if that ever happens.
  - Added Automation Status for pending potion swap for better communication with user.
