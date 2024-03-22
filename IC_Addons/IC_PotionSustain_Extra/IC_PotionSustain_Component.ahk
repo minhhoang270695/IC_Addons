@@ -91,6 +91,7 @@ g_PotionSustain.Init()
 */
 Class IC_PotionSustain_Component
 {
+	static Injected := false
     Settings := ""
     TempSettings := new IC_PotionSustain_Component._IC_PotionSustain_TempSettings
     TimerFunctions := ""
@@ -128,14 +129,16 @@ Class IC_PotionSustain_Component
 	ModronSaveCallResponse := ""
 	PendingCall := false
 
-    InjectAddon()
-    {
-        splitStr := StrSplit(A_LineFile, "\")
-        addonDirLoc := splitStr[(splitStr.Count()-1)]
-        addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_PotionSustain_Addon.ahk`n"
-        FileAppend, %addonLoc%, %g_BrivFarmModLoc%
-        OutputDebug, % addonLoc . " to " . g_BrivFarmModLoc
-    }
+	InjectAddon()
+	{
+		if (this.Injected)
+			return
+		splitStr := StrSplit(A_LineFile, "\")
+		addonDirLoc := splitStr[(splitStr.Count()-1)]
+		addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_BrivGemFarm_LevelUp_Addon.ahk`n"
+		FileAppend, %addonLoc%, %g_BrivFarmModLoc%
+		this.Injected := true
+	}
 	
     ; GUI startup
     Init()
