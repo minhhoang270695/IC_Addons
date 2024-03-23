@@ -1,8 +1,12 @@
 # IC Addons by Emmote
 
+___
+
 ## IC_NoModronAdventuring_Extra
 
 This is a fork of Antilectual's [IC_NoModronAdventuring_Extra](https://github.com/antilectual/IC_Addons/tree/main/IC_Addons/IC_NoModronAdventuring_Extra) addon that adds a few extra features.
+
+___
 
 ## IC_PotionSustain_Extra
 
