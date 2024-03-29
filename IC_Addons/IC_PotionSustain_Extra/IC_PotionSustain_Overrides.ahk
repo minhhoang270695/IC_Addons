@@ -1,10 +1,9 @@
-Global g_PSBGF_BuySilvers := false
-Global g_PSBGF_ModronCallParams := ""
-Global g_PSBGF_CurrentBuffs := ""
-Global g_PSBGF_PreviousBuffs := ""
-Global g_PSBGF_InstanceId := ""
-Global g_PSBGF_Response := ""
-Global g_PSBGF_LogFile := A_LineFile . "\..\logs.json"
+global g_PSBGF_BuySilvers := false
+global g_PSBGF_ModronCallParams := ""
+global g_PSBGF_SentCall := false
+global g_PSBGF_InstanceId := ""
+global g_PSBGF_Response := ""
+global g_PSBGF_LogFile := A_LineFile . "\..\logs.json"
 
 class IC_PotionSustain_SharedData_Class extends IC_SharedData_Class
 {
@@ -21,17 +20,11 @@ class IC_PotionSustain_SharedData_Class extends IC_SharedData_Class
 	PSBGF_SetModronCallParams(set)
 	{
 		g_PSBGF_ModronCallParams := set
-		RegExMatch(set,"&buffs=[^&]+",g_PSBGF_CurrentBuffs)
 	}
 	
 	PSBGF_GetModronCallParams()
 	{
 		return g_PSBGF_ModronCallParams
-	}
-	
-	PSBGF_GetIsDifferentCall()
-	{
-		return g_PSBGF_ModronCallParams != "" AND g_PSBGF_PreviousBuffs != g_PSBGF_CurrentBuffs
 	}
 	
 	PSBGF_SetInstanceId(set)
@@ -69,11 +62,10 @@ class IC_PotionSustain_BrivGemFarm_Class extends IC_BrivSharedFunctions_Class
         currentChestTallies := startingPurchasedSilverChests + startingPurchasedGoldChests + startingOpenedGoldChests + startingOpenedSilverChests
         ElapsedTime := 0
 		
-		if (g_PSBGF_ModronCallParams != "" AND g_PSBGF_PreviousBuffs != g_PSBGF_CurrentBuffs AND g_PSBGF_InstanceId != "")
+		if (g_PSBGF_ModronCallParams != "" AND g_PSBGF_InstanceId != "")
 		{
 			this.SendModronSaveCall(g_PSBGF_ModronCallParams)
-			RegExMatch(g_PSBGF_ModronCallParams,"&buffs=[^&]+",g_PSBGF_PreviousBuffs)
-			g_PSBGF_ModronCallParams := ""
+			g_PSBGF_ModronCallParams := "Sent"
 		}
 
         doHybridStacking := ( g_BrivUserSettings[ "ForceOfflineGemThreshold" ] > 0 ) OR ( g_BrivUserSettings[ "ForceOfflineRunThreshold" ] > 1 )

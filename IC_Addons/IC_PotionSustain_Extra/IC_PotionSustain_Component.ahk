@@ -32,7 +32,7 @@ Gui, ICScriptHub:Add, Edit, vg_PS_ChestSmallThreshMax xs230 y+-21 w60 +Right,
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Text, xs300 y+-17, (For deciding to buy Silvers or Golds)
 Gui, ICScriptHub:Add, Text, xs20 y+15 w130 +Right, Can Sustain Smalls:
-Gui, ICScriptHub:Add, Text, vg_PS_AbleSustainSmallStatus xs160 y+-13 w200, Unknown
+Gui, ICScriptHub:Add, Text, vg_PS_AbleSustainSmallStatus xs160 y+-13 w300, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Currently Buying Silvers:
 Gui, ICScriptHub:Add, Text, vg_PS_BuyingSilversStatus xs160 y+-13 w200, Unknown
 Gui, ICScriptHub:Add, GroupBox, x15 ys120 Section w500 h180, Automate Modron Potions
@@ -70,34 +70,34 @@ Gui, ICScriptHub:Add, Text, vg_PS_HugePotWaxingStatus xs240 y+-13 w240, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Gem Hunters:
 Gui, ICScriptHub:Add, Text, vg_PS_GemHunterPotCountStatus xs160 y+-13 w60 +Right, Unknown
 Gui, ICScriptHub:Add, Text, vg_PS_GemHunterStatus xs240 y+-13 w240, Unknown
-;Gui, ICScriptHub:Add, Button, x145 y+15 w100 vg_Test_Clicked, `Test
+
+;Gui, ICScriptHub:Add, Button, x145 y+25 w100 vg_Test_Clicked, `Test
 ;buttonFunc := ObjBindMethod(g_PotionSustain, "Test")
 ;GuiControl,ICScriptHub: +g, g_Test_Clicked, % buttonFunc
 
 if(IsObject(IC_BrivGemFarm_Component))
-    g_PotionSustain.InjectAddon()
+{
+	g_PotionSustain.InjectAddon()
+}
 else
 {
-    GuiControl, ICScriptHub:Text, g_PS_StatusText, WARNING: This addon needs IC_BrivGemFarm enabled.
-    Gui, Submit, NoHide
-    return
+	GuiControl, ICScriptHub:Text, g_PS_StatusText, WARNING: This addon needs IC_BrivGemFarm enabled.
+	Gui, Submit, NoHide
+	return
 }
 
 g_PotionSustain.Init()
 
 /*  IC_PotionSustain_Component
-    Class that manages the GUI for IC_PotionSustain.
+	Class that manages Potion Sustain.
 
 */
 Class IC_PotionSustain_Component
 {
-    Settings := ""
-    TempSettings := new IC_PotionSustain_Component._IC_PotionSustain_TempSettings
-    TimerFunctions := ""
+	Injected := false
+	Settings := {}
+	TimerFunctions := ""
 	SanitySize := 5000
-	Testing := false
-	TestIndex := 0
-	TestResetZone := 1300
 	
 	UserData := ""
 	RunsCount := -1
@@ -117,43 +117,37 @@ Class IC_PotionSustain_Component
 	NotEnough := "Not Enough"
 	Blocked := "Blocked"
 	ListSize := 0
-	SaveModronParams := ""
 	ModronCallParams := ""
 	InstanceId := ""
-	ForceChange := false
 	FoundHighAreaPot := false
 	DisableLarge := false
 	DisableHuge := false
 	GemHunter := 0
 	ModronSaveCallResponse := ""
 	PendingCall := false
+	OfflineDone := true
 
-    InjectAddon()
-    {
-        splitStr := StrSplit(A_LineFile, "\")
-        addonDirLoc := splitStr[(splitStr.Count()-1)]
-        addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_PotionSustain_Addon.ahk`n"
-        FileAppend, %addonLoc%, %g_BrivFarmModLoc%
-        OutputDebug, % addonLoc . " to " . g_BrivFarmModLoc
-    }
+	InjectAddon()
+	{
+		splitStr := StrSplit(A_LineFile, "\")
+		addonDirLoc := splitStr[(splitStr.Count()-1)]
+		addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_PotionSustain_Addon.ahk`n"
+		FileAppend, %addonLoc%, %g_BrivFarmModLoc%
+	}
 	
-    ; GUI startup
-    Init()
-    {
-        Global
-        Gui, Submit, NoHide
+	; GUI startup
+	Init()
+	{
+		Global
+		Gui, Submit, NoHide
 		this.LoadSettings()
-        GuiControl, ICScriptHub:, g_PS_StatusText, Waiting for Gem Farm to start.
+		this.UpdateMainStatus("Waiting for Gem Farm to start.")
 		GuiControl, ICScriptHub:, g_PS_SmallPotCountStatus, Unknown
-        this.CreateTimedFunctions()
-		this.RunsCount := g_SF.Memory.ReadResetsCount()
-		g_ServerCall.UpdatePlayServer()
-        g_SF.ResetServerCall()
-		this.CalculateSmallPotionSustain()
-        this.Start()
-		this.ForceChange := true
+		this.CreateTimedFunctions()
 		this.OverrideGemFarmBuyOpenCheckboxes()
-    }
+		this.RunsCount := g_SF.Memory.ReadResetsCount()
+		this.Start()
+	}
 	
 	OverrideGemFarmBuyOpenCheckboxes()
 	{
@@ -171,24 +165,24 @@ Class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:Disable, OpenGoldsCheck
 	}
 	
-    ; Loads settings from the addon's setting.json file.
-    LoadSettings()
-    {
+	; Loads settings from the addon's setting.json file.
+	LoadSettings()
+	{
 		Global
-        Gui, Submit, NoHide
-        writeSettings := False
-        this.Settings := g_SF.LoadObjectFromJSON(g_PS_SettingsPath)
-        if(!IsObject(this.Settings) OR this.Settings["SmallThresh"] != "")
-        {
-            this.DefaultSettings()
-            writeSettings := True
-        }
-        if(writeSettings)
-        {
-            g_SF.WriteObjectToJSON(g_PS_SettingsPath, this.Settings)
-        }
-        GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMin, % this.Settings["SmallThreshMin"]
-        GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMax, % this.Settings["SmallThreshMax"]
+		Gui, Submit, NoHide
+		writeSettings := False
+		this.Settings := g_SF.LoadObjectFromJSON(g_PS_SettingsPath)
+		if(!IsObject(this.Settings) OR this.Settings["SmallThresh"] != "")
+		{
+			this.DefaultSettings()
+			writeSettings := True
+		}
+		if(writeSettings)
+		{
+			g_SF.WriteObjectToJSON(g_PS_SettingsPath, this.Settings)
+		}
+		GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMin, % this.Settings["SmallThreshMin"]
+		GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMax, % this.Settings["SmallThreshMax"]
 		GuiControl, ICScriptHub:, g_PS_AutomateThreshMin, % this.Settings["AutomateThreshMin"]
 		GuiControl, ICScriptHub:, g_PS_AutomateThreshMax, % this.Settings["AutomateThreshMax"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_EnableAlternating, % this.Settings["Alternate"]
@@ -201,18 +195,19 @@ Class IC_PotionSustain_Component
 		this.EnableAlternating := this.Settings["Alternate"]
 		this.DisableLarge := this.Settings["DisableLarges"]
 		this.DisableHuge := this.Settings["DisableHuges"]
-        this.UpdateGUI()
-    }
-    
-    ; Saves settings to addon's setting.json file.
-    SaveSettings()
-    {
+		this.UpdateGUI()
+	}
+	
+	; Saves settings to addon's setting.json file.
+	SaveSettings()
+	{
 		Global
-        Gui, Submit, NoHide
-        this.Settings["SmallThreshMin"] := g_PS_ChestSmallThreshMin
-        this.Settings["SmallThreshMax"] := g_PS_ChestSmallThreshMax
-        this.Settings["AutomateThreshMin"] := g_PS_AutomateThreshMin
-        this.Settings["AutomateThreshMax"] := g_PS_AutomateThreshMax
+		Gui, Submit, NoHide
+		local sanityChecked := this.SanityCheckSettings()
+		this.Settings["SmallThreshMin"] := g_PS_ChestSmallThreshMin
+		this.Settings["SmallThreshMax"] := g_PS_ChestSmallThreshMax
+		this.Settings["AutomateThreshMin"] := g_PS_AutomateThreshMin
+		this.Settings["AutomateThreshMax"] := g_PS_AutomateThreshMax
 		this.Settings["Alternate"] := g_PS_Checkbox_EnableAlternating
 		this.Settings["DisableLarges"] := g_PS_Checkbox_DisableLarges
 		this.Settings["DisableHuges"] := g_PS_Checkbox_DisableHuges
@@ -229,17 +224,53 @@ Class IC_PotionSustain_Component
 			try ; avoid thrown errors when comobject is not available.
 			{
 				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-				SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
+				if (SharedRunData.PSBGF_Running() != "") {
+					SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
+				}
 			}
 		}
-        g_SF.WriteObjectToJSON(g_PS_SettingsPath, this.Settings )
-		this.ForceChange := true
-        this.UpdateGUI()
-    }
+		g_SF.WriteObjectToJSON(g_PS_SettingsPath, this.Settings)
+		if (!sanityChecked)
+			this.UpdateMainStatus("Saved settings.")
+		this.UpdateGUI()
+	}
+	
+	SanityCheckSettings()
+	{
+		local sanityGap := 25
+		local sanityChecked := false
+		if (!this.IsNumber(g_PS_ChestSmallThreshMin) OR g_PS_ChestSmallThreshMin < 1 OR !this.IsNumber(g_PS_ChestSmallThreshMax) OR g_PS_ChestSmallThreshMax < 1 OR !this.IsNumber(g_PS_AutomateThreshMin) OR g_PS_AutomateThreshMin < 1 OR !this.IsNumber(g_PS_AutomateThreshMax) OR g_PS_AutomateThreshMax < 1)
+		{
+			g_PS_ChestSmallThreshMin := 150
+			g_PS_ChestSmallThreshMax := 200
+			g_PS_AutomateThreshMin := 100
+			g_PS_AutomateThreshMax := 150
+			GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMin, % g_PS_ChestSmallThreshMin
+			GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMax, % g_PS_ChestSmallThreshMax
+			GuiControl, ICScriptHub:, g_PS_AutomateThreshMin, % g_PS_AutomateThreshMin
+			GuiControl, ICScriptHub:, g_PS_AutomateThreshMax, % g_PS_AutomateThreshMax
+			this.UpdateMainStatus("Save Error. Invalid input found in thresholds. Restored defaults.")
+			sanityChecked := true
+		}
+		if (g_PS_ChestSmallThreshMax < (g_PS_ChestSmallThreshMin)+sanityGap)
+		{
+			g_PS_ChestSmallThreshMax := (g_PS_ChestSmallThreshMin + sanityGap)
+			GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMax, % g_PS_ChestSmallThreshMax
+			this.UpdateMainStatus("Save Error. Small maximum threshold too low vs minimum. Increased.")
+			sanityChecked := true
+		}
+		if (g_PS_AutomateThreshMax < (g_PS_AutomateThreshMin)+sanityGap)
+		{
+			g_PS_AutomateThreshMax := (g_PS_AutomateThreshMin + sanityGap)
+			GuiControl, ICScriptHub:, g_PS_AutomateThreshMax, % g_PS_AutomateThreshMax
+			this.UpdateMainStatus("Save Error. Automation maximum threshold too low vs minimum. Increased.")
+			sanityChecked := true
+		}
+		return sanityChecked
+	}
 	
 	DefaultSettings()
 	{
-		Global
 		this.Settings := {}
 		this.Settings["SmallThreshMin"] := 150
 		this.Settings["SmallThreshMax"] := 200
@@ -250,128 +281,142 @@ Class IC_PotionSustain_Component
 		this.Settings["DisableHuges"] := false
 	}
 
-    ; Adds timed functions to be run when briv gem farm is started
-    CreateTimedFunctions()
-    {
-        this.TimerFunctions := {}
-        fncToCallOnTimer := ObjBindMethod(this, "UpdateTick")
-        this.TimerFunctions[fncToCallOnTimer] := 500
-        g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(this, "Start"))
-        g_BrivFarmAddonStopFunctions.Push(ObjBindMethod(this, "Stop"))
-    }
+	; Adds timed functions to be run when briv gem farm is started
+	CreateTimedFunctions()
+	{
+		this.TimerFunctions := {}
+		fncToCallOnTimer := ObjBindMethod(this, "UpdateTick")
+		this.TimerFunctions[fncToCallOnTimer] := 2000
+		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(this, "Start"))
+		g_BrivFarmAddonStopFunctions.Push(ObjBindMethod(this, "Stop"))
+	}
 	
 	Test()
 	{
 		; Testing stuff
 	}
 
-    ; Updates status on a timer
-    UpdateTick()
-    {
+	; Updates status on a timer
+	UpdateTick()
+	{
 		this.UpdateAutomationStatus("Idle.")
-		currRuns := this.Testing ? this.TestIndex : g_SF.Memory.ReadResetsCount()
-		this.SaveModronParams := ""
+		currRuns := g_SF.Memory.ReadResetsCount()
 		if (currRuns > 0 AND (this.PotAmounts["s"] < 0 OR (this.ListSize == 0 AND this.EnableAlternating) OR this.RunsCount != currRuns))
 		{
+			this.UpdateAutomationStatus("Recalculating...")
 			this.RunsCount := currRuns
-			;this.GemHunter := this.ReadActiveGemHunter()
-			oldPotAmounts := this.ObjFullyClone(this.PotAmounts)
-			size := g_SF.Memory.ReadInventoryItemsCount()
-			if (this.PotAmounts["s"] < 0 OR (size >= 1 AND size <= this.SanitySize))
+			this.GemHunter := this.ReadActiveGemHunter()
+			this.UpdatePotAmounts()
+			this.DetermineWaxingWaning()
+			if (this.PotAmounts["s"] >= 0 AND this.PotAmounts["s"] <= this.ChestSmallPotMinThresh AND this.ChestSmallPotMinThresh >= 0)
+				this.ChestSmallPotBuying := true
+			else if (this.PotAmounts["s"] >= this.ChestSmallPotMaxThresh)
+				this.ChestSmallPotBuying := false
+				
+			calcAuto := this.CalculateAutomationBuffs()
+			this.ModronCallParams := this.GetModronCallParamsFromMemory(calcAuto)
+			try ; avoid thrown errors when comobject is not available.
 			{
-				this.UpdateAutomationStatus("Updating Potion Amounts")
-				loop, %size%
+				this.ModronResetZone := g_SF.Memory.GetModronResetArea()
+				this.CalculateSmallPotionSustain()
+				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
+				if (SharedRunData.PSBGF_Running() == "") ; Addon running check
 				{
-					buffID := g_SF.Memory.ReadInventoryBuffIDBySlot(A_Index)
-					amount := g_SF.Memory.ReadInventoryBuffCountBySlot(A_Index)
-					for k,v in this.PotIDs
+					this.UpdateAutomationStatus("Connection to gem farm script is broken. Restart script.")
+					this.UpdateMainStatus("Connection to gem farm script is broken. Restart script.")
+					GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, Unknown
+					GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, Unknown
+				}
+				else if (SharedRunData.PSBGF_Running())
+				{
+					this.UpdateMainStatus("Running.")
+					g_PS_Running := true
+					this.PendingCall := SharedRunData.PSBGF_IsCallPending()
+					instanceId := g_SF.Memory.ReadInstanceID()
+					if (instanceId != this.InstanceId AND instanceId != "" AND instanceId > 0)
 					{
-						if (buffID==v)
-							this.PotAmounts[k] := amount
+						this.InstanceId := instanceId
+						SharedRunData.PSBGF_SetInstanceId(instanceId)
 					}
-				}
-				for k,v in this.PotAmounts
-				{
-					if (v == -1)
-						this.PotAmounts[k] = 0
-				}
-				smalls := this.PotAmounts["s"]
-				if (smalls >= 0 AND smalls <= this.ChestSmallPotMinThresh AND this.ChestSmallPotMinThresh >= 0)
-					this.ChestSmallPotBuying := true
-				else if (smalls >= this.ChestSmallPotMaxThresh)
-					this.ChestSmallPotBuying := false
-			}
-			needAChange := false
-			for k,v in this.PotAmounts
-			{
-				if (((oldPotAmounts[k] > this.AutomatePotMinThresh AND v <= this.AutomatePotMinThresh) OR (oldPotAmounts[k] < this.AutomatePotMaxThresh AND v >= this.AutomatePotMaxThresh) OR (v < oldPotAmounts[k] AND oldPotAmounts[k] <= this.AutomatePotMinThresh)) AND !this.AreObjectsEqual(oldPotAmounts, this.PotAmounts))
-				{
-					needAChange := true
-					break
+					if (this.ChestSmallPotBuying != SharedRunData.PSBGF_GetBuySilvers())
+						SharedRunData.PSBGF_SetBuySilvers(this.ChestSmallPotBuying)
+					this.ModronSaveCallResponse := SharedRunData.PSBGF_GetResponse()
 				}
 			}
-			Random,randChance,1,100
-			if ((this.ListSize == 0 OR needAChange OR this.ForceChange OR randChance <= 25) AND g_PS_Running AND this.EnableAlternating)
+			catch
 			{
-				this.UpdateAutomationStatus("Recalculating...")
-				needAChange := false
-				this.ForceChange := false
-				this.GemHunter := 0
-				this.UserData := g_ServerCall.CallUserDetails()
-				if(IsObject(this.UserData) AND this.UserData.success)
-					this.GemHunter := this.CheckUserDataForGemHunter(this.UserData.details.buffs)
-				calcAuto := this.CalculateAutomationBuffs()
-				if(IsObject(this.UserData) AND this.UserData.success)
-					this.SaveModronParams := this.GetSaveModronParams(this.UserData.details.modron_saves,calcAuto)
-			}
-		}
-        try ; avoid thrown errors when comobject is not available.
-        {
-			this.ModronResetZone := this.Testing ? this.TestResetZone : g_SF.Memory.GetModronResetArea()
-			this.CalculateSmallPotionSustain()
-            SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-            if (SharedRunData.PSBGF_Running() == "") ; Addon running check
-            {
-                GuiControl, ICScriptHub:Text, g_PS_StatusText, Not running. Loaded after Gem Farm script. Stop and Start.
-            }
-			else if (SharedRunData.PSBGF_Running())
-			{
-                GuiControl, ICScriptHub:Text, g_PS_StatusText, Running.
-				g_PS_Running := true
-				this.PendingCall := SharedRunData.PSBGF_GetIsDifferentCall()
-				instanceId := g_SF.Memory.ReadInstanceID()
-				if (instanceId != this.InstanceId AND instanceId != "" AND instanceId > 0)
-				{
-					this.InstanceId := instanceId
-					SharedRunData.PSBGF_SetInstanceId(instanceId)
-				}
-				if (this.ChestSmallPotBuying != SharedRunData.PSBGF_GetBuySilvers())
-					SharedRunData.PSBGF_SetBuySilvers(this.ChestSmallPotBuying)
-				if (this.EnableAlternating AND this.SaveModronParams != "" AND this.SaveModronParams != this.ModronCallParams)
-				{
-					this.ModronCallParams := this.SaveModronParams
-					SharedRunData.PSBGF_SetModronCallParams(this.SaveModronParams)
-					this.PendingCall := SharedRunData.PSBGF_GetIsDifferentCall()
-				}
-				this.ModronSaveCallResponse := SharedRunData.PSBGF_GetResponse()
-			}
-			else
-			{
-				this.UpdateAutomationStatus("Connection to gem farm script is broken.")
-				GuiControl, ICScriptHub:Text, g_PS_StatusText, Connection to gem farm script is broken.
+				this.UpdateAutomationStatus("Not Running.")
+				this.UpdateMainStatus("Waiting for Gem Farm to start.")
 				GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, Unknown
 				GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, Unknown
 			}
-        }
-        catch
-        {
-			this.UpdateAutomationStatus("Not Running")
-            GuiControl, ICScriptHub:Text, g_PS_StatusText, Waiting for Gem Farm to start.
-			GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, Unknown
-            GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, Unknown
-        }
+		}
+		try {
+			if (this.EnableAlternating)
+			{
+				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
+				if (SharedRunData.PSBGF_Running())
+				{
+					if (SharedRunData.PSBGF_GetModronCallParams() == "Sent")
+					{
+						this.ModronCallParams := ""
+						SharedRunData.PSBGF_SetModronCallParams("")
+					}
+					if (SharedRunData.PSBGF_GetModronCallParams() != this.ModronCallParams)
+						SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
+					this.PendingCall := !(SharedRunData.PSBGF_GetModronCallParams() == "")
+				}
+			}
+		}
 		this.UpdateGUI()
-    }
+	}
+	
+	UpdatePotAmounts()
+	{
+		size := g_SF.Memory.ReadInventoryItemsCount()
+		if (size < 0 OR size > this.SanitySize)
+			return
+		loop, %size%
+		{
+			buffID := g_SF.Memory.ReadInventoryBuffIDBySlot(A_Index)
+			amount := g_SF.Memory.ReadInventoryBuffCountBySlot(A_Index)
+			for k,v in this.PotIDs
+			{
+				if (buffID==v)
+					this.PotAmounts[k] := amount
+			}
+		}
+		for k,v in this.PotAmounts
+		{
+			if (v == -1)
+				this.PotAmounts[k] = 0
+		}
+	}
+	
+	DetermineWaxingWaning()
+	{
+		if (!this.EnableAlternating)
+		{
+			for k,v in this.PotAmounts
+			{
+				this.WaxingPots[k] := false
+			}
+			return
+		}
+		for k,v in this.PotAmounts
+		{
+			if (v <= this.AutomatePotMinThresh)
+				this.WaxingPots[k] := true
+			else if (v >= this.AutomatePotMaxThresh)
+				this.WaxingPots[k] := false
+		}
+	}
+	
+	UpdateMainStatus(status)
+	{
+		GuiControl, ICScriptHub:Text, g_PS_StatusText, % status
+		Gui, Submit, NoHide
+	}
 	
 	UpdateAutomationStatus(status)
 	{
@@ -381,37 +426,37 @@ Class IC_PotionSustain_Component
 		{
 			if (this.ModronSaveCallResponse != "")
 				status := "Warning: Modron save call seems to have failed. Check logs."
-			else if (this.FoundHighAreaPot)
-				status := "Warning: A potion in the Modron has a zone greater than 1."
 			else if (this.PendingCall)
 				status := "Pending potion swapping. Waiting for next offline stack."
+			else if (this.FoundHighAreaPot)
+				status := "Warning: A potion in the Modron has a zone greater than 1."
 		}
 		GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, % status
 		Gui, Submit, NoHide
 	}
 
-    Start()
-    {
+	Start()
+	{
 		this.UpdateTick()
-        for k,v in this.TimerFunctions
-            SetTimer, %k%, %v%, 0
-        GuiControl, ICScriptHub:Text, g_PS_StatusText, Running.
-    }
+		for k,v in this.TimerFunctions
+			SetTimer, %k%, %v%, 0
+		this.UpdateMainStatus("Running.")
+	}
 
-    Stop()
-    {
-        for k,v in this.TimerFunctions
-        {
-            SetTimer, %k%, Off
-            SetTimer, %k%, Delete
-        }
-        GuiControl, ICScriptHub:Text, g_PS_StatusText, Waiting for Gem Farm to start
+	Stop()
+	{
+		for k,v in this.TimerFunctions
+		{
+			SetTimer, %k%, Off
+			SetTimer, %k%, Delete
+		}
+		this.UpdateMainStatus("Waiting for Gem Farm to start.")
 		GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, Unknown
-        GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, Unknown
+		GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, Unknown
 		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, Unknown
 		GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, Unknown
 		Gui, Submit, NoHide
-    }
+	}
 	
 	UpdateGUI()
 	{
@@ -447,8 +492,8 @@ Class IC_PotionSustain_Component
 	
 	CalculateAutomationBuffs()
 	{
-        restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "g_PS_AutomateList")
-        LV_Delete()
+		restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "g_PS_AutomateList")
+		LV_Delete()
 		this.ListSize := 0
 		; Bad modron read - flee.
 		if (this.ModronResetZone < 1)
@@ -461,14 +506,6 @@ Class IC_PotionSustain_Component
 		{
 			if (v < 0)
 				return
-		}
-		; Deal with waxing.
-		for k,v in this.PotAmounts
-		{
-			if (v <= this.AutomatePotMinThresh)
-				this.WaxingPots[k] := true
-			if (v >= this.AutomatePotMaxThresh)
-				this.WaxingPots[k] := false
 		}
 		; Sustaining mediums.
 		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold.
@@ -672,67 +709,28 @@ Class IC_PotionSustain_Component
 		return 0
 	}
 	
-	GetSaveModronParams(saves,calcAuto)
-	{
-		userId := g_SF.Memory.ReadUserID()
-		userHash := g_SF.Memory.ReadUserHash()
-		networkId := g_SF.Memory.ReadPlatform()
-		version := g_SF.Memory.ReadBaseGameVersion()
-		gameInstanceId := g_SF.Memory.ReadActiveGameInstance()
-		params := ""
-		this.FoundHighAreaPot := false
-		for k,v in saves
-		{
-			if (v.instance_id != gameInstanceId)
-				continue
-			if (!this.AreObjectsEqual(calcAuto,v.buffs))
-			{
-				; Add non speed pots that might be included.
-				for j,w in v.buffs
-				{
-					if (w > 1 AND !this.FoundHighAreaPot)
-						this.FoundHighAreaPot := true
-					if (!this.HasValue(this.PotIDs,j))
-						calcAuto[j] := w
-				}
-			}
-			if (!this.AreObjectsEqual(calcAuto,v.buffs))
-				this.ForceChange := true
-			params .= "&core_id=" . (v.core_id) . "&grid=" . (this.JsonifyArray(v.grid)) . "&game_instance_id=" . gameInstanceId . "&formation_saves=" . (this.JsonifyObject(v.formation_saves)) . "&area_goal=" . (v.area_goal) . "&buffs=" . (this.JsonifyObject(calcAuto)) . "&checkin_timestamp=" . (this.GetNowEpoch() + 600000) . "&properties={""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}"
-			break
-		}
-		params .= "&user_id=" . userID . "&hash=" . userHash . "&language_id=1&timestamp=0&request_id=0&network_id=" . networkId . "&mobile_client_version=" . version . "&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true"
-		return params
-	}
-	
-	GetSaveModronParamsFromMemory(calcAuto)
+	GetModronCallParamsFromMemory(calcAuto)
 	{
 		gameInstanceId := g_SF.Memory.ReadActiveGameInstance()
-		params := ""
-		
 		modronSaveIndex := g_SF.Memory.GetCurrentModronSaveSlot()
 		modronSaves := g_SF.Memory.GameManager.game.gameInstances[gameInstanceId].Controller.userData.ModronHandler.modronSaves[modronSaveIndex]
-		calcAuto := this.JsonifyObject(this.ModifyCallBuffsBasedOnCurrentBuffs(modronSaves.Buffs,calcAuto))
-		forms := this.JsonifyDictionary(modronSaves.FormationSaves)
-		if (calcAuto == "" OR calcAuto == "{}" OR forms == "" OR forms == "{}")
+		
+		currBuffs := this.ObjectifyDictionary(modronSaves.Buffs.QuickClone(),,200)
+		calcAuto := this.AddNonSpeedPotsFromCurrBuffsToCalcAuto(currBuffs,calcAuto)
+		if (this.AreObjectsEqual(currBuffs, calcAuto))
+			return ""
+		calcAutoJson := this.JsonifyObject(calcAuto)
+		formsJson := this.JsonifyDictionary(modronSaves.FormationSaves.QuickClone())
+		
+		if (calcAutoJson == "" OR calcAutoJson == "{}" OR formsJson == "" OR formsJson == "{}")
 			return ""
 		
-		params .= "&core_id=" . (modronSaves.CoreID.Read())
-		;params .= "&grid=" . (g_SF.ReadModronGridArray(modronSaves))
-		params .= "&game_instance_id=" . gameInstanceId
-		params .= "&formation_saves=" . forms
-		params .= "&area_goal=" . (modronSaves.targetArea.Read())
-		params .= "&buffs=" . calcAuto
-		params .= "&checkin_timestamp=" . (this.GetNowEpoch() + 600000)
-		params .= "&properties={""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}"
-		
-		params .= "&user_id=" . (g_SF.Memory.ReadUserID()) . "&hash=" . (g_SF.Memory.ReadUserHash()) . "&language_id=1&timestamp=0&request_id=0&network_id=" . (g_SF.Memory.ReadPlatform()) . "&mobile_client_version=" . (g_SF.Memory.ReadBaseGameVersion()) . "&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true"
+		params := "&core_id=" . (modronSaves.CoreID.Read()) . "&grid=" . (g_SF.Memory.ReadModronGridArray(modronSaves)) . "&game_instance_id=" . gameInstanceId . "&formation_saves=" . formsJson . "&area_goal=" . (modronSaves.targetArea.Read()) . "&buffs=" . calcAutoJson . "&checkin_timestamp=" . (this.GetNowEpoch() + 600000) . "&properties={""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}" . "&user_id=" . (g_SF.Memory.ReadUserID()) . "&hash=" . (g_SF.Memory.ReadUserHash()) . "&language_id=1&timestamp=0&request_id=0&network_id=" . (g_SF.Memory.ReadPlatform()) . "&mobile_client_version=" . (g_SF.Memory.ReadBaseGameVersion()) . "&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true"
 		return params
 	}
 	
-	ModifyCallBuffsBasedOnCurrentBuffs(currentBuffs,calcAuto)
+	AddNonSpeedPotsFromCurrBuffsToCalcAuto(buffsObj,calcAuto)
 	{
-		buffsObj := this.ObjectifyDictionary(currentBuffs,,200)
 		this.FoundHighAreaPot := false
 		if (!this.AreObjectsEqual(buffsObj, calcAuto))
 		{
@@ -752,7 +750,7 @@ Class IC_PotionSustain_Component
 		buffs := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].BuffHandler.activeBuffs
 		buffsSize := buffs.size.Read()
 		if(buffsSize <= 0 OR buffsSize > 1000)
-            return 0
+			return 0
 		loop, %buffsSize%
 		{
 			if (buffs[A_Index - 1].BaseEffectString.Read() == "increase_boss_gems_percent,50")
@@ -760,6 +758,38 @@ Class IC_PotionSustain_Component
 		}
 		return 0
 	}
+	
+/*	
+	ReadModronGridArray(modronSaves)
+	{
+		gridSave := modronSaves.GridSave.QuickClone()
+		gridHeight := gridSave.size.Read()
+		gridJSON := "["
+		loop, %gridHeight%
+		{
+			x := A_Index - 1
+			if (x > 0)
+				gridJSON .= ","
+			gridJSON .= "["
+			gridWidth := gridSave[x].size.Read()
+			if !gridHeight
+				gridHeight := 16
+			loop, %gridWidth%
+			{
+				y := A_Index - 1
+				if (y > 0)
+					gridJSON .= ","
+				currRead := gridSave[x][y,,,0x4].Read("UInt")
+				gridJSON .= currRead
+				if(currRead != 0)
+					currRead = 1
+			}
+			gridJSON .= "]"
+		}
+		gridJSON .= "]"
+		return gridJSON
+	}
+*/
 	
 	EncodeDecodeURI(str, encode := true, component := true) {
 		static Doc, JS
@@ -774,21 +804,31 @@ Class IC_PotionSustain_Component
 		return ret
 	}
 	
-    AreObjectsEqual(obj1 := "", obj2 := "")
-    {
-        if (obj1.Count() != obj2.Count())
-            return false
-        if (!IsObject(obj1))
-            return !IsObject(obj2) && (obj1 == obj2)
-        for k, v in obj1
-        {
-            if (IsObject(v) && !this.AreObjectsEqual(obj2[k], v))
-                return false
-            else if (!IsObject(v) && obj2[k] != v && obj2.HasKey(k))
-                return false
-        }
-        return true
-    }
+	AreObjectsEqual(obj1 := "", obj2 := "")
+	{
+		if (obj1.Count() != obj2.Count())
+			return false
+		if (!IsObject(obj1))
+			return !IsObject(obj2) AND (obj1 == obj2)
+		for k,v in obj1
+		{
+			if (IsObject(v) AND !this.AreObjectsEqual(obj2[k], v))
+				return false
+			else if (!IsObject(v) AND obj2[k] != v)
+				return false
+			if (VarSetCapacity(k) != 0)
+			{
+				if (!obj2.HasKey(""k))
+					return false
+			}
+			else
+			{
+				if (!obj2.HasKey(k))
+					return false
+			}
+		}
+		return true
+	}
 	
 	ObjFullyClone(obj)
 	{
@@ -852,20 +892,20 @@ Class IC_PotionSustain_Component
 		dictSize := dict.size.Read()
 		if (dictSize < sanityMin OR dictSize > sanityMax)
 			return ""
-		json := "{"
+		jsonDict := "{"
 		loop, %dictSize%
 		{
 			if (A_Index > 1)
-				json .= ","
+				jsonDict .= ","
 			key := dict["key", A_Index - 1, true].Read()
-			json .= """" key """:"
+			jsonDict .= """" key """:"
 			if (dict[key].size.Read() > 0)
-				json .= this.JsonifyDictionary(dict[key])
+				jsonDict .= this.JsonifyDictionary(dict[key])
 			else
-				json .= dict[key].Read()
+				jsonDict .= dict[key].Read()
 		}
-		json .= "}"
-		return json
+		jsonDict .= "}"
+		return jsonDict
 	}
 	
 	ObjectifyDictionary(dict, sanityMin := 0, sanityMax := 50000)
@@ -895,6 +935,13 @@ Class IC_PotionSustain_Component
 	FmtSecs(T, Fmt:="{:}d {:02}h {:02}m {:02}s") { ; v0.50 by SKAN on D36G/H @ tiny.cc/fmtsecs
 		local D, H, M, HH, Q:=60, R:=3600, S:=86400
 		return Format(Fmt, D:=T//S, H:=(T:=T-D*S)//R, M:=(T:=T-H*R)//Q, T-M*Q, HH:=D*24+H, HH*Q+M)
+	}
+	
+	IsNumber(inputText)
+	{
+		if inputText is number
+			return true
+		return false
 	}
 	
 }

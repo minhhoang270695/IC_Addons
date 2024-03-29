@@ -1,4 +1,8 @@
-19    March 2024 - v0.0.13
+23    March 2024 - v0.1.1
+ - Finally got a round tuit to sanity check threshold input values.
+23    March 2024 - v0.1.0
+ - Modified script to use memory reading instead of pulling user data with server calls. (Requires Script Hub v4)
+20    March 2024 - v0.0.13
  - Modified script to (hopefully) work with the new version of Script Hub in development.
 16    March 2024 - v0.0.12
  - Added support for sustaining larges beyond z2k. For if that ever happens.
