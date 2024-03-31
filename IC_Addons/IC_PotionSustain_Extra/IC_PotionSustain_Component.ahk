@@ -294,6 +294,12 @@ Class IC_PotionSustain_Component
 	Test()
 	{
 		; Testing stuff
+		calcAuto := this.CalculateAutomationBuffs()
+		params := this.GetModronCallParamsFromMemory(calcAuto)
+		sanitisedParams := RegExReplace(params, "&user_id=[a-zA-Z0-9]+", "&user_id=____")
+		sanitisedParams := RegExReplace(sanitisedParams, "&hash=[a-zA-Z0-9]+", "&hash=____")
+		sanitisedParams := RegExReplace(sanitisedParams, "&instance_id=[a-zA-Z0-9]+", "&instance_id=____")
+		MsgBox, % sanitisedParams
 	}
 
 	; Updates status on a timer
@@ -312,9 +318,12 @@ Class IC_PotionSustain_Component
 				this.ChestSmallPotBuying := true
 			else if (this.PotAmounts["s"] >= this.ChestSmallPotMaxThresh)
 				this.ChestSmallPotBuying := false
-				
-			calcAuto := this.CalculateAutomationBuffs()
-			this.ModronCallParams := this.GetModronCallParamsFromMemory(calcAuto)
+			
+			if (this.EnableAlternating)
+			{
+				calcAuto := this.CalculateAutomationBuffs()
+				this.ModronCallParams := this.GetModronCallParamsFromMemory(calcAuto)
+			}
 			try ; avoid thrown errors when comobject is not available.
 			{
 				this.ModronResetZone := g_SF.Memory.GetModronResetArea()
@@ -331,7 +340,6 @@ Class IC_PotionSustain_Component
 				{
 					this.UpdateMainStatus("Running.")
 					g_PS_Running := true
-					this.PendingCall := SharedRunData.PSBGF_IsCallPending()
 					instanceId := g_SF.Memory.ReadInstanceID()
 					if (instanceId != this.InstanceId AND instanceId != "" AND instanceId > 0)
 					{
@@ -366,6 +374,14 @@ Class IC_PotionSustain_Component
 						SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
 					this.PendingCall := !(SharedRunData.PSBGF_GetModronCallParams() == "")
 				}
+				else
+				{
+					this.UpdateAutomationStatus("Unable to communicate with Gem Farm script.")
+				}
+			}
+			else
+			{
+				this.UpdateAutomationStatus("Disabled.")
 			}
 		}
 		this.UpdateGUI()
@@ -421,7 +437,15 @@ Class IC_PotionSustain_Component
 	UpdateAutomationStatus(status)
 	{
 		if (!this.EnableAlternating)
-			GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, Off
+		{
+			status := "Disabled."
+			if (this.ListSize > 0)
+			{
+				restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "g_PS_AutomateList")
+				LV_Delete()
+				this.ListSize := 0
+			}
+		}
 		else if (status == "Idle.")
 		{
 			if (this.ModronSaveCallResponse != "")

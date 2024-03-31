@@ -1,3 +1,5 @@
+31    March 2024 - v0.1.2
+ - Cleaning up some code and hopefully adding a bit more description if things aren't going as expected.
 23    March 2024 - v0.1.1
  - Finally got a round tuit to sanity check threshold input values.
 23    March 2024 - v0.1.0
