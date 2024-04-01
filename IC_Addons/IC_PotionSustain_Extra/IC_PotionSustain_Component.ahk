@@ -126,6 +126,7 @@ Class IC_PotionSustain_Component
 	ModronSaveCallResponse := ""
 	PendingCall := false
 	OfflineDone := true
+	BadMemoryRead := false
 
 	InjectAddon()
 	{
@@ -223,9 +224,9 @@ Class IC_PotionSustain_Component
 			this.ModronCallParams := ""
 			try ; avoid thrown errors when comobject is not available.
 			{
-				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-				if (SharedRunData.PSBGF_Running() != "") {
-					SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
+				sharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
+				if (sharedRunData.PSBGF_Running() != "") {
+					sharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
 				}
 			}
 		}
@@ -328,15 +329,15 @@ Class IC_PotionSustain_Component
 			{
 				this.ModronResetZone := g_SF.Memory.GetModronResetArea()
 				this.CalculateSmallPotionSustain()
-				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-				if (SharedRunData.PSBGF_Running() == "") ; Addon running check
+				sharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
+				if (sharedRunData.PSBGF_Running() == "") ; Addon running check
 				{
 					this.UpdateAutomationStatus("Connection to gem farm script is broken. Restart script.")
 					this.UpdateMainStatus("Connection to gem farm script is broken. Restart script.")
 					GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, Unknown
 					GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, Unknown
 				}
-				else if (SharedRunData.PSBGF_Running())
+				else if (sharedRunData.PSBGF_Running())
 				{
 					this.UpdateMainStatus("Running.")
 					g_PS_Running := true
@@ -344,11 +345,11 @@ Class IC_PotionSustain_Component
 					if (instanceId != this.InstanceId AND instanceId != "" AND instanceId > 0)
 					{
 						this.InstanceId := instanceId
-						SharedRunData.PSBGF_SetInstanceId(instanceId)
+						sharedRunData.PSBGF_SetInstanceId(instanceId)
 					}
-					if (this.ChestSmallPotBuying != SharedRunData.PSBGF_GetBuySilvers())
-						SharedRunData.PSBGF_SetBuySilvers(this.ChestSmallPotBuying)
-					this.ModronSaveCallResponse := SharedRunData.PSBGF_GetResponse()
+					if (this.ChestSmallPotBuying != sharedRunData.PSBGF_GetBuySilvers())
+						sharedRunData.PSBGF_SetBuySilvers(this.ChestSmallPotBuying)
+					this.ModronSaveCallResponse := sharedRunData.PSBGF_GetResponse()
 				}
 			}
 			catch
@@ -362,17 +363,17 @@ Class IC_PotionSustain_Component
 		try {
 			if (this.EnableAlternating)
 			{
-				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-				if (SharedRunData.PSBGF_Running())
+				sharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
+				if (sharedRunData.PSBGF_Running())
 				{
-					if (SharedRunData.PSBGF_GetModronCallParams() == "Sent")
+					if (sharedRunData.PSBGF_GetModronCallParams() == "Sent")
 					{
 						this.ModronCallParams := ""
-						SharedRunData.PSBGF_SetModronCallParams("")
+						sharedRunData.PSBGF_SetModronCallParams("")
 					}
-					if (SharedRunData.PSBGF_GetModronCallParams() != this.ModronCallParams)
-						SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
-					this.PendingCall := !(SharedRunData.PSBGF_GetModronCallParams() == "")
+					if (sharedRunData.PSBGF_GetModronCallParams() != this.ModronCallParams)
+						sharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
+					this.PendingCall := !(sharedRunData.PSBGF_GetModronCallParams() == "")
 				}
 				else
 				{
@@ -450,6 +451,8 @@ Class IC_PotionSustain_Component
 		{
 			if (this.ModronSaveCallResponse != "")
 				status := "Warning: Modron save call seems to have failed. Check logs."
+			else if (this.BadMemoryRead)
+				status := "Warning: Bad memory read. Check imports / pointers."
 			else if (this.PendingCall)
 				status := "Pending potion swapping. Waiting for next offline stack."
 			else if (this.FoundHighAreaPot)
@@ -733,14 +736,18 @@ Class IC_PotionSustain_Component
 		return 0
 	}
 	
-	GetModronCallParamsFromMemory(calcAuto)
+	GetModronCallParamsFromMemory(calcAutoIn)
 	{
 		gameInstanceId := g_SF.Memory.ReadActiveGameInstance()
 		modronSaveIndex := g_SF.Memory.GetCurrentModronSaveSlot()
 		modronSaves := g_SF.Memory.GameManager.game.gameInstances[gameInstanceId].Controller.userData.ModronHandler.modronSaves[modronSaveIndex]
 		
+		modronId := modronSaves.CoreID.Read()
+		this.BadMemoryRead := (modronId == "")
+		if (this.BadMemoryRead)
+			return ""
 		currBuffs := this.ObjectifyDictionary(modronSaves.Buffs.QuickClone(),,200)
-		calcAuto := this.AddNonSpeedPotsFromCurrBuffsToCalcAuto(currBuffs,calcAuto)
+		calcAuto := this.AddNonSpeedPotsFromCurrBuffsToCalcAuto(currBuffs,calcAutoIn)
 		if (this.AreObjectsEqual(currBuffs, calcAuto))
 			return ""
 		calcAutoJson := this.JsonifyObject(calcAuto)
@@ -749,7 +756,7 @@ Class IC_PotionSustain_Component
 		if (calcAutoJson == "" OR calcAutoJson == "{}" OR formsJson == "" OR formsJson == "{}")
 			return ""
 		
-		params := "&core_id=" . (modronSaves.CoreID.Read()) . "&grid=" . (g_SF.Memory.ReadModronGridArray(modronSaves)) . "&game_instance_id=" . gameInstanceId . "&formation_saves=" . formsJson . "&area_goal=" . (modronSaves.targetArea.Read()) . "&buffs=" . calcAutoJson . "&checkin_timestamp=" . (this.GetNowEpoch() + 600000) . "&properties={""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}" . "&user_id=" . (g_SF.Memory.ReadUserID()) . "&hash=" . (g_SF.Memory.ReadUserHash()) . "&language_id=1&timestamp=0&request_id=0&network_id=" . (g_SF.Memory.ReadPlatform()) . "&mobile_client_version=" . (g_SF.Memory.ReadBaseGameVersion()) . "&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true"
+		params := "&core_id=" . modronId . "&grid=" . (g_SF.Memory.ReadModronGridArray(modronSaves)) . "&game_instance_id=" . gameInstanceId . "&formation_saves=" . formsJson . "&area_goal=" . (modronSaves.targetArea.Read()) . "&buffs=" . calcAutoJson . "&checkin_timestamp=" . (this.GetNowEpoch() + 600000) . "&properties={""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}" . "&user_id=" . (g_SF.Memory.ReadUserID()) . "&hash=" . (g_SF.Memory.ReadUserHash()) . "&language_id=1&timestamp=0&request_id=0&network_id=" . (g_SF.Memory.ReadPlatform()) . "&mobile_client_version=" . (g_SF.Memory.ReadBaseGameVersion()) . "&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true"
 		return params
 	}
 	
@@ -782,38 +789,6 @@ Class IC_PotionSustain_Component
 		}
 		return 0
 	}
-	
-/*	
-	ReadModronGridArray(modronSaves)
-	{
-		gridSave := modronSaves.GridSave.QuickClone()
-		gridHeight := gridSave.size.Read()
-		gridJSON := "["
-		loop, %gridHeight%
-		{
-			x := A_Index - 1
-			if (x > 0)
-				gridJSON .= ","
-			gridJSON .= "["
-			gridWidth := gridSave[x].size.Read()
-			if !gridHeight
-				gridHeight := 16
-			loop, %gridWidth%
-			{
-				y := A_Index - 1
-				if (y > 0)
-					gridJSON .= ","
-				currRead := gridSave[x][y,,,0x4].Read("UInt")
-				gridJSON .= currRead
-				if(currRead != 0)
-					currRead = 1
-			}
-			gridJSON .= "]"
-		}
-		gridJSON .= "]"
-		return gridJSON
-	}
-*/
 	
 	EncodeDecodeURI(str, encode := true, component := true) {
 		static Doc, JS
