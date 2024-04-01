@@ -224,9 +224,9 @@ Class IC_PotionSustain_Component
 			this.ModronCallParams := ""
 			try ; avoid thrown errors when comobject is not available.
 			{
-				sharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-				if (sharedRunData.PSBGF_Running() != "") {
-					sharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
+				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
+				if (SharedRunData.PSBGF_Running() != "") {
+					SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
 				}
 			}
 		}
@@ -329,15 +329,15 @@ Class IC_PotionSustain_Component
 			{
 				this.ModronResetZone := g_SF.Memory.GetModronResetArea()
 				this.CalculateSmallPotionSustain()
-				sharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-				if (sharedRunData.PSBGF_Running() == "") ; Addon running check
+				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
+				if (SharedRunData.PSBGF_Running() == "") ; Addon running check
 				{
 					this.UpdateAutomationStatus("Connection to gem farm script is broken. Restart script.")
 					this.UpdateMainStatus("Connection to gem farm script is broken. Restart script.")
 					GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, Unknown
 					GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, Unknown
 				}
-				else if (sharedRunData.PSBGF_Running())
+				else if (SharedRunData.PSBGF_Running())
 				{
 					this.UpdateMainStatus("Running.")
 					g_PS_Running := true
@@ -345,11 +345,11 @@ Class IC_PotionSustain_Component
 					if (instanceId != this.InstanceId AND instanceId != "" AND instanceId > 0)
 					{
 						this.InstanceId := instanceId
-						sharedRunData.PSBGF_SetInstanceId(instanceId)
+						SharedRunData.PSBGF_SetInstanceId(instanceId)
 					}
-					if (this.ChestSmallPotBuying != sharedRunData.PSBGF_GetBuySilvers())
-						sharedRunData.PSBGF_SetBuySilvers(this.ChestSmallPotBuying)
-					this.ModronSaveCallResponse := sharedRunData.PSBGF_GetResponse()
+					if (this.ChestSmallPotBuying != SharedRunData.PSBGF_GetBuySilvers())
+						SharedRunData.PSBGF_SetBuySilvers(this.ChestSmallPotBuying)
+					this.ModronSaveCallResponse := SharedRunData.PSBGF_GetResponse()
 				}
 			}
 			catch
@@ -363,17 +363,17 @@ Class IC_PotionSustain_Component
 		try {
 			if (this.EnableAlternating)
 			{
-				sharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
-				if (sharedRunData.PSBGF_Running())
+				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
+				if (SharedRunData.PSBGF_Running())
 				{
-					if (sharedRunData.PSBGF_GetModronCallParams() == "Sent")
+					if (SharedRunData.PSBGF_GetModronCallParams() == "Sent")
 					{
 						this.ModronCallParams := ""
-						sharedRunData.PSBGF_SetModronCallParams("")
+						SharedRunData.PSBGF_SetModronCallParams("")
 					}
-					if (sharedRunData.PSBGF_GetModronCallParams() != this.ModronCallParams)
-						sharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
-					this.PendingCall := !(sharedRunData.PSBGF_GetModronCallParams() == "")
+					if (SharedRunData.PSBGF_GetModronCallParams() != this.ModronCallParams)
+						SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
+					this.PendingCall := !(SharedRunData.PSBGF_GetModronCallParams() == "")
 				}
 				else
 				{
