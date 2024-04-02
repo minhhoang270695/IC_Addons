@@ -928,6 +928,7 @@ Class IC_PotionSustain_Component
 	
 	FmtSecs(T, Fmt:="{:}d {:02}h {:02}m {:02}s") { ; v0.50 by SKAN on D36G/H @ tiny.cc/fmtsecs
 		local D, H, M, HH, Q:=60, R:=3600, S:=86400
+		T := Round(T)
 		return Format(Fmt, D:=T//S, H:=(T:=T-D*S)//R, M:=(T:=T-H*R)//Q, T-M*Q, HH:=D*24+H, HH*Q+M)
 	}
 	
