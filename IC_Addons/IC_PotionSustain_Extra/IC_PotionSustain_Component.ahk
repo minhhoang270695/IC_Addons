@@ -295,12 +295,6 @@ Class IC_PotionSustain_Component
 	Test()
 	{
 		; Testing stuff
-		calcAuto := this.CalculateAutomationBuffs()
-		params := this.GetModronCallParamsFromMemory(calcAuto)
-		sanitisedParams := RegExReplace(params, "&user_id=[a-zA-Z0-9]+", "&user_id=____")
-		sanitisedParams := RegExReplace(sanitisedParams, "&hash=[a-zA-Z0-9]+", "&hash=____")
-		sanitisedParams := RegExReplace(sanitisedParams, "&instance_id=[a-zA-Z0-9]+", "&instance_id=____")
-		MsgBox, % sanitisedParams
 	}
 
 	; Updates status on a timer
@@ -341,11 +335,11 @@ Class IC_PotionSustain_Component
 				{
 					this.UpdateMainStatus("Running.")
 					g_PS_Running := true
-					instanceId := g_SF.Memory.ReadInstanceID()
-					if (instanceId != this.InstanceId AND instanceId != "" AND instanceId > 0)
+					psInstanceId := g_SF.Memory.ReadInstanceID()
+					if (psInstanceId != this.InstanceId AND psInstanceId != "" AND psInstanceId > 0)
 					{
-						this.InstanceId := instanceId
-						SharedRunData.PSBGF_SetInstanceId(instanceId)
+						this.InstanceId := psInstanceId
+						SharedRunData.PSBGF_SetInstanceId(psInstanceId)
 					}
 					if (this.ChestSmallPotBuying != SharedRunData.PSBGF_GetBuySilvers())
 						SharedRunData.PSBGF_SetBuySilvers(this.ChestSmallPotBuying)
@@ -373,7 +367,7 @@ Class IC_PotionSustain_Component
 					}
 					if (SharedRunData.PSBGF_GetModronCallParams() != this.ModronCallParams)
 						SharedRunData.PSBGF_SetModronCallParams(this.ModronCallParams)
-					this.PendingCall := !(SharedRunData.PSBGF_GetModronCallParams() == "")
+					this.PendingCall := (SharedRunData.PSBGF_GetModronCallParams() != "")
 				}
 				else
 				{
@@ -738,26 +732,27 @@ Class IC_PotionSustain_Component
 	
 	GetModronCallParamsFromMemory(calcAutoIn)
 	{
-		gameInstanceId := g_SF.Memory.ReadActiveGameInstance()
-		modronSaveIndex := g_SF.Memory.GetCurrentModronSaveSlot()
-		modronSaves := g_SF.Memory.GameManager.game.gameInstances[gameInstanceId].Controller.userData.ModronHandler.modronSaves[modronSaveIndex]
+		psModronSaveIndex := g_SF.Memory.GetCurrentModronSaveSlot()
+		psModronSaves := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.ModronHandler.modronSaves[psModronSaveIndex]
 		
-		modronId := modronSaves.CoreID.Read()
-		this.BadMemoryRead := (modronId == "")
+		psModronId := psModronSaves.CoreID.Read()
+		this.BadMemoryRead := (psModronId == "")
 		if (this.BadMemoryRead)
 			return ""
-		currBuffs := this.ObjectifyDictionary(modronSaves.Buffs.QuickClone(),,200)
-		calcAuto := this.AddNonSpeedPotsFromCurrBuffsToCalcAuto(currBuffs,calcAutoIn)
-		if (this.AreObjectsEqual(currBuffs, calcAuto))
+		psCurrBuffs := this.ObjectifyDictionary(psModronSaves.Buffs.QuickClone(),,200)
+		psCalcAuto := this.AddNonSpeedPotsFromCurrBuffsToCalcAuto(psCurrBuffs,calcAutoIn)
+		if (this.AreObjectsEqual(psCurrBuffs, psCalcAuto))
 			return ""
-		calcAutoJson := this.JsonifyObject(calcAuto)
-		formsJson := this.JsonifyDictionary(modronSaves.FormationSaves.QuickClone())
+		psCalcAutoJson := this.JsonifyObject(psCalcAuto)
+		psFormsJson := this.JsonifyDictionary(psModronSaves.FormationSaves.QuickClone())
 		
-		if (calcAutoJson == "" OR calcAutoJson == "{}" OR formsJson == "" OR formsJson == "{}")
+		if (psCalcAutoJson == "" OR psCalcAutoJson == "{}" OR psFormsJson == "" OR psFormsJson == "{}")
 			return ""
+			
+		psGameInstanceId := g_SF.Memory.ReadActiveGameInstance()
 		
-		params := "&core_id=" . modronId . "&grid=" . (g_SF.Memory.ReadModronGridArray(modronSaves)) . "&game_instance_id=" . gameInstanceId . "&formation_saves=" . formsJson . "&area_goal=" . (modronSaves.targetArea.Read()) . "&buffs=" . calcAutoJson . "&checkin_timestamp=" . (this.GetNowEpoch() + 600000) . "&properties={""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}" . "&user_id=" . (g_SF.Memory.ReadUserID()) . "&hash=" . (g_SF.Memory.ReadUserHash()) . "&language_id=1&timestamp=0&request_id=0&network_id=" . (g_SF.Memory.ReadPlatform()) . "&mobile_client_version=" . (g_SF.Memory.ReadBaseGameVersion()) . "&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true"
-		return params
+		psParams := "&core_id=" . psModronId . "&grid=" . (g_SF.Memory.ReadModronGridArray(psModronSaves)) . "&game_instance_id=" . psGameInstanceId . "&formation_saves=" . psFormsJson . "&area_goal=" . (psModronSaves.targetArea.Read()) . "&buffs=" . psCalcAutoJson . "&checkin_timestamp=" . (this.GetNowEpoch() + 600000) . "&properties={""formation_enabled"":true,""toggle_preferences"":{""formation"":true,""reset"":true,""buff"":true}}" . "&user_id=" . (g_SF.Memory.ReadUserID()) . "&hash=" . (g_SF.Memory.ReadUserHash()) . "&language_id=1&timestamp=0&request_id=0&network_id=" . (g_SF.Memory.ReadPlatform()) . "&mobile_client_version=" . (g_SF.Memory.ReadBaseGameVersion()) . "&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true"
+		return psParams
 	}
 	
 	AddNonSpeedPotsFromCurrBuffsToCalcAuto(buffsObj,calcAuto)
@@ -778,14 +773,14 @@ Class IC_PotionSustain_Component
 	
 	ReadActiveGemHunter()
 	{
-		buffs := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].BuffHandler.activeBuffs
-		buffsSize := buffs.size.Read()
-		if(buffsSize <= 0 OR buffsSize > 1000)
+		psBuffs := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].BuffHandler.activeBuffs
+		psBuffsSize := psBuffs.size.Read()
+		if(psBuffsSize <= 0 OR psBuffsSize > 1000)
 			return 0
-		loop, %buffsSize%
+		loop, %psBuffsSize%
 		{
-			if (buffs[A_Index - 1].BaseEffectString.Read() == "increase_boss_gems_percent,50")
-				return buffs[A_Index - 1].RemainingTime.Read()
+			if (psBuffs[A_Index - 1].BaseEffectString.Read() == "increase_boss_gems_percent,50")
+				return psBuffs[A_Index - 1].RemainingTime.Read()
 		}
 		return 0
 	}

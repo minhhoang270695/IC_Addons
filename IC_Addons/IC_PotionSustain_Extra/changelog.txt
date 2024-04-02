@@ -1,3 +1,5 @@
+ 2    April 2024 - v0.1.4
+ - Hopefully fixed a bug where bad memory reading would occur.
  1    April 2024 - v0.1.3
  - Added a warning for cases of bad memory reading.
 31    March 2024 - v0.1.2
