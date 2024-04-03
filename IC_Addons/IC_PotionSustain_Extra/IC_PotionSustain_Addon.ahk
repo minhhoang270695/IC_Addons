@@ -1,3 +1,4 @@
 #include %A_LineFile%\..\IC_PotionSustain_Overrides.ahk
-IC_UpdateClass_Class.UpdateClassFunctions(g_BrivGemFarm, IC_PotionSustain_BrivGemFarm_Class)
-IC_UpdateClass_Class.UpdateClassFunctions(g_SharedData, IC_PotionSustain_SharedData_Class)
+#include *i %A_LineFile%\..\..\..\SharedFunctions\SH_UpdateClass.ahk
+SH_UpdateClass.UpdateClassFunctions(g_BrivGemFarm, IC_PotionSustain_BrivGemFarm_Class)
+SH_UpdateClass.UpdateClassFunctions(g_SharedData, IC_PotionSustain_SharedData_Class)
