@@ -42,7 +42,7 @@ z1175 (or z885 with Gem Hunter) can permanently sustain medium potions - if the 
 |---|--:|--:|--:|
 | Medium + Large | 40.09%+ | x10 | x10 |
 | Medium + Huge | 5.02%+ | x10 | x10 |
-| Medium + Small | 100% | 5.64x | x8.46 |
+| Medium + Small | 100% | x5.64 | x8.46 |
 
 #### Smalls + Others.
 
@@ -52,7 +52,7 @@ z655 (or z475 with Gem Hunter) can permanently sustain small potions.
 |---|--:|--:|--:|
 | Small + Large | 23.27%+ | x7.25 | x10 |
 | Small + Huge | 0.82%+ | x8.86 | x10 |
-| Small + Medium | 58.17%+ | 5.64x | x8.46 |
+| Small + Medium | 58.17%+ | x5.64 | x8.46 |
 | Small only | 100% | x2.58 | x3.87 |
 
 #### Anything available.
@@ -63,7 +63,7 @@ Below z655 (or z475 with Gem Hunter) you can't permanently sustain any potion. B
 |---|--:|--:|--:|
 | Large | 0%+ | x4.64 | x6.96 |
 | Huge | 0%+ | x5.67 | x8.51 |
-| Medium | 0%+ | 3.61x | x5.41 |
+| Medium | 0%+ | x3.61 | x5.41 |
 | Small | 0%+ | x2.58 | x3.87 |
 
 *All of this is of course assuming there aren't any bugs. Spoiler alert - there will be bugs.*
