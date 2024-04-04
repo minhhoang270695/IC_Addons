@@ -2,7 +2,9 @@
 
 This is an AddOn for Script Hub that will try to sustain your potions as best it can. It does this through two separate methods.
 
-ⓘ *Note: This addon requires Script Hub version 4. If you have not updated to that version - this addon will **not** work.*
+> [!WARNING]
+> *This addon requires Script Hub version 4. If you have not updated to that version - this addon will **not** work.*
+
 ___
 
 
