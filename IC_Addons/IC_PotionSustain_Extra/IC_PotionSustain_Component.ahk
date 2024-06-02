@@ -267,6 +267,18 @@ Class IC_PotionSustain_Component
 			this.UpdateMainStatus("Save Error. Automation maximum threshold too low vs minimum. Increased.")
 			sanityChecked := true
 		}
+		if (g_PS_ChestSmallThreshMin < (g_PS_AutomateThreshMin)+sanityGap)
+		{
+			g_PS_ChestSmallThreshMin := (g_PS_AutomateThreshMin + sanityGap)
+			GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMin, % g_PS_ChestSmallThreshMin
+			if (g_PS_ChestSmallThreshMax < (g_PS_ChestSmallThreshMin)+sanityGap)
+			{
+				g_PS_ChestSmallThreshMax := (g_PS_ChestSmallThreshMin + sanityGap)
+				GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMax, % g_PS_ChestSmallThreshMax
+			}
+			this.UpdateMainStatus("Save Error. Small minimum threshold too low vs automation minimum. Increased.")
+			sanityChecked := true
+		}
 		return sanityChecked
 	}
 	
@@ -929,7 +941,12 @@ Class IC_PotionSustain_Component
 	FmtSecs(T, Fmt:="{:}d {:02}h {:02}m {:02}s") { ; v0.50 by SKAN on D36G/H @ tiny.cc/fmtsecs
 		local D, H, M, HH, Q:=60, R:=3600, S:=86400
 		T := Round(T)
-		return Format(Fmt, D:=T//S, H:=(T:=T-D*S)//R, M:=(T:=T-H*R)//Q, T-M*Q, HH:=D*24+H, HH*Q+M)
+		fmtTime := Format(Fmt, D:=T//S, H:=(T:=T-D*S)//R, M:=(T:=T-H*R)//Q, T-M*Q, HH:=D*24+H, HH*Q+M)
+		StringReplace, fmtTime, fmtTime, 0d 00h 00m, , All
+		StringReplace, fmtTime, fmtTime, 0d 00h, , All
+		StringReplace, fmtTime, fmtTime, 0d, , All
+		fmtTime := Trim(fmtTime)
+		return fmtTime
 	}
 	
 	IsNumber(inputText)
