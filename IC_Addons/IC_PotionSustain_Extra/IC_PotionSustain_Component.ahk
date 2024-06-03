@@ -942,9 +942,9 @@ Class IC_PotionSustain_Component
 		local D, H, M, HH, Q:=60, R:=3600, S:=86400
 		T := Round(T)
 		fmtTime := Format(Fmt, D:=T//S, H:=(T:=T-D*S)//R, M:=(T:=T-H*R)//Q, T-M*Q, HH:=D*24+H, HH*Q+M)
-		StringReplace, fmtTime, fmtTime, 0d 00h 00m, , All
-		StringReplace, fmtTime, fmtTime, 0d 00h, , All
-		StringReplace, fmtTime, fmtTime, 0d, , All
+		fmtTime := RegExReplace(fmtTime, "m)^0d ", "")
+		fmtTime := RegExReplace(fmtTime, "m)^00h ", "")
+		fmtTime := RegExReplace(fmtTime, "m)^00m ", "")
 		fmtTime := Trim(fmtTime)
 		return fmtTime
 	}
