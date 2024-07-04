@@ -35,7 +35,7 @@ Gui, ICScriptHub:Add, Text, xs20 y+15 w130 +Right, Can Sustain Smalls:
 Gui, ICScriptHub:Add, Text, vg_PS_AbleSustainSmallStatus xs160 y+-13 w300, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Currently Buying Silvers:
 Gui, ICScriptHub:Add, Text, vg_PS_BuyingSilversStatus xs160 y+-13 w200, Unknown
-Gui, ICScriptHub:Add, GroupBox, x15 ys120 Section w500 h180, Automate Modron Potions
+Gui, ICScriptHub:Add, GroupBox, x15 ys120 Section w500 h205, Automate Modron Potions
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_EnableAlternating xs15 ys25, Enable automating potions in the modron?
 Gui, ICScriptHub:Add, Text, xs165 y+10 w50, Minimum
 Gui, ICScriptHub:Add, Text, xs235 y+-13 w50, Maximum
@@ -48,13 +48,15 @@ Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Sustain Bracket:
 Gui, ICScriptHub:Add, Text, vg_PS_SustainBracketStatus xs160 y+-13 w130, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Automation Status:
 Gui, ICScriptHub:Add, Text, vg_PS_AutomationStatus xs160 y+-13 w330, Unknown
+Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableSmalls xs15 y+15, Disable the use of Small potions?
+Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableMediums xs245 y+-13, Disable the use of Medium potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableLarges xs15 y+15, Disable the use of Large potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableHuges xs245 y+-13, Disable the use of Huge potions?
 GUIFunctions.UseThemeTextColor("TableTextColor")
 Gui, ICScriptHub:Add, ListView, xs300 ys15 w190 h100 vg_PS_AutomateList, Priority|Alternating|Status
 GUIFunctions.UseThemeListViewBackgroundColor("g_PS_AutomateList")
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, GroupBox, x15 ys185 Section w500 h140, Current Potion Amounts
+Gui, ICScriptHub:Add, GroupBox, x15 ys210 Section w500 h140, Current Potion Amounts
 Gui, ICScriptHub:Add, Text, xs20 ys+20 w130 +Right, Smalls:
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotCountStatus xs160 y+-13 w60 +Right, Unknown
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotWaxingStatus xs240 y+-13 w240, Unknown
@@ -120,6 +122,8 @@ Class IC_PotionSustain_Component
 	ModronCallParams := ""
 	InstanceId := ""
 	FoundHighAreaPot := false
+	DisableSmall := false
+	DisableMedium := false
 	DisableLarge := false
 	DisableHuge := false
 	GemHunter := 0
@@ -173,7 +177,7 @@ Class IC_PotionSustain_Component
 		Gui, Submit, NoHide
 		writeSettings := False
 		this.Settings := g_SF.LoadObjectFromJSON(g_PS_SettingsPath)
-		if(!IsObject(this.Settings) OR this.Settings["SmallThresh"] != "")
+		if(!IsObject(this.Settings) OR this.Settings["SmallThresh"] != "" OR this.Settings["DisableSmalls"] == "")
 		{
 			this.DefaultSettings()
 			writeSettings := True
@@ -187,6 +191,8 @@ Class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:, g_PS_AutomateThreshMin, % this.Settings["AutomateThreshMin"]
 		GuiControl, ICScriptHub:, g_PS_AutomateThreshMax, % this.Settings["AutomateThreshMax"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_EnableAlternating, % this.Settings["Alternate"]
+		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableSmalls, % this.Settings["DisableSmalls"]
+		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableMediums, % this.Settings["DisableMediums"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableLarges, % this.Settings["DisableLarges"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableHuges, % this.Settings["DisableHuges"]
 		this.ChestSmallPotMinThresh := this.Settings["SmallThreshMin"]
@@ -194,6 +200,8 @@ Class IC_PotionSustain_Component
 		this.AutomatePotMinThresh := this.Settings["AutomateThreshMin"]
 		this.AutomatePotMaxThresh := this.Settings["AutomateThreshMax"]
 		this.EnableAlternating := this.Settings["Alternate"]
+		this.DisableSmall := this.Settings["DisableSmalls"]
+		this.DisableMedium := this.Settings["DisableMediums"]
 		this.DisableLarge := this.Settings["DisableLarges"]
 		this.DisableHuge := this.Settings["DisableHuges"]
 		this.UpdateGUI()
@@ -210,6 +218,8 @@ Class IC_PotionSustain_Component
 		this.Settings["AutomateThreshMin"] := g_PS_AutomateThreshMin
 		this.Settings["AutomateThreshMax"] := g_PS_AutomateThreshMax
 		this.Settings["Alternate"] := g_PS_Checkbox_EnableAlternating
+		this.Settings["DisableSmalls"] := g_PS_Checkbox_DisableSmalls
+		this.Settings["DisableMediums"] := g_PS_Checkbox_DisableMediums
 		this.Settings["DisableLarges"] := g_PS_Checkbox_DisableLarges
 		this.Settings["DisableHuges"] := g_PS_Checkbox_DisableHuges
 		this.ChestSmallPotMinThresh := g_PS_ChestSmallThreshMin
@@ -217,6 +227,8 @@ Class IC_PotionSustain_Component
 		this.AutomatePotMinThresh := g_PS_AutomateThreshMin
 		this.AutomatePotMaxThresh := g_PS_AutomateThreshMax
 		this.EnableAlternating := g_PS_Checkbox_EnableAlternating
+		this.DisableSmall := g_PS_Checkbox_DisableSmalls
+		this.DisableMedium := g_PS_Checkbox_DisableMediums
 		this.DisableLarge := g_PS_Checkbox_DisableLarges
 		this.DisableHuge := g_PS_Checkbox_DisableHuges
 		if (!this.EnableAlternating)
@@ -279,6 +291,13 @@ Class IC_PotionSustain_Component
 			this.UpdateMainStatus("Save Error. Small minimum threshold too low vs automation minimum. Increased.")
 			sanityChecked := true
 		}
+		if (g_PS_Checkbox_EnableAlternating AND g_PS_Checkbox_DisableSmalls AND g_PS_Checkbox_DisableMediums AND g_PS_Checkbox_DisableLarges AND g_PS_Checkbox_DisableHuges)
+		{
+			g_PS_Checkbox_EnableAlternating := false
+			GuiControl, ICScriptHub:, g_PS_Checkbox_EnableAlternating, % g_PS_Checkbox_EnableAlternating
+			this.UpdateMainStatus("Save Error. All Potions Disabled. Disabling Automate Modron Potions.")
+			sanityChecked := true
+		}
 		return sanityChecked
 	}
 	
@@ -290,6 +309,8 @@ Class IC_PotionSustain_Component
 		this.Settings["AutomateThreshMin"] := 100
 		this.Settings["AutomateThreshMax"] := 150
 		this.Settings["Alternate"] := false
+		this.Settings["DisableSmalls"] := false
+		this.Settings["DisableMediums"] := false
 		this.Settings["DisableLarges"] := false
 		this.Settings["DisableHuges"] := false
 	}
@@ -501,8 +522,8 @@ Class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:Text, g_PS_LargePotCountStatus, % this.PotAmounts["l"]
 		GuiControl, ICScriptHub:Text, g_PS_HugePotCountStatus, % this.PotAmounts["h"]
 		GuiControl, ICScriptHub:Text, g_PS_GemHunterPotCountStatus, % this.PotAmounts["gh"]
-		GuiControl, ICScriptHub:Text, g_PS_SmallPotWaxingStatus, % this.WaxingPots["s"] ? waxing : waning
-		GuiControl, ICScriptHub:Text, g_PS_MediumPotWaxingStatus, % this.WaxingPots["m"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_SmallPotWaxingStatus, % this.Settings["DisableSmalls"] ? blocked : this.WaxingPots["s"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_MediumPotWaxingStatus, % this.Settings["DisableMediums"] ? blocked : this.WaxingPots["m"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_LargePotWaxingStatus, % this.Settings["DisableLarges"] ? blocked : this.WaxingPots["l"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_HugePotWaxingStatus, % this.Settings["DisableHuges"] ? blocked : this.WaxingPots["h"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_GemHunterStatus, % this.GemHunter > 0 ? "Active: " . (this.FmtSecs(this.GemHunter)) . " remaining." : "Inactive."
@@ -557,12 +578,12 @@ Class IC_PotionSustain_Component
 		if (this.ModronResetZone >= lZone AND this.PotAmounts["l"] > this.AutomatePotMinThresh AND !this.DisableLarge)
 			calcAuto := this.CalculateSustainLarges()
 		; Sustaining mediums.
-		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold.
-		else if (this.ModronResetZone >= mZone AND this.PotAmounts["m"] > this.AutomatePotMinThresh)
+		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold and medium pots are not disabled.
+		else if (this.ModronResetZone >= mZone AND this.PotAmounts["m"] > this.AutomatePotMinThresh AND !this.DisableMedium)
 			calcAuto := this.CalculateSustainMediums()
 		; Sustaining smalls.
-		; Only use if modron reset is 655+ (or 475+GH) and small pots are above the minimum threshold.
-		else if (this.ModronResetZone >= sZone AND this.PotAmounts["s"] > this.AutomatePotMinThresh)
+		; Only use if modron reset is 655+ (or 475+GH) and small pots are above the minimum threshold and small pots are not disabled.
+		else if (this.ModronResetZone >= sZone AND this.PotAmounts["s"] > this.AutomatePotMinThresh AND !this.DisableSmall)
 			calcAuto := this.CalculateSustainSmalls()
 		; Sustaining nothing.
 		; Only use as a last resort.
@@ -581,7 +602,7 @@ Class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, Larges + Others.
 		calcAuto := {this.PotIDs["l"]:1}
 		status := ["---","---","---","---"]
-		if (this.PotAmounts["m"] >= this.AutomatePotMinThresh AND !this.WaxingPots["m"])
+		if (!this.DisableMedium AND this.PotAmounts["m"] >= this.AutomatePotMinThresh AND !this.WaxingPots["m"])
 		{
 			calcAuto[this.PotIDs["m"]] := 1
 			status[1] := this.Using
@@ -589,21 +610,21 @@ Class IC_PotionSustain_Component
 		else if (!this.DisableHuge AND this.PotAmounts["h"] >= this.AutomatePotMinThresh AND !this.WaxingPots["h"])
 		{
 			calcAuto[this.PotIDs["h"]] := 1
-			status[1] := this.NotEnough
+			status[1] := this.DisableMedium ? this.Blocked : this.NotEnough
 			status[2] := this.Using
 		}
-		else if (this.PotAmounts["s"] >= this.AutomatePotMinThresh AND !this.WaxingPots["s"])
+		else if (!this.DisableSmall AND this.PotAmounts["s"] >= this.AutomatePotMinThresh AND !this.WaxingPots["s"])
 		{
 			calcAuto[this.PotIDs["s"]] := 1
-			status[1] := this.NotEnough
+			status[1] := this.DisableMedium ? this.Blocked : this.NotEnough
 			status[2] := this.DisableHuge ? this.Blocked : this.NotEnough
 			status[3] := this.Using
 		}
 		else
 		{
-			status[1] := this.NotEnough
+			status[1] := this.DisableMedium ? this.Blocked : this.NotEnough
 			status[2] := this.DisableHuge ? this.Blocked : this.NotEnough
-			status[3] := this.NotEnough
+			status[3] := this.DisableSmall ? this.Blocked : this.NotEnough
 			status[4] := this.Using
 		}
 		LV_Add(,1,"l + m",status[1])
@@ -631,7 +652,7 @@ Class IC_PotionSustain_Component
 			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
 			status[2] := this.Using
 		}
-		else if (this.PotAmounts["s"] >= this.AutomatePotMinThresh AND !this.WaxingPots["s"])
+		else if (!this.DisableSmall AND this.PotAmounts["s"] >= this.AutomatePotMinThresh AND !this.WaxingPots["s"])
 		{
 			calcAuto[this.PotIDs["s"]] := 1
 			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
@@ -642,7 +663,7 @@ Class IC_PotionSustain_Component
 		{
 			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
 			status[2] := this.DisableHuge ? this.Blocked : this.NotEnough
-			status[3] := this.NotEnough
+			status[3] := this.DisableSmall ? this.Blocked : this.NotEnough
 			status[4] := this.Using
 		}
 		LV_Add(,1,"m + l",status[1])
@@ -670,7 +691,7 @@ Class IC_PotionSustain_Component
 			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
 			status[2] := this.Using
 		}
-		else if (this.PotAmounts["m"] >= this.AutomatePotMinThresh AND !this.WaxingPots["m"])
+		else if (!this.DisableMedium AND this.PotAmounts["m"] >= this.AutomatePotMinThresh AND !this.WaxingPots["m"])
 		{
 			calcAuto[this.PotIDs["m"]] := 1
 			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
@@ -681,7 +702,7 @@ Class IC_PotionSustain_Component
 		{
 			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
 			status[2] := this.DisableHuge ? this.Blocked : this.NotEnough
-			status[3] := this.NotEnough
+			status[3] := this.DisableMedium ? this.Blocked : this.NotEnough
 			status[4] := this.Using
 		}
 		LV_Add(,1,"s + l",status[1])
@@ -709,20 +730,27 @@ Class IC_PotionSustain_Component
 			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
 			status[2] := this.Using
 		}
-		else if (this.PotAmounts["m"] >= this.AutomatePotMinThresh AND !this.WaxingPots["m"])
+		else if (!this.DisableMedium AND this.PotAmounts["m"] >= this.AutomatePotMinThresh AND !this.WaxingPots["m"])
 		{
 			calcAuto[this.PotIDs["m"]] := 1
 			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
 			status[2] := this.DisableHuge ? this.Blocked : this.NotEnough
 			status[3] := this.Using
 		}
-		else
+		else if (!this.DisableSmall)
 		{
 			calcAuto[this.PotIDs["s"]] := 1
 			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
 			status[2] := this.DisableHuge ? this.Blocked : this.NotEnough
-			status[3] := this.NotEnough
+			status[3] := this.DisableMedium ? this.Blocked : this.NotEnough
 			status[4] := this.Using
+		}
+		else
+		{
+			status[1] := this.DisableLarge ? this.Blocked : this.NotEnough
+			status[2] := this.DisableHuge ? this.Blocked : this.NotEnough
+			status[3] := this.DisableMedium ? this.Blocked : this.NotEnough
+			status[4] := this.DisableSmall ? this.Blocked : this.NotEnough
 		}
 		LV_Add(,1,"l",status[1])
 		LV_Add(,2,"h",status[2])

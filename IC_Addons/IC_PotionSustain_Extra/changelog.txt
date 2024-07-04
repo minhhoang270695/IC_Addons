@@ -1,3 +1,5 @@
+ 4     July 2024 - v0.1.6
+ - Added checkboxes to disable the use of Small and Medium potions to the Automate Modron Potions section. Disabling all 4 types will result in Automate Modron Potions to be disabled.
  2     June 2024 - v0.1.5
  - Added a sanity check for people who try to save a small threshold minimum that's lower than the automation threshold minimum.
  - Cleaned up the formatting on the gem hunter timer. (If there are 0 days - it won't show days. If there are also 0 hours - it won't show hours either. etc..)
