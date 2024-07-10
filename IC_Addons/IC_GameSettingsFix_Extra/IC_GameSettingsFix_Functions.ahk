@@ -1,6 +1,6 @@
 class IC_GameSettingsFix_Component
 {
-	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"ReduceFramerateWhenNotInFocus":false,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"SoundMuted":false}
+	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":4,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"SoundMuted":false}
 	Settings := {}
 	GameSettingsFileLocation := ""
 	InstanceID := ""
@@ -38,7 +38,11 @@ class IC_GameSettingsFix_Component
 			g_SF.WriteObjectToJSON(g_GSF_SettingsPath, this.Settings)
 		GuiControl, ICScriptHub:, g_GSF_TargetFramerate, % this.Settings["TargetFramerate"]
 		GuiControl, ICScriptHub:, g_GSF_PercentOfParticlesSpawned, % this.Settings["PercentOfParticlesSpawned"]
+		GuiControl, ICScriptHub:, g_GSF_resolution_x, % this.Settings["resolution_x"]
+		GuiControl, ICScriptHub:, g_GSF_resolution_y, % this.Settings["resolution_y"]
+		GuiControl, ICScriptHub:, g_GSF_resolution_fullscreen, % this.Settings["resolution_fullscreen"]
 		GuiControl, ICScriptHub:, g_GSF_ReduceFramerateWhenNotInFocus, % this.Settings["ReduceFramerateWhenNotInFocus"]
+		GuiControl, ICScriptHub:Choose, g_GSF_LevelupAmountIndex, % this.ConvertLevelUpIndexToUI(this.Settings["LevelupAmountIndex"])
 		GuiControl, ICScriptHub:, g_GSF_UseConsolePortraits, % this.Settings["UseConsolePortraits"]
 		GuiControl, ICScriptHub:, g_GSF_FormationSaveIncludeFeatsCheck, % this.Settings["FormationSaveIncludeFeatsCheck"]
 		GuiControl, ICScriptHub:, g_GSF_NarrowHeroBoxes, % this.Settings["NarrowHeroBoxes"]
@@ -53,7 +57,11 @@ class IC_GameSettingsFix_Component
 		this.CheckMissingOrExtraSettings()
 		this.Settings["TargetFramerate"] := g_GSF_TargetFramerate
 		this.Settings["PercentOfParticlesSpawned"] := g_GSF_PercentOfParticlesSpawned
+		this.Settings["resolution_x"] := g_GSF_resolution_x
+		this.Settings["resolution_y"] := g_GSF_resolution_y
+		this.Settings["resolution_fullscreen"] := g_GSF_resolution_fullscreen
 		this.Settings["ReduceFramerateWhenNotInFocus"] := g_GSF_ReduceFramerateWhenNotInFocus
+		this.Settings["LevelupAmountIndex"] := this.ConvertLevelUpIndexFromUI(g_GSF_LevelupAmountIndex)
 		this.Settings["UseConsolePortraits"] := g_GSF_UseConsolePortraits
 		this.Settings["FormationSaveIncludeFeatsCheck"] := g_GSF_FormationSaveIncludeFeatsCheck
 		this.Settings["NarrowHeroBoxes"] := g_GSF_NarrowHeroBoxes
@@ -79,6 +87,20 @@ class IC_GameSettingsFix_Component
 			GuiControl, ICScriptHub:, g_GSF_PercentOfParticlesSpawned, % g_GSF_PercentOfParticlesSpawned
 			sanityChecked := true
 			this.UpdateMainStatus("Save Error. PercentOfParticlesSpawned was an invalid number.")
+		}
+		if (!this.IsNumber(g_GSF_resolution_x) OR g_GSF_resolution_x < 0)
+		{
+			g_GSF_resolution_x := this.DefaultSettings["resolution_x"]
+			GuiControl, ICScriptHub:, g_GSF_resolution_x, % g_GSF_resolution_x
+			sanityChecked := true
+			this.UpdateMainStatus("Save Error. resolution_x was an invalid number.")
+		}
+		if (!this.IsNumber(g_GSF_resolution_y) OR g_GSF_resolution_y < 0)
+		{
+			g_GSF_resolution_y := this.DefaultSettings["resolution_y"]
+			GuiControl, ICScriptHub:, g_GSF_resolution_y, % g_GSF_resolution_y
+			sanityChecked := true
+			this.UpdateMainStatus("Save Error. resolution_y was an invalid number.")
 		}
 		return sanityChecked
 	}
@@ -150,21 +172,22 @@ class IC_GameSettingsFix_Component
 	ReadAndEditSettingsString(g_GSF_settingsFileLoc)
 	{
 		local g_GSF_settingsFile
-		local g_GSF_numChanges
 		this.MadeChanges := false
 		FileRead, g_GSF_settingsFile, %g_GSF_settingsFileLoc%
 		for k,v in this.Settings
 		{
 			g_GSF_numChanges := 0
 			g_GSF_before := g_GSF_settingsFile
-			g_GSF_after := RegExReplace(g_GSF_before, """" k """: (false|true)", """" k """: " (v == 0 ? "false" : "true"), g_GSF_numChanges)
+			g_GSF_after := RegExReplace(g_GSF_before, """" k """: (false|true)", """" k """: " (v == 0 ? "false" : "true"))
 			if (g_GSF_before != g_GSF_after) {
 				this.MadeChanges := true
 				continue
 			}
 			g_GSF_after := RegExReplace(g_GSF_before, """" k """: ([0-9]+)", """" k """: " v)
-			if (g_GSF_before != g_GSF_after)
+			if (g_GSF_before != g_GSF_after) {
+				g_GSF_settingsFile := g_GSF_after
 				this.MadeChanges := true
+			}
 		}
 		return g_GSF_settingsFile
 	}
@@ -210,6 +233,30 @@ class IC_GameSettingsFix_Component
 	{
 		GuiControl, ICScriptHub:Text, g_GSF_StatusText, % status
 		Gui, Submit, NoHide
+	}
+	
+	ConvertLevelUpIndexFromUI(g_GSF_levelUpIndexUI)
+	{
+		switch g_GSF_levelUpIndexUI
+		{
+			case "x1": return 0
+			case "x10": return 1
+			case "x25": return 2
+			case "x100": return 3
+			default: return 4
+		}
+	}
+	
+	ConvertLevelUpIndexToUI(g_GSF_levelUpIndexVal)
+	{
+		switch g_GSF_levelUpIndexVal
+		{
+			case 0: return "x1"
+			case 1: return "x10"
+			case 2: return "x25"
+			case 3: return "x100"
+			default: return "Next Upg"
+		}
 	}
 	
 	; =======================

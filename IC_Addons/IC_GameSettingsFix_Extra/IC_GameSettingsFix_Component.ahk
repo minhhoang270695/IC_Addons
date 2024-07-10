@@ -17,40 +17,75 @@ GuiControl,ICScriptHub: +g, g_GameSettingsFixSave_Clicked, % buttonFunc
 Gui, ICScriptHub:Add, Text, x5 y+10 w130 +Right, Status:
 Gui, ICScriptHub:Add, Text, vg_GSF_StatusText x145 y+-13 w400, Waiting for Gem Farm to start
 
-Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x15 y+10 Section w500 h240, Settings
-Gui, ICScriptHub:Add, Text, xs15 ys20 w200 +Right, Setting
-Gui, ICScriptHub:Add, Text, xs225 ys20 w200, Value
-Gui, ICScriptHub:Add, Text, xs305 ys20 w150, Recommended
-Gui, ICScriptHub:Font, w400
-Gui, ICScriptHub:Add, Text, xs15 ys45 w200 +Right, TargetFramerate:
-GUIFunctions.UseThemeTextColor("InputBoxTextColor")
-Gui, ICScriptHub:Add, Edit, vg_GSF_TargetFramerate xs225 y+-17 w60 +Right, 600
-GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, Text, xs305 y+-17 w150, 600 (Maybe more - maybe less)
-Gui, ICScriptHub:Add, Text, xs15 y+15 w200 +Right, PercentOfParticlesSpawned:
-GUIFunctions.UseThemeTextColor("InputBoxTextColor")
-Gui, ICScriptHub:Add, Edit, vg_GSF_PercentOfParticlesSpawned xs225 y+-17 w60 +Right, 0
-GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, Text, xs305 y+-17 w150, 0
-Gui, ICScriptHub:Add, Text, xs15 y+15 w200 +Right, ReduceFramerateWhenNotInFocus:
-Gui, ICScriptHub:Add, Checkbox, vg_GSF_ReduceFramerateWhenNotInFocus xs225 y+-13,
-Gui, ICScriptHub:Add, Text, xs305 y+-13 w150, Unchecked
-Gui, ICScriptHub:Add, Text, xs15 y+15 w200 +Right, FormationSaveIncludeFeatsCheck:
-Gui, ICScriptHub:Add, Checkbox, vg_GSF_FormationSaveIncludeFeatsCheck xs225 y+-13,
-Gui, ICScriptHub:Add, Text, xs305 y+-13 w150, Unchecked
-Gui, ICScriptHub:Add, Text, xs15 y+15 w200 +Right, UseConsolePortraits:
-Gui, ICScriptHub:Add, Checkbox, vg_GSF_UseConsolePortraits xs225 y+-13,
-Gui, ICScriptHub:Add, Text, xs305 y+-13 w150, Personal Preference
-Gui, ICScriptHub:Add, Text, xs15 y+15 w200 +Right, NarrowHeroBoxes:
-Gui, ICScriptHub:Add, Checkbox, vg_GSF_NarrowHeroBoxes xs225 y+-13,
-Gui, ICScriptHub:Add, Text, xs305 y+-13 w150, Personal Preference
-Gui, ICScriptHub:Add, Text, xs15 y+15 w200 +Right, SoundMuted:
-Gui, ICScriptHub:Add, Checkbox, Checked vg_GSF_SoundMuted xs225 y+-13,
-Gui, ICScriptHub:Add, Text, xs305 y+-13 w150, Personal Preference
+global g_GSF_col1w := 180
+global g_GSF_col2w := 70
+global g_GSF_col3w := 180
+global g_GSF_col1x := 15
+global g_GSF_col2x := 205
+global g_GSF_col3x := 290
+global g_GSF_ypos := 20
 
 Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x15 ys+245 Section w500 h95, Info
+Gui, ICScriptHub:Add, GroupBox, x15 y+10 Section w500 h335, Settings
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, Setting
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col2x% ys%g_GSF_ypos% w%g_GSF_col2w%, Value
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% ys%g_GSF_ypos% w%g_GSF_col3w%, Recommended
+Gui, ICScriptHub:Font, w400
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, TargetFramerate:
+GUIFunctions.UseThemeTextColor("InputBoxTextColor")
+Gui, ICScriptHub:Add, Edit, vg_GSF_TargetFramerate xs%g_GSF_col2x% y+-17 w%g_GSF_col2w% +Right, 600
+GUIFunctions.UseThemeTextColor("DefaultTextColor")
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, 600 (Maybe more - maybe less)
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, PercentOfParticlesSpawned:
+GUIFunctions.UseThemeTextColor("InputBoxTextColor")
+Gui, ICScriptHub:Add, Edit, vg_GSF_PercentOfParticlesSpawned xs%g_GSF_col2x% y+-17 w%g_GSF_col2w% +Right, 0
+GUIFunctions.UseThemeTextColor("DefaultTextColor")
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, 0
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, resolution_x:
+GUIFunctions.UseThemeTextColor("InputBoxTextColor")
+Gui, ICScriptHub:Add, Edit, vg_GSF_resolution_x xs%g_GSF_col2x% y+-17 w%g_GSF_col2w% +Right, 0
+GUIFunctions.UseThemeTextColor("DefaultTextColor")
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, Personal Preference
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, resolution_y:
+GUIFunctions.UseThemeTextColor("InputBoxTextColor")
+Gui, ICScriptHub:Add, Edit, vg_GSF_resolution_y xs%g_GSF_col2x% y+-17 w%g_GSF_col2w% +Right, 0
+GUIFunctions.UseThemeTextColor("DefaultTextColor")
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, Personal Preference
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, resolution_fullscreen:
+Gui, ICScriptHub:Add, Checkbox, vg_GSF_resolution_fullscreen xs%g_GSF_col2x% y+-13,
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, ReduceFramerateWhenNotInFocus:
+Gui, ICScriptHub:Add, Checkbox, vg_GSF_ReduceFramerateWhenNotInFocus xs%g_GSF_col2x% y+-13,
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Unchecked
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, FormationSaveIncludeFeatsCheck:
+Gui, ICScriptHub:Add, Checkbox, vg_GSF_FormationSaveIncludeFeatsCheck xs%g_GSF_col2x% y+-13,
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Unchecked
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, LevelupAmountIndex:
+Gui, ICScriptHub:Add, DDL, vg_GSF_LevelupAmountIndex xs%g_GSF_col2x% y+-17 w%g_GSF_col2w%, x1|x10|x25|x100|Next Upg||
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, Next Upg or x100 w/ Level Up Addon
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, UseConsolePortraits:
+Gui, ICScriptHub:Add, Checkbox, vg_GSF_UseConsolePortraits xs%g_GSF_col2x% y+-13,
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, NarrowHeroBoxes:
+Gui, ICScriptHub:Add, Checkbox, vg_GSF_NarrowHeroBoxes xs%g_GSF_col2x% y+-13,
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
+g_GSF_ypos += 25
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, SoundMuted:
+Gui, ICScriptHub:Add, Checkbox, Checked vg_GSF_SoundMuted xs%g_GSF_col2x% y+-13,
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
+
+Gui, ICScriptHub:Font, w700
+Gui, ICScriptHub:Add, GroupBox, x15 ys+340 Section w500 h95, Info
 Gui, ICScriptHub:Font, w400
 Gui, ICScriptHub:Add, Text, xs15 ys+20 w125, Settings File Location:
 Gui, ICScriptHub:Add, Text, xs35 y+5 w450 vg_GSF_GameSettingsFileLocation, Unknown

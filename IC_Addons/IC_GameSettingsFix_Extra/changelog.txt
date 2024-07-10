@@ -1,2 +1,5 @@
+10     July 2024 - v0.0.2
+ - Added four new settings: resolution_x / resolution_y / resolution_fullscreen / LevelupAmountIndex
+ - Fixed a bug where some settings would be fixed and then unfixed by followup checks.
  9     July 2024 - v0.0.1
  - Initial Release. An addon that will fix your game settings in-case they get reset by the game.
