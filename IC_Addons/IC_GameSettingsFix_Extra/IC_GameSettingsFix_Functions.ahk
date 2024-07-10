@@ -178,8 +178,9 @@ class IC_GameSettingsFix_Component
 		{
 			g_GSF_numChanges := 0
 			g_GSF_before := g_GSF_settingsFile
-			g_GSF_after := RegExReplace(g_GSF_before, """" k """: (false|true)", """" k """: " (v == 0 ? "false" : "true"))
+			g_GSF_after := RegExReplace(g_GSF_before, """" k """: (false|true)", """" k """: " (v ? "true" : "false"))
 			if (g_GSF_before != g_GSF_after) {
+				g_GSF_settingsFile := g_GSF_after
 				this.MadeChanges := true
 				continue
 			}
