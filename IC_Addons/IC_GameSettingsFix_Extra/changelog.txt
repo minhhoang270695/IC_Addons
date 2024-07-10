@@ -1,3 +1,5 @@
+10     July 2024 - v0.0.4
+ - Removed the SoundMuted setting option because that value is forced by user data instead of the localSettings.json.
 10     July 2024 - v0.0.3
  - Fixed a bug where checkbox settings would not be fixed.
 10     July 2024 - v0.0.2

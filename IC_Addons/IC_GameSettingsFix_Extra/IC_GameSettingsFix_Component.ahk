@@ -26,7 +26,7 @@ global g_GSF_col3x := 290
 global g_GSF_ypos := 20
 
 Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x15 y+10 Section w500 h335, Settings
+Gui, ICScriptHub:Add, GroupBox, x15 y+10 Section w500 h300, Settings
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, Setting
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col2x% ys%g_GSF_ypos% w%g_GSF_col2w%, Value
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% ys%g_GSF_ypos% w%g_GSF_col3w%, Recommended
@@ -79,13 +79,9 @@ g_GSF_ypos += 25
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, NarrowHeroBoxes:
 Gui, ICScriptHub:Add, Checkbox, vg_GSF_NarrowHeroBoxes xs%g_GSF_col2x% y+-13,
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
-g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, SoundMuted:
-Gui, ICScriptHub:Add, Checkbox, Checked vg_GSF_SoundMuted xs%g_GSF_col2x% y+-13,
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
 
 Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x15 ys+340 Section w500 h95, Info
+Gui, ICScriptHub:Add, GroupBox, x15 ys+305 Section w500 h95, Info
 Gui, ICScriptHub:Font, w400
 Gui, ICScriptHub:Add, Text, xs15 ys+20 w125, Settings File Location:
 Gui, ICScriptHub:Add, Text, xs35 y+5 w450 vg_GSF_GameSettingsFileLocation, Unknown

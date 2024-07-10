@@ -1,6 +1,6 @@
 class IC_GameSettingsFix_Component
 {
-	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":4,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"SoundMuted":false}
+	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":4,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true}
 	Settings := {}
 	GameSettingsFileLocation := ""
 	InstanceID := ""
@@ -46,7 +46,6 @@ class IC_GameSettingsFix_Component
 		GuiControl, ICScriptHub:, g_GSF_UseConsolePortraits, % this.Settings["UseConsolePortraits"]
 		GuiControl, ICScriptHub:, g_GSF_FormationSaveIncludeFeatsCheck, % this.Settings["FormationSaveIncludeFeatsCheck"]
 		GuiControl, ICScriptHub:, g_GSF_NarrowHeroBoxes, % this.Settings["NarrowHeroBoxes"]
-		GuiControl, ICScriptHub:, g_GSF_SoundMuted, % this.Settings["SoundMuted"]
 	}
 	
 	SaveSettings()
@@ -65,7 +64,6 @@ class IC_GameSettingsFix_Component
 		this.Settings["UseConsolePortraits"] := g_GSF_UseConsolePortraits
 		this.Settings["FormationSaveIncludeFeatsCheck"] := g_GSF_FormationSaveIncludeFeatsCheck
 		this.Settings["NarrowHeroBoxes"] := g_GSF_NarrowHeroBoxes
-		this.Settings["SoundMuted"] := g_GSF_SoundMuted
 		g_SF.WriteObjectToJSON(g_GSF_SettingsPath, this.Settings)
 		if (!sanityChecked)
 			this.UpdateMainStatus("Saved settings.")
