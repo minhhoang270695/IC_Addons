@@ -16,4 +16,4 @@ Read the [Potion Sustain README](IC_PotionSustain_Extra/README.md)
 
 An addon of my own make that attempts to fix your game's `localSettings.json` file when something decides to undo your custom changes.
 
-Read the [Game Settins Fix README](IC_GameSettingsFix_Extra/README.md)
+Read the [Game Settings Fix README](IC_GameSettingsFix_Extra/README.md)
