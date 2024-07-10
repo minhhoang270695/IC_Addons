@@ -288,6 +288,7 @@ class IC_GameSettingsFix_Component
 			SetTimer, %k%, Off
 			SetTimer, %k%, Delete
 		}
+		this.UpdateMainStatus("Waiting for Gem Farm to start.")
 	}
 	
 }
