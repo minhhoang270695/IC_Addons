@@ -1,3 +1,5 @@
+11     July 2024 - v0.0.5
+ - Some very minor optimisation improvements.
 10     July 2024 - v0.0.4
  - Removed the SoundMuted setting option because that value is forced by user data instead of the localSettings.json.
 10     July 2024 - v0.0.3

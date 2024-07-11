@@ -137,8 +137,10 @@ class IC_GameSettingsFix_Component
 	UpdateGameSettingsFix()
 	{
 		this.UpdateMainStatus("Idle. Waiting for next game close.")
-		if (this.IsGameClosed() AND this.InstanceID != "")
+		if (this.IsGameClosed())
 		{
+			if (this.InstanceID == "")
+				return
 			this.UpdateMainStatus("Game is closed. Verifying settings.")
 			if (this.GameSettingsFileLocation != "" AND FileExist(this.GameSettingsFileLocation))
 			{
@@ -148,9 +150,9 @@ class IC_GameSettingsFix_Component
 			}
 			this.InstanceID := ""
 		}
-		else if (!this.IsGameClosed())
+		else
 		{
-			if (this.GameSettingsFileLocation == "" OR !FileExist(this.GameSettingsFileLocation))
+			if (this.GameSettingsFileLocation == "")
 				this.FindSettingsFile()
 			if (this.InstanceID == "")
 				this.InstanceID := g_SF.Memory.ReadInstanceID()
@@ -163,6 +165,8 @@ class IC_GameSettingsFix_Component
 		if (!InStr(webRequestLogLoc, "webRequestLog"))
 			return
 		local settingsFileLoc := StrReplace(webRequestLogLoc, "downloaded_files\webRequestLog.txt", "localSettings.json")
+		if (!FileExist(settingsFileLoc))
+			return
 		this.GameSettingsFileLocation := settingsFileLoc
 		GuiControl, ICScriptHub:, g_GSF_GameSettingsFileLocation, % settingsFileLoc
 	}
@@ -174,7 +178,6 @@ class IC_GameSettingsFix_Component
 		FileRead, g_GSF_settingsFile, %g_GSF_settingsFileLoc%
 		for k,v in this.Settings
 		{
-			g_GSF_numChanges := 0
 			g_GSF_before := g_GSF_settingsFile
 			g_GSF_after := RegExReplace(g_GSF_before, """" k """: (false|true)", """" k """: " (v ? "true" : "false"))
 			if (g_GSF_before != g_GSF_after) {
