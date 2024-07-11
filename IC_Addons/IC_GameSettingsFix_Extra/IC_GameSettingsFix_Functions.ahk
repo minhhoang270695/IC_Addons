@@ -1,5 +1,6 @@
 class IC_GameSettingsFix_Component
 {
+	TimerFunctions := {}
 	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":4,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true}
 	Settings := {}
 	GameSettingsFileLocation := ""
@@ -200,13 +201,10 @@ class IC_GameSettingsFix_Component
 		if (!IsObject(g_GSF_newFile))
 		{
 			this.UpdateMainStatus("Error. Could not write to the settings file this time.")
-			this.InstanceID := ""
-			g_GSF_settingsFile := ""
 			return
 		}
 		g_GSF_newFile.Write(g_GSF_settingsFile)
 		g_GSF_newFile.Close()
-		g_GSF_settingsFile := ""
 		this.UpdateMainStatus("Game settings file had changes. Corrected.")
 		this.FixedCounter++
 		GuiControl, ICScriptHub:, g_GSF_NumTimesFixed, % this.FixedCounter
@@ -214,9 +212,8 @@ class IC_GameSettingsFix_Component
 	
 	IsGameClosed()
 	{
-		if(g_SF.Memory.ReadCurrentZone() == "")
-			if (Not WinExist( "ahk_exe " . g_userSettings[ "ExeName"] ))
-				return true
+		if(g_SF.Memory.ReadCurrentZone() == "" AND Not WinExist( "ahk_exe " . g_userSettings[ "ExeName"] ))
+			return true
 		return false
 	}
 	
