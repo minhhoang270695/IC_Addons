@@ -1,3 +1,5 @@
+12     July 2024 - v0.1.7
+ - Updated the reset zone thresholds for sustaining potions based on official gem drop chances. 
  4     July 2024 - v0.1.6
  - Added checkboxes to disable the use of Small and Medium potions to the Automate Modron Potions section. Disabling all 4 types will result in Automate Modron Potions to be disabled.
  2     June 2024 - v0.1.5

@@ -563,14 +563,14 @@ Class IC_PotionSustain_Component
 		}
 		; Sustaining mediums.
 		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold.
-		lZone := 3025
-		mZone := 1175
-		sZone := 655
+		lZone := 3060
+		mZone := 1185
+		sZone := 665
 		if (this.GemHunter > 0)
 		{
-			lZone := 2290
-			mZone := 885
-			sZone := 475
+			lZone := 2305
+			mZone := 895
+			sZone := 480
 		}
 		calcAuto := {}
 		; Sustaining larges.
