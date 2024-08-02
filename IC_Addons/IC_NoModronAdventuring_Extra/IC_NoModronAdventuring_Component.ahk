@@ -13,6 +13,7 @@ global NMA_WallRestart
 global g_NMAHighestZone := 1
 global g_NMATimeAtWall := 0
 global NMA_CompleteAlert
+global NMA_CompleteAlertBeep
 
 global g_NMASpecSettings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\SpecSettings.json" )
 if !IsObject(g_NMASpecSettings)
@@ -57,6 +58,8 @@ GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, vNMA_AlertZone x125 y+-17 w60, % g_NMAAlertZone
 GUIFunctions.UseThemeTextColor()
 Gui, ICScriptHub:Add, Text, x190 y+-17, has been reached (it will only do this once)
+Gui, ICScriptHub:Add, Checkbox, x15 y+10 vNMA_CompleteAlertBeep , Play a sound when the above zone has been reached
+
 Gui, ICScriptHub:Add, Checkbox, x15 y+20 vNMA_ChooseSpecs , Choose Specialisations
 Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_LevelClick , Upgrade Click Damage
 Gui, ICScriptHub:Add, Checkbox, x15 y+5 vNMA_FireUlts , Fire Ultimates     Ignore Ults:
@@ -122,10 +125,21 @@ NMA_RunAdventuring()
             name := g_SF.Memory.ReadChampNameByID(k)
             g_NMAlvlObj.NMA_LevelAndSpec(favoriteFormation, k)
         }
-		if (NMA_CompleteAlert AND g_SF.Memory.ReadHighestZone() >= g_NMAAlertZone)
+		if (g_SF.Memory.ReadHighestZone() >= g_NMAAlertZone)
 		{
-			msgbox, No Modron Adventuring:`n`nYou've reached zone %g_NMAAlertZone%.
-			NMA_CompleteAlert := false
+			if (NMA_CompleteAlertBeep) {
+				loop, 5
+				{
+					SoundBeep, 860, 400
+					SoundBeep, 1000, 400
+				}
+				SoundBeep, 860, 400
+				NMA_CompleteAlertBeep := false
+			}
+			if(NMA_CompleteAlert) {
+				msgbox, No Modron Adventuring:`n`nYou've reached zone %g_NMAAlertZone%.
+				NMA_CompleteAlert := false
+			}
 		}
         if (NMA_LevelClick)
             g_NMAlvlObj.DirectedInputNoCritical(,, "{ClickDmg}")
