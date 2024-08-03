@@ -53,6 +53,7 @@ Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_IncreaseSustainBracket xs15 y+15,
 Gui, ICScriptHub:Add, Text, xs200 y+-13 w180 +Right, Increase Sustain Bracket Threshold:
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, vg_PS_IncreaseBracketThresh xs390 y+-17 w60 +Right, 
+GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableSmalls xs15 y+15, Disable the use of Small potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableMediums xs245 y+-13, Disable the use of Medium potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableLarges xs15 y+15, Disable the use of Large potions?
