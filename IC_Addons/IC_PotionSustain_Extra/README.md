@@ -73,3 +73,5 @@ Below z665 (or z480 with Gem Hunter) you can't permanently sustain any potion. B
 | Small | 0%+ | x2.58 | x3.87 |
 
 *All of this is of course assuming there aren't any bugs. Spoiler alert - there will be bugs.*
+
+![Potion Sustain Addon Preview Image](images/SustainAddonPreview.png)
