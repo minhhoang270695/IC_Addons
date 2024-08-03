@@ -36,9 +36,13 @@ For the time being it's extremely simplistic - and might not be good for everyon
 
 *Note: Speeds below include the Modron node as well as Hew Maan's feat and the Potent Potions blessing.*
 
+### Allow Increasing Sustain Bracket
+
+This is a checkbox that will allow the script to temporarily increase your sustain bracket if the amount of potions for higher brackets exceeds a higher threshold. The minimum for this threshold is three times your Automation Maximum Threshold.
+
 #### Mediums + Others.
 
-z1175 (or z885 with Gem Hunter) can permanently sustain medium potions - if the script can buy Silvers occasionally to sustain smalls. (Which is why Sustain Smalls is not optional.)
+z1185 (or z895 with Gem Hunter) can permanently sustain medium potions - if the script can buy Silvers occasionally to sustain smalls. (Which is why Sustain Smalls is not optional.)
 
 | Alternatives | Uptime | Speed<br>No Shandie | Speed<br>Shandie |
 |---|--:|--:|--:|
@@ -48,7 +52,7 @@ z1175 (or z885 with Gem Hunter) can permanently sustain medium potions - if the 
 
 #### Smalls + Others.
 
-z655 (or z475 with Gem Hunter) can permanently sustain small potions.
+z665 (or z480 with Gem Hunter) can permanently sustain small potions.
 
 | Alternatives | Uptime | Speed<br>No Shandie | Speed<br>Shandie |
 |---|--:|--:|--:|
@@ -59,7 +63,7 @@ z655 (or z475 with Gem Hunter) can permanently sustain small potions.
 
 #### Anything available.
 
-Below z655 (or z475 with Gem Hunter) you can't permanently sustain any potion. Because of this it will use 1 potion at a time and alternate all 4 types.
+Below z665 (or z480 with Gem Hunter) you can't permanently sustain any potion. Because of this it will use 1 potion at a time and alternate all 4 types.
 
 | Alternatives | Uptime | Speed<br>No Shandie | Speed<br>Shandie |
 |---|--:|--:|--:|

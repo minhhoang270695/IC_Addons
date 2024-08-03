@@ -1,3 +1,7 @@
+03   August 2024 - v0.2.0
+ - Refactoring parts of the addon to separate Component from Functions.
+ - Fixing a bug where Buying Silver potions still used old sustain zone numbers.
+ - Adding a new setting that allows temporarily increasing sustain brackets.
 12     July 2024 - v0.1.7
  - Updated the reset zone thresholds for sustaining potions based on official gem drop chances. 
  4     July 2024 - v0.1.6
