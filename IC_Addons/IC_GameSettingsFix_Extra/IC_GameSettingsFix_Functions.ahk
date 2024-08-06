@@ -258,9 +258,9 @@ class IC_GameSettingsFix_Component
 		}
 	}
 	
-	ApplySettingsFileLocationGUI(settingsFileLoc,lineWrapLimit := 80)
+	ApplySettingsFileLocationGUI(settingsFileLoc)
 	{
-		local displayGSFL := this.AddLineBreakToSettingsFileLocation(settingsFileLoc, lineWrapLimit)
+		local displayGSFL := this.AddLineBreakToSettingsFileLocation(settingsFileLoc)
 		if (displayGSFL[2] >= 1)
 		{
 			; If a new line was added - increase the height of the 
@@ -312,17 +312,19 @@ class IC_GameSettingsFix_Component
 	; ===== MISC STUFF =====
 	; ======================
 	
-	AddLineBreakToSettingsFileLocation(settingsFileLoc, limit)
+	AddLineBreakToSettingsFileLocation(settingsFileLoc, limit := 80)
 	{
 		local split := StrSplit(settingsFileLoc, "\")
 		local wrapped := ""
 		local numNewLinesAdded := 0
+		local currLimit := limit
 		for k,v in split
 		{
-			if (StrLen(wrapped) + StrLen(v) >= (limit*(numNewLinesAdded+1)))
+			if (StrLen(wrapped) + StrLen(v) + 1  >= currLimit)
 			{
 				wrapped .= "`n"
 				numNewLinesAdded++
+				currLimit += limit
 			}
 			if (k > 1)
 				wrapped .= "\"
