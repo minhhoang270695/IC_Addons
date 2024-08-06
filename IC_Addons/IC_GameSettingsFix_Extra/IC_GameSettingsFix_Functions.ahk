@@ -261,7 +261,7 @@ class IC_GameSettingsFix_Component
 	ApplySettingsFileLocationGUI(settingsFileLoc,lineWrapLimit := 80)
 	{
 		local displayGSFL := this.AddLineBreakToSettingsFileLocation(settingsFileLoc, lineWrapLimit)
-		if (displayGSFL[2] > 1)
+		if (displayGSFL[2] >= 1)
 		{
 			; If a new line was added - increase the height of the 
 			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_GameSettingsFileLocation
