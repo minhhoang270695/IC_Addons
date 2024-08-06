@@ -81,12 +81,12 @@ Gui, ICScriptHub:Add, Checkbox, xs%g_GSF_col2x% y+-13 vg_GSF_NarrowHeroBoxes,
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
 
 Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x15 ys+305 Section w500 h105, Info
+Gui, ICScriptHub:Add, GroupBox, x15 ys+305 Section w500 h105 vg_GSF_InfoGroupBox, Info
 Gui, ICScriptHub:Font, w400
-Gui, ICScriptHub:Add, Text, xs15 ys+30 w125 , Settings File Location:
-Gui, ICScriptHub:Add, Text, xs35 y+5 w450 vg_GSF_GameSettingsFileLocation, Unknown
-Gui, ICScriptHub:Add, Text, xs15 y+15 w125, Num Times Fixed Settings:
+Gui, ICScriptHub:Add, Text, xs15 ys+30 w125, Num Times Fixed Settings:
 Gui, ICScriptHub:Add, Text, xs150 y+-13 w200 vg_GSF_NumTimesFixed, 0
+Gui, ICScriptHub:Add, Text, xs15 y+15 w125, Settings File Location:
+Gui, ICScriptHub:Add, Text, xs35 y+5 w450 vg_GSF_GameSettingsFileLocation, Unknown
 
 if(IsObject(IC_BrivGemFarm_Component))
 {

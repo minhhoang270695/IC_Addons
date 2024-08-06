@@ -169,7 +169,7 @@ class IC_GameSettingsFix_Component
 		if (!FileExist(settingsFileLoc))
 			return
 		this.GameSettingsFileLocation := settingsFileLoc
-		GuiControl, ICScriptHub:, g_GSF_GameSettingsFileLocation, % settingsFileLoc
+		this.ApplySettingsFileLocationGUI(settingsFileLoc)
 	}
 	
 	ReadAndEditSettingsString(g_GSF_settingsFileLoc)
@@ -258,6 +258,24 @@ class IC_GameSettingsFix_Component
 		}
 	}
 	
+	ApplySettingsFileLocationGUI(settingsFileLoc,lineWrapLimit := 80)
+	{
+		local displayGSFL := this.AddLineBreakToSettingsFileLocation(settingsFileLoc, lineWrapLimit)
+		if (displayGSFL[2] > 1)
+		{
+			; If a new line was added - increase the height of the 
+			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_GameSettingsFileLocation
+			local rowHeight := posH
+			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_InfoGroupBox
+			local oldHeight := posH
+			local heightOffset := rowHeight * (displayGSFL[2]+1)
+			local newHeight := oldHeight + (heightOffset-rowHeight)
+			GuiControl, ICScriptHub:Move, g_GSF_InfoGroupBox, h%newHeight%
+			GuiControl, ICScriptHub:Move, g_GSF_GameSettingsFileLocation, h%heightOffset%
+		}
+		GuiControl, ICScriptHub:, g_GSF_GameSettingsFileLocation, % displayGSFL[1]
+	}
+	
 	; =======================
 	; ===== TIMER STUFF =====
 	; =======================
@@ -288,6 +306,29 @@ class IC_GameSettingsFix_Component
 			SetTimer, %k%, Delete
 		}
 		this.UpdateMainStatus("Waiting for Gem Farm to start.")
+	}
+	
+	; ======================
+	; ===== MISC STUFF =====
+	; ======================
+	
+	AddLineBreakToSettingsFileLocation(settingsFileLoc, limit)
+	{
+		local split := StrSplit(settingsFileLoc, "\")
+		local wrapped := ""
+		local numNewLinesAdded := 0
+		for k,v in split
+		{
+			if (StrLen(wrapped) + StrLen(v) >= (limit*(numNewLinesAdded+1)))
+			{
+				wrapped .= "`n"
+				numNewLinesAdded++
+			}
+			if (k > 1)
+				wrapped .= "\"
+			wrapped .= v
+		}
+		return [wrapped,numNewLinesAdded]
 	}
 	
 }
