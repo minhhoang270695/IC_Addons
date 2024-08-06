@@ -32,51 +32,51 @@ Gui, ICScriptHub:Add, Text, xs%g_GSF_col2x% ys%g_GSF_ypos% w%g_GSF_col2w%, Value
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% ys%g_GSF_ypos% w%g_GSF_col3w%, Recommended
 Gui, ICScriptHub:Font, w400
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, TargetFramerate:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_TargetFramerateH, TargetFramerate:
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, xs%g_GSF_col2x% y+-17 w%g_GSF_col2w% +Right vg_GSF_TargetFramerate, 600
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, 600 (Maybe more - maybe less)
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, PercentOfParticlesSpawned:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_PercentOfParticlesSpawnedH, PercentOfParticlesSpawned:
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, xs%g_GSF_col2x% y+-17 w%g_GSF_col2w% +Right vg_GSF_PercentOfParticlesSpawned, 0
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, 0
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, resolution_x:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_resolution_xH, resolution_x:
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, xs%g_GSF_col2x% y+-17 w%g_GSF_col2w% +Right vg_GSF_resolution_x, 0
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, Personal Preference
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, resolution_y:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_resolution_yH, resolution_y:
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, xs%g_GSF_col2x% y+-17 w%g_GSF_col2w% +Right vg_GSF_resolution_y, 0
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, Personal Preference
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, resolution_fullscreen:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_resolution_fullscreenH, resolution_fullscreen:
 Gui, ICScriptHub:Add, Checkbox, xs%g_GSF_col2x% y+-13 vg_GSF_resolution_fullscreen,
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, ReduceFramerateWhenNotInFocus:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_ReduceFramerateWhenNotInFocusH, ReduceFramerateWhenNotInFocus:
 Gui, ICScriptHub:Add, Checkbox, xs%g_GSF_col2x% y+-13 vg_GSF_ReduceFramerateWhenNotInFocus,
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Unchecked
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, FormationSaveIncludeFeatsCheck:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_FormationSaveIncludeFeatsCheckH, FormationSaveIncludeFeatsCheck:
 Gui, ICScriptHub:Add, Checkbox, xs%g_GSF_col2x% y+-13 vg_GSF_FormationSaveIncludeFeatsCheck,
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Unchecked
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, LevelupAmountIndex:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_LevelupAmountIndexH, LevelupAmountIndex:
 Gui, ICScriptHub:Add, DDL, xs%g_GSF_col2x% y+-17 w%g_GSF_col2w% vg_GSF_LevelupAmountIndex, x1|x10|x25|x100|Next Upg||
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-17 w%g_GSF_col3w%, Next Upg or x100 w/ Level Up Addon
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, UseConsolePortraits:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_UseConsolePortraitsH, UseConsolePortraits:
 Gui, ICScriptHub:Add, Checkbox, xs%g_GSF_col2x% y+-13 vg_GSF_UseConsolePortraits,
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
 g_GSF_ypos += 25
-Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right, NarrowHeroBoxes:
+Gui, ICScriptHub:Add, Text, xs%g_GSF_col1x% ys%g_GSF_ypos% w%g_GSF_col1w% +Right vg_GSF_NarrowHeroBoxesH, NarrowHeroBoxes:
 Gui, ICScriptHub:Add, Checkbox, xs%g_GSF_col2x% y+-13 vg_GSF_NarrowHeroBoxes,
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
 

@@ -17,6 +17,7 @@ class IC_GameSettingsFix_Component
 		Global
 		Gui, Submit, NoHide
 		this.LoadSettings()
+		this.CreateTooltips()
 		if (!this.IsGameClosed() AND (this.GameSettingsFileLocation == "" OR !FileExist(this.GameSettingsFileLocation)))
 			this.FindSettingsFile()
 		this.UpdateMainStatus("Waiting for Gem Farm to start.")
@@ -129,6 +130,30 @@ class IC_GameSettingsFix_Component
 			}
 		}
 		return madeEdit
+	}
+	
+	CreateTooltips()
+	{
+		TargetFramerateTT := GUIFunctions.GetToolTipTarget("g_GSF_TargetFramerateH")
+		ParticlesTT := GUIFunctions.GetToolTipTarget("g_GSF_PercentOfParticlesSpawnedH")
+		ResolutionXTT := GUIFunctions.GetToolTipTarget("g_GSF_resolution_xH")
+		ResolutionYTT := GUIFunctions.GetToolTipTarget("g_GSF_resolution_yH")
+		ResolutionFSTT := GUIFunctions.GetToolTipTarget("g_GSF_resolution_fullscreenH")
+		ReduceFPSFocusTT := GUIFunctions.GetToolTipTarget("g_GSF_ReduceFramerateWhenNotInFocusH")
+		IncludeFeatsTT := GUIFunctions.GetToolTipTarget("g_GSF_FormationSaveIncludeFeatsCheckH")
+		LevelUpIndexTT := GUIFunctions.GetToolTipTarget("g_GSF_LevelupAmountIndexH")
+		ConsolePortraitsTT := GUIFunctions.GetToolTipTarget("g_GSF_UseConsolePortraitsH")
+		NarrowBenchTT := GUIFunctions.GetToolTipTarget("g_GSF_NarrowHeroBoxesH")
+		g_MouseToolTips[TargetFramerateTT] := "Settings -> Graphics -> Target Framerate:`nThis sets the upper-limit for FPS for the game."
+		g_MouseToolTips[ParticlesTT] := "Settings -> Graphics -> Particle Amount:`nThe graphics for some abilities can create other little graphical effects`ncalled particles. This sets the proportion of them that can be created."
+		g_MouseToolTips[ResolutionXTT] := "Settings -> Display -> Resolution:`nThe width of your game window in pixels."
+		g_MouseToolTips[ResolutionYTT] := "Settings -> Display -> Resolution:`nThe height of your game window in pixels."
+		g_MouseToolTips[ResolutionFSTT] := "Settings -> Display -> Fullscreen:`nDetermines whether the game covers the entire screen or not."
+		g_MouseToolTips[ReduceFPSFocusTT] := "Settings -> Graphics -> Reduce framerate when in background:`nThis will limit the fps of the game (and therefore slow it down) while`nit's hidden behind other windows."
+		g_MouseToolTips[IncludeFeatsTT] := "Formation Manager -> Include currently equipped Feats with save:`nDetermines whether a formation save will have feats included or not`nwhen saved."
+		g_MouseToolTips[LevelUpIndexTT] := "Level Up Button (Left of BUD/Ultimate bar):`nDetermines how champions are levelled up."
+		g_MouseToolTips[ConsolePortraitsTT] := "Settings -> Interface -> Console UI Portraits:`nDetermines whether the portraits for the champions on the bench are the`ncreepy ones that stare into your soul or not."
+		g_MouseToolTips[NarrowBenchTT] := "Settings -> Interface -> Narrow Bench Boxes:`nDetermines whether you can see all champions on the bench on low`nresolutions or not."
 	}
 	
 	; ======================

@@ -1,3 +1,5 @@
+ 6   August 2024 - v0.0.6
+ - Added tooltips to the settings to explain what some of them are and where to find them in-game.
 11     July 2024 - v0.0.5
  - Some very minor optimisation improvements.
 10     July 2024 - v0.0.4
