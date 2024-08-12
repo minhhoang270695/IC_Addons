@@ -7,6 +7,9 @@ This is an AddOn for Script Hub that will try to sustain your potions as best it
 
 ___
 
+![Potion Sustain Addon Preview Image](images/SustainAddonPreview.png)
+
+___
 
 ## Sustain Smalls
 
@@ -36,7 +39,8 @@ It runs on a similar process that Sustaining Smalls does. When a potion type fal
 
 The interface will tell you which Alternating combination it's currently using.
 
-*Please be aware that it can only change the potions in the modron during offline stacking - so this will not work at all for purely online runs.*
+> [!NOTE]
+> *Please be aware that it can only change the potions in the modron during offline stacking - so this will not work at all for purely online runs.*
 
 ### Settings
 
@@ -57,7 +61,7 @@ If a potion type is not being used so it can restock and the amount of that poti
 This is a checkbox that will allow the addon to temporarily increase your sustain bracket if the amount of potions for higher brackets exceeds a higher threshold. The minimum for this threshold is three times your Automation Maximum Threshold.
 
 > [!NOTE]
-> *This setting is mutually exclusive with `Force Specific Sustain Bracket`.*
+> *`Allow Increasing Sustain Bracket` is mutually exclusive with `Force Specific Sustain Bracket`.*
 
 #### Force Specific Sustain Bracket?
 
@@ -69,7 +73,7 @@ The purpose of this setting is so that people who have bought 4 Event Boons can 
 > *I will not be held liable for idiots who set a sustain bracket higher than they can support.*
 
 > [!NOTE]
-> *This setting is mutually exclusive with `Allow Increasing Sustain Bracket`.*
+> *`Force Specific Sustain Bracket` is mutually exclusive with `Allow Increasing Sustain Bracket`.*
 
 #### Disable the use of [Type] Potions
 
@@ -126,7 +130,3 @@ ___
 ## Current Potion Amounts
 
 This is simply an informative display that lets you know the status of each potion type. How many you have and whether they're available or not or blocked. It will even display your Gem Hunter Potion status.
-
-___
-
-![Potion Sustain Addon Preview Image](images/SustainAddonPreview.png)
