@@ -16,6 +16,16 @@ It defaults to always buying Gold chests until your small potion count falls bel
 
 To do this - the AddOn completely ignores the four Buy and Open settings in the `Briv Gem Farm` addon. It acts like they are all on. It will - however - continue to follow the `Maintain this many gems when buying chests.` setting.
 
+### Settings
+
+#### Small Potion Thresholds (Minimum)
+
+When the small potion amount drops to or below this threshold - the addon will start buying Silver Chests.
+ 
+#### Small Potion Thresholds (Maximum)
+
+If the addon is currently buying Silver chests and the small potion amount increases to or above this threshold - it will start buying Gold Chests again.
+
 ___
 
 ## Automate Modron Potions
@@ -28,19 +38,58 @@ The interface will tell you which Alternating combination it's currently using.
 
 *Please be aware that it can only change the potions in the modron during offline stacking - so this will not work at all for purely online runs.*
 
-### Sustain Brackets
+### Settings
+
+#### Enable automating potions in the modron?
+
+This will tell the addon to start automatically changing the potions set in the modron. It can only do this while the game is off during offline stacking.
+
+#### Modron Potion Thresholds (Minimum)
+
+When a potion type amount drops to or below this threshold - the addon will make this potion type unavailable so it can restock.
+ 
+#### Modron Potion Thresholds (Maximum)
+
+If a potion type is not being used so it can restock and the amount of that potion increases to or above this threshold - the addon will make it available for use again.
+
+#### Allow Increasing Sustain Bracket?
+
+This is a checkbox that will allow the addon to temporarily increase your sustain bracket if the amount of potions for higher brackets exceeds a higher threshold. The minimum for this threshold is three times your Automation Maximum Threshold.
+
+> [!NOTE]
+> *This setting is mutually exclusive with `Force Specific Sustain Bracket`.*
+
+#### Force Specific Sustain Bracket?
+
+This is a checkbox that will force the addon to use a specific sustain bracket. It will only ever automate potion priorities within this bracket - even if you cannot sustain that bracket.
+
+The purpose of this setting is so that people who have bought 4 Event Boons can alternate single potions with the `Anything Available` bracket and thereby not waste potions.
+
+> [!CAUTION]
+> *I will not be held liable for idiots who set a sustain bracket higher than they can support.*
+
+> [!NOTE]
+> *This setting is mutually exclusive with `Allow Increasing Sustain Bracket`.*
+
+#### Disable the use of [Type] Potions
+
+These four checkboxes quite literally prevent the addon from being able to automate the selected potion types. It's generally not recommended to use these settings unless you have a very good reason for doing so.
+
+___
+
+## Sustain Brackets
 
 The addon determines which combinations of potions to use based on your current modron `Reset Zone`.
 
 For the time being it's extremely simplistic - and might not be good for everyone - but it's the best I can do for now. I may try more complicated alternatives at a later date.
 
-*Note: Speeds below include the Modron node as well as Hew Maan's feat and the Potent Potions blessing.*
+> [!WARNING]
+> *This addon does not automatically adjust Sustain Bracket based on Event Boons.*
 
-### Allow Increasing Sustain Bracket
+> [!NOTE]
+> *Speeds below include the Modron node as well as Hew Maan's feat and the Potent Potions blessing.*
 
-This is a checkbox that will allow the script to temporarily increase your sustain bracket if the amount of potions for higher brackets exceeds a higher threshold. The minimum for this threshold is three times your Automation Maximum Threshold.
-
-#### Mediums + Others.
+### Mediums + Others
 
 z1185 (or z895 with Gem Hunter) can permanently sustain medium potions - if the script can buy Silvers occasionally to sustain smalls. (Which is why Sustain Smalls is not optional.)
 
@@ -50,7 +99,7 @@ z1185 (or z895 with Gem Hunter) can permanently sustain medium potions - if the 
 | Medium + Huge | 5.02%+ | x10 | x10 |
 | Medium + Small | 100% | x5.64 | x8.46 |
 
-#### Smalls + Others.
+### Smalls + Others
 
 z665 (or z480 with Gem Hunter) can permanently sustain small potions.
 
@@ -61,7 +110,7 @@ z665 (or z480 with Gem Hunter) can permanently sustain small potions.
 | Small + Medium | 58.17%+ | x5.64 | x8.46 |
 | Small only | 100% | x2.58 | x3.87 |
 
-#### Anything available.
+### Anything Available
 
 Below z665 (or z480 with Gem Hunter) you can't permanently sustain any potion. Because of this it will use 1 potion at a time and alternate all 4 types.
 
@@ -72,6 +121,12 @@ Below z665 (or z480 with Gem Hunter) you can't permanently sustain any potion. B
 | Medium | 0%+ | x3.61 | x5.41 |
 | Small | 0%+ | x2.58 | x3.87 |
 
-*All of this is of course assuming there aren't any bugs. Spoiler alert - there will be bugs.*
+___
+
+## Current Potion Amounts
+
+This is simply an informative display that lets you know the status of each potion type. How many you have and whether they're available or not or blocked. It will even display your Gem Hunter Potion status.
+
+___
 
 ![Potion Sustain Addon Preview Image](images/SustainAddonPreview.png)

@@ -1,3 +1,5 @@
+12   August 2024 - v0.2.1
+ - Added a new setting that allows forcing a specific sustain bracket. (I will not be held liable for idiots who set a sustain bracket higher than they can support.)
 03   August 2024 - v0.2.0
  - Refactoring parts of the addon to separate Component from Functions.
  - Fixing a bug where Buying Silver potions still used old sustain zone numbers.

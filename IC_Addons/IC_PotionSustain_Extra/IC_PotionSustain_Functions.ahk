@@ -5,7 +5,7 @@ class IC_PotionSustain_Component
 	TimerFunctions := ""
 	SanitySize := 5000
 	
-	DefaultSettings := {"SmallThreshMin":150,"SmallThreshMax":200,"AutomateThreshMin":100,"AutomateThreshMax":150,"Alternate":false,"DisableSmalls":false,"DisableMediums":false,"DisableLarges":false,"DisableHuges":false,"EnableISB":false,"ISBThresh":450}
+	DefaultSettings := {"SmallThreshMin":150,"SmallThreshMax":200,"AutomateThreshMin":100,"AutomateThreshMax":150,"Alternate":false,"DisableSmalls":false,"DisableMediums":false,"DisableLarges":false,"DisableHuges":false,"EnableISB":false,"ISBThresh":450,"EnableFSB":false,"FSBType":g_PS_Brackets[1]}
 	UserData := ""
 	RunsCount := -1
 	ModronResetZone := -1
@@ -13,14 +13,14 @@ class IC_PotionSustain_Component
 	PotAmounts := {"s":-1,"m":-1,"l":-1,"h":-1,"gh":0}
 	PotZones := {"l":3060,"m":1185,"s":665}
 	PotZonesGH := {"l":2305,"m":895,"s":480}
-	ChestSmallPotMinThresh := 50
-	ChestSmallPotMaxThresh := 100
+	ChestSmallPotMinThresh := this.DefaultSettings["SmallThreshMin"]
+	ChestSmallPotMaxThresh := this.DefaultSettings["SmallThreshMax"]
 	ChestSmallPotWaxing := false
-	AutomatePotMinThresh := 50
-	AutomatePotMaxThresh := 500
+	AutomatePotMinThresh := this.DefaultSettings["AutomateThreshMin"]
+	AutomatePotMaxThresh := this.DefaultSettings["AutomateThreshMax"]
 	ChestSmallPotBuying := false
 	SustainSmallAbility := "Unknown"
-	EnableAlternating := false
+	EnableAlternating := this.DefaultSettings["Alternate"]
 	WaxingPots := {"s":false,"m":false,"l":false,"h":false}
 	Using := "Using"
 	NotEnough := "Not Enough"
@@ -29,13 +29,15 @@ class IC_PotionSustain_Component
 	ModronCallParams := ""
 	InstanceId := ""
 	FoundHighAreaPot := false
-	EnableISB := false
-	ISBThresh := 500
+	EnableISB := this.DefaultSettings["EnableISB"]
+	ISBThresh := this.DefaultSettings["ISBThresh"]
 	ISBMult := 3
-	DisableSmall := false
-	DisableMedium := false
-	DisableLarge := false
-	DisableHuge := false
+	EnableFSB := this.DefaultSettings["EnableFSB"]
+	FSBType := this.DefaultSettings["FSBType"]
+	DisableSmall := this.DefaultSettings["DisableSmalls"]
+	DisableMedium := this.DefaultSettings["DisableMediums"]
+	DisableLarge := this.DefaultSettings["DisableLarges"]
+	DisableHuge := this.DefaultSettings["DisableHuges"]
 	GemHunter := 0
 	ModronSaveCallResponse := ""
 	PendingCall := false
@@ -119,6 +121,8 @@ class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableHuges, % this.Settings["DisableHuges"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_IncreaseSustainBracket, % this.Settings["EnableISB"]
 		GuiControl, ICScriptHub:, g_PS_IncreaseBracketThresh, % this.Settings["ISBThresh"]
+		GuiControl, ICScriptHub:, g_PS_Checkbox_ForceSustainBracket, % this.Settings["EnableFSB"]
+		GuiControl, ICScriptHub:ChooseString, g_PS_SpecificSustainBracket, % this.Settings["FSBType"]
 		this.ChestSmallPotMinThresh := this.Settings["SmallThreshMin"]
 		this.ChestSmallPotMaxThresh := this.Settings["SmallThreshMax"]
 		this.AutomatePotMinThresh := this.Settings["AutomateThreshMin"]
@@ -130,6 +134,8 @@ class IC_PotionSustain_Component
 		this.DisableHuge := this.Settings["DisableHuges"]
 		this.EnableISB := this.Settings["EnableISB"]
 		this.ISBThresh := this.Settings["ISBThresh"]
+		this.EnableFSB := this.Settings["EnableFSB"]
+		this.FSBType := this.Settings["FSBType"]
 		this.UpdateGUI()
 	}
 	
@@ -138,6 +144,7 @@ class IC_PotionSustain_Component
 	{
 		Global
 		Gui, Submit, NoHide
+		this.ListSize := 0
 		local sanityChecked := this.SanityCheckSettings()
 		this.CheckMissingOrExtraSettings()
 		this.Settings["SmallThreshMin"] := g_PS_ChestSmallThreshMin
@@ -151,6 +158,8 @@ class IC_PotionSustain_Component
 		this.Settings["DisableHuges"] := g_PS_Checkbox_DisableHuges
 		this.Settings["EnableISB"] := g_PS_Checkbox_IncreaseSustainBracket
 		this.Settings["ISBThresh"] := g_PS_IncreaseBracketThresh
+		this.Settings["EnableFSB"] := g_PS_Checkbox_ForceSustainBracket
+		this.Settings["FSBType"] := g_PS_SpecificSustainBracket
 		this.ChestSmallPotMinThresh := g_PS_ChestSmallThreshMin
 		this.ChestSmallPotMaxThresh := g_PS_ChestSmallThreshMax
 		this.AutomatePotMinThresh := g_PS_AutomateThreshMin
@@ -162,6 +171,8 @@ class IC_PotionSustain_Component
 		this.DisableHuge := g_PS_Checkbox_DisableHuges
 		this.EnableISB := g_PS_Checkbox_IncreaseSustainBracket
 		this.ISBThresh := g_PS_IncreaseBracketThresh
+		this.EnableFSB := g_PS_Checkbox_ForceSustainBracket
+		this.FSBType := g_PS_SpecificSustainBracket
 		if (!this.EnableAlternating)
 		{
 			this.ModronCallParams := ""
@@ -236,6 +247,29 @@ class IC_PotionSustain_Component
 			g_PS_IncreaseBracketThresh := g_PS_AutomateThreshMax * this.ISBMult
 			GuiControl, ICScriptHub:, g_PS_IncreaseBracketThresh, % g_PS_IncreaseBracketThresh
 			this.UpdateMainStatus("Save Error. ISB threshold too low vs automation maximum. Increased.")
+			sanityChecked := true
+		}
+		if (g_PS_Checkbox_IncreaseSustainBracket AND g_PS_Checkbox_ForceSustainBracket)
+		{
+			g_PS_Checkbox_IncreaseSustainBracket := false
+			g_PS_Checkbox_ForceSustainBracket := false
+			GuiControl, ICScriptHub:, g_PS_Checkbox_IncreaseSustainBracket, % g_PS_Checkbox_IncreaseSustainBracket
+			GuiControl, ICScriptHub:, g_PS_Checkbox_ForceSustainBracket, % g_PS_Checkbox_ForceSustainBracket
+			this.UpdateMainStatus("Save Error. Cannot enable ISB and FSB at the same time. Disabled both.")
+			sanityChecked := true
+		}
+		if (g_PS_SpecificSustainBracket != g_PS_Brackets[1] AND g_PS_SpecificSustainBracket != g_PS_Brackets[2] AND g_PS_SpecificSustainBracket != g_PS_Brackets[3] AND g_PS_SpecificSustainBracket != "Larges + Others")
+		{
+			g_PS_SpecificSustainBracket := g_PS_Brackets[1]
+			GuiControl, ICScriptHub:ChooseString, g_PS_SpecificSustainBracket, % g_PS_SpecificSustainBracket
+			this.UpdateMainStatus("Save Error. Invalid Specific Sustain Bracket. Reset to default.")
+			sanityChecked := true
+		}
+		if (g_PS_Checkbox_ForceSustainBracket AND ((g_PS_SpecificSustainBracket == g_PS_Brackets[2] AND g_PS_Checkbox_DisableSmalls) OR (g_PS_SpecificSustainBracket == g_PS_Brackets[3] AND g_PS_Checkbox_DisableMediums) OR (g_PS_SpecificSustainBracket == "Larges + Others" AND g_PS_Checkbox_DisableLarges)))
+		{
+			g_PS_Checkbox_ForceSustainBracket := false
+			GuiControl, ICScriptHub:, g_PS_Checkbox_ForceSustainBracket, % g_PS_Checkbox_ForceSustainBracket
+			this.UpdateMainStatus("Save Error. Specific Sustain Bracket is a disabled potion. Disabling FSB.")
 			sanityChecked := true
 		}
 		return sanityChecked
@@ -395,63 +429,6 @@ class IC_PotionSustain_Component
 		}
 	}
 	
-	UpdateMainStatus(psStatus)
-	{
-		GuiControl, ICScriptHub:Text, g_PS_StatusText, % psStatus
-		Gui, Submit, NoHide
-	}
-	
-	UpdateAutomationStatus(psStatus)
-	{
-		if (!this.EnableAlternating)
-		{
-			psStatus := "Disabled."
-			if (this.ListSize > 0)
-			{
-				restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "g_PS_AutomateList")
-				LV_Delete()
-				this.ListSize := 0
-			}
-		}
-		else if (psStatus == "Idle.")
-		{
-			if (this.ModronSaveCallResponse != "")
-				psStatus := "Warning: Modron save call seems to have failed. Check logs."
-			else if (this.BadMemoryRead)
-				psStatus := "Warning: Bad memory read. Check imports / pointers."
-			else if (this.PendingCall)
-				psStatus := "Pending potion swapping. Waiting for next offline stack."
-			else if (this.FoundHighAreaPot)
-				psStatus := "Warning: A potion in the Modron has a zone greater than 1."
-		}
-		GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, % psStatus
-		Gui, Submit, NoHide
-	}
-	
-	; =====================
-	; ===== GUI STUFF =====
-	; =====================
-	
-	UpdateGUI()
-	{
-		local waxing := "Unavailable. Restocking."
-		local waning := "Available."
-		local blocked := "Blocked by user."
-		GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, % this.PotAmounts["s"]
-		GuiControl, ICScriptHub:Text, g_PS_MediumPotCountStatus, % this.PotAmounts["m"]
-		GuiControl, ICScriptHub:Text, g_PS_LargePotCountStatus, % this.PotAmounts["l"]
-		GuiControl, ICScriptHub:Text, g_PS_HugePotCountStatus, % this.PotAmounts["h"]
-		GuiControl, ICScriptHub:Text, g_PS_GemHunterPotCountStatus, % this.PotAmounts["gh"]
-		GuiControl, ICScriptHub:Text, g_PS_SmallPotWaxingStatus, % this.DisableSmall ? blocked : this.WaxingPots["s"] ? waxing : waning
-		GuiControl, ICScriptHub:Text, g_PS_MediumPotWaxingStatus, % this.DisableMedium ? blocked : this.WaxingPots["m"] ? waxing : waning
-		GuiControl, ICScriptHub:Text, g_PS_LargePotWaxingStatus, % this.DisableLarge ? blocked : this.WaxingPots["l"] ? waxing : waning
-		GuiControl, ICScriptHub:Text, g_PS_HugePotWaxingStatus, % this.DisableHuge ? blocked : this.WaxingPots["h"] ? waxing : waning
-		GuiControl, ICScriptHub:Text, g_PS_GemHunterStatus, % this.GemHunter > 0 ? "Active: " . (this.FmtSecs(this.GemHunter)) . " remaining." : "Inactive."
-		GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, % this.SustainSmallAbility
-		GuiControl, ICScriptHub:Text, g_PS_BuyingSilversStatus, % this.ChestSmallPotBuying ? "Yes." : "No."
-		Gui, Submit, NoHide
-	}
-	
 	CalculateSmallPotionSustain()
 	{
 		local smallSustain := this.GemHunter > 0 ? this.PotZonesGH["s"] : this.PotZones["s"]
@@ -485,22 +462,36 @@ class IC_PotionSustain_Component
 		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold.
 		local potPool := this.GemHunter > 0 ? this.PotZonesGH : this.PotZones
 		psCalcAuto := {}
-		; Sustaining larges.
-		; Only use if modron reset is 3025+ (or 2290+GH) and large pots are above the minimum threshold and large pots are not disabled.
-		if (this.ModronResetZone >= potPool["l"] AND this.PotAmounts["l"] > this.AutomatePotMinThresh AND !this.DisableLarge)
-			psCalcAuto := this.CalculateSustainLarges()
-		; Sustaining mediums.
-		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold and medium pots are not disabled.
-		else if (((this.EnableISB AND this.PotAmounts["m"] >= this.ISBThresh) OR (this.ModronResetZone >= potPool["m"] AND this.PotAmounts["m"] > this.AutomatePotMinThresh)) AND !this.DisableMedium)
-			psCalcAuto := this.CalculateSustainMediums()
-		; Sustaining smalls.
-		; Only use if modron reset is 665+ (or 475+GH) and small pots are above the minimum threshold and small pots are not disabled.
-		else if (((this.EnableISB AND this.PotAmounts["s"] >= this.ISBThresh) OR (this.ModronResetZone >= potPool["s"] AND this.PotAmounts["s"] > this.AutomatePotMinThresh)) AND !this.DisableSmall)
-			psCalcAuto := this.CalculateSustainSmalls()
-		; Sustaining nothing.
-		; Only use as a last resort.
+		if (this.EnableFSB)
+		{
+			if (this.FSBType == g_PS_Brackets[4])
+				psCalcAuto := this.CalculateSustainLarges(true)
+			else if (this.FSBType == g_PS_Brackets[3])
+				psCalcAuto := this.CalculateSustainMediums(true)
+			else if (this.FSBType == g_PS_Brackets[2])
+				psCalcAuto := this.CalculateSustainSmalls(true)
+			else
+				psCalcAuto := this.CalculateSustainNone(true)
+		}
 		else
-			psCalcAuto := this.CalculateSustainNone()
+		{
+			; Sustaining larges.
+			; Only use if modron reset is 3025+ (or 2290+GH) and large pots are above the minimum threshold and large pots are not disabled.
+			if (!this.DisableLarge AND this.ModronResetZone >= potPool["l"] AND this.PotAmounts["l"] > this.AutomatePotMinThresh)
+				psCalcAuto := this.CalculateSustainLarges()
+			; Sustaining mediums.
+			; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold and medium pots are not disabled.
+			else if (!this.DisableMedium AND ((this.EnableISB AND this.PotAmounts["m"] >= this.ISBThresh) OR (this.ModronResetZone >= potPool["m"] AND this.PotAmounts["m"] > this.AutomatePotMinThresh)))
+				psCalcAuto := this.CalculateSustainMediums()
+			; Sustaining smalls.
+			; Only use if modron reset is 665+ (or 475+GH) and small pots are above the minimum threshold and small pots are not disabled.
+			else if (!this.DisableSmall AND ((this.EnableISB AND this.PotAmounts["s"] >= this.ISBThresh) OR (this.ModronResetZone >= potPool["s"] AND this.PotAmounts["s"] > this.AutomatePotMinThresh)))
+				psCalcAuto := this.CalculateSustainSmalls()
+			; Sustaining nothing.
+			; Only use as a last resort.
+			else
+				psCalcAuto := this.CalculateSustainNone()
+		}
 		LV_ModifyCol(1, 45)
 		LV_ModifyCol(2, 65)
 		LV_ModifyCol(3, 75)
@@ -508,10 +499,11 @@ class IC_PotionSustain_Component
 		return psCalcAuto
 	}
 	
-	CalculateSustainLarges()
+	CalculateSustainLarges(psForced := false)
 	{
 		; Set can use larges.
-		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, Larges + Others.
+		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, % g_PS_Brackets[4] "."
+		this.UpdateSustainBracketHeader(psForced)
 		psCalcAuto := {this.PotIDs["l"]:1}
 		psStatus := ["---","---","---","---"]
 		if (!this.DisableMedium AND this.PotAmounts["m"] >= this.AutomatePotMinThresh AND !this.WaxingPots["m"])
@@ -547,10 +539,11 @@ class IC_PotionSustain_Component
 		return psCalcAuto
 	}
 	
-	CalculateSustainMediums()
+	CalculateSustainMediums(psForced := false)
 	{
 		; Set can use mediums.
-		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, Mediums + Others.
+		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, % g_PS_Brackets[3] "."
+		this.UpdateSustainBracketHeader(psForced)
 		psCalcAuto := {this.PotIDs["m"]:1}
 		psStatus := ["---","---","---","---"]
 		if (!this.DisableLarge AND this.PotAmounts["l"] >= this.AutomatePotMinThresh AND !this.WaxingPots["l"])
@@ -586,10 +579,11 @@ class IC_PotionSustain_Component
 		return psCalcAuto
 	}
 	
-	CalculateSustainSmalls()
+	CalculateSustainSmalls(psForced := false)
 	{
 		; Set can use smalls.
-		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, Smalls + Others.
+		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, % g_PS_Brackets[2] "."
+		this.UpdateSustainBracketHeader(psForced)
 		psCalcAuto := {this.PotIDs["s"]:1}
 		psStatus := ["---","---","---","---"]
 		if (!this.DisableLarge AND this.PotAmounts["l"] >= this.AutomatePotMinThresh AND !this.WaxingPots["l"])
@@ -625,10 +619,11 @@ class IC_PotionSustain_Component
 		return psCalcAuto
 	}
 	
-	CalculateSustainNone()
+	CalculateSustainNone(psForced := false)
 	{
 		; Set can use smalls.
-		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, Anything available.
+		GuiControl, ICScriptHub:Text, g_PS_SustainBracketStatus, % g_PS_Brackets[1] "."
+		this.UpdateSustainBracketHeader(psForced)
 		psCalcAuto := {}
 		psStatus := ["---","---","---","---"]
 		if (!this.DisableLarge AND this.PotAmounts["l"] >= this.AutomatePotMinThresh AND !this.WaxingPots["l"])
@@ -735,6 +730,72 @@ class IC_PotionSustain_Component
 				return psBuffs[A_Index - 1].RemainingTime.Read()
 		}
 		return 0
+	}
+	
+	; =====================
+	; ===== GUI STUFF =====
+	; =====================
+	
+	UpdateGUI()
+	{
+		local waxing := "Unavailable. Restocking."
+		local waning := "Available."
+		local blocked := "Blocked by user."
+		GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, % this.PotAmounts["s"]
+		GuiControl, ICScriptHub:Text, g_PS_MediumPotCountStatus, % this.PotAmounts["m"]
+		GuiControl, ICScriptHub:Text, g_PS_LargePotCountStatus, % this.PotAmounts["l"]
+		GuiControl, ICScriptHub:Text, g_PS_HugePotCountStatus, % this.PotAmounts["h"]
+		GuiControl, ICScriptHub:Text, g_PS_GemHunterPotCountStatus, % this.PotAmounts["gh"]
+		GuiControl, ICScriptHub:Text, g_PS_SmallPotWaxingStatus, % this.DisableSmall ? blocked : this.WaxingPots["s"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_MediumPotWaxingStatus, % this.DisableMedium ? blocked : this.WaxingPots["m"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_LargePotWaxingStatus, % this.DisableLarge ? blocked : this.WaxingPots["l"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_HugePotWaxingStatus, % this.DisableHuge ? blocked : this.WaxingPots["h"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_GemHunterStatus, % this.GemHunter > 0 ? "Active: " . (this.FmtSecs(this.GemHunter)) . " remaining." : "Inactive."
+		GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, % this.SustainSmallAbility
+		GuiControl, ICScriptHub:Text, g_PS_BuyingSilversStatus, % this.ChestSmallPotBuying ? "Yes." : "No."
+		Gui, Submit, NoHide
+	}
+	
+	UpdateMainStatus(psStatus)
+	{
+		GuiControl, ICScriptHub:Text, g_PS_StatusText, % psStatus
+		Gui, Submit, NoHide
+	}
+	
+	UpdateAutomationStatus(psStatus)
+	{
+		if (!this.EnableAlternating)
+		{
+			psStatus := "Disabled."
+			if (this.ListSize > 0)
+			{
+				restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "g_PS_AutomateList")
+				LV_Delete()
+				this.ListSize := 0
+			}
+		}
+		else if (psStatus == "Idle.")
+		{
+			if (this.ModronSaveCallResponse != "")
+				psStatus := "Warning: Modron save call seems to have failed. Check logs."
+			else if (this.BadMemoryRead)
+				psStatus := "Warning: Bad memory read. Check imports / pointers."
+			else if (this.PendingCall)
+				psStatus := "Pending potion swapping. Waiting for next offline stack."
+			else if (this.FoundHighAreaPot)
+				psStatus := "Warning: A potion in the Modron has a zone greater than 1."
+		}
+		GuiControl, ICScriptHub:Text, g_PS_AutomationStatus, % psStatus
+		Gui, Submit, NoHide
+	}
+	
+	UpdateSustainBracketHeader(psForced)
+	{
+		local psStatus := "Sustain Bracket"
+		if (psForced)
+			psStatus .= " (Forced)"
+		psStatus .= ":"
+		GuiControl, ICScriptHub:Text, g_PS_SustainBracketHeader, % psStatus
 	}
 	
 	; =======================

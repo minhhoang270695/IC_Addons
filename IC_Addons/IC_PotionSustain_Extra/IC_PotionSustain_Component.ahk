@@ -11,6 +11,7 @@ global g_PS_ChestSmallThreshMin
 global g_PS_ChestSmallThreshMax
 global g_PS_AutomateThreshMin
 global g_PS_AutomateThreshMax
+global g_PS_Brackets := ["Anything Available","Smalls + Others","Mediums + Others","Larges + Others"]
 
 Gui, ICScriptHub:Tab, Potion Sustain
 GUIFunctions.UseThemeTextColor("HeaderTextColor")
@@ -36,7 +37,7 @@ Gui, ICScriptHub:Add, Text, xs20 y+15 w130 +Right, Can Sustain Smalls:
 Gui, ICScriptHub:Add, Text, vg_PS_AbleSustainSmallStatus xs160 y+-13 w300, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Currently Buying Silvers:
 Gui, ICScriptHub:Add, Text, vg_PS_BuyingSilversStatus xs160 y+-13 w200, Unknown
-Gui, ICScriptHub:Add, GroupBox, x15 ys120 Section w500 h245, Automate Modron Potions
+Gui, ICScriptHub:Add, GroupBox, x15 ys120 Section w500 h270, Automate Modron Potions
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_EnableAlternating xs15 ys25, Enable automating potions in the modron?
 Gui, ICScriptHub:Add, Text, xs165 y+10 w50, Minimum
 Gui, ICScriptHub:Add, Text, xs235 y+-13 w50, Maximum
@@ -45,7 +46,7 @@ GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, vg_PS_AutomateThreshMin xs160 y+-17 w60 +Right, 
 Gui, ICScriptHub:Add, Edit, vg_PS_AutomateThreshMax xs230 y+-21 w60 +Right, 
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Sustain Bracket:
+Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right vg_PS_SustainBracketHeader, Sustain Bracket:
 Gui, ICScriptHub:Add, Text, vg_PS_SustainBracketStatus xs160 y+-13 w130, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Automation Status:
 Gui, ICScriptHub:Add, Text, vg_PS_AutomationStatus xs160 y+-13 w330, Unknown
@@ -54,7 +55,10 @@ Gui, ICScriptHub:Add, Text, xs200 y+-13 w180 +Right, Increase Sustain Bracket Th
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, vg_PS_IncreaseBracketThresh xs390 y+-17 w60 +Right, 
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableSmalls xs15 y+15, Disable the use of Small potions?
+Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_ForceSustainBracket xs15 y+10, Force Specific Sustain Bracket?
+Gui, ICScriptHub:Add, Text, xs200 y+-13 w100 +Right, Sustain Bracket:
+Gui, ICScriptHub:Add, DDL, xs310 y+-17 w140 vg_PS_SpecificSustainBracket, % g_PS_Brackets[1] "||" g_PS_Brackets[2] "|" g_PS_Brackets[3] "|"
+Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableSmalls xs15 y+20, Disable the use of Small potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableMediums xs245 y+-13, Disable the use of Medium potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableLarges xs15 y+15, Disable the use of Large potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableHuges xs245 y+-13, Disable the use of Huge potions?
@@ -62,7 +66,7 @@ GUIFunctions.UseThemeTextColor("TableTextColor")
 Gui, ICScriptHub:Add, ListView, xs300 ys15 w190 h100 vg_PS_AutomateList, Priority|Alternating|Status
 GUIFunctions.UseThemeListViewBackgroundColor("g_PS_AutomateList")
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, GroupBox, x15 ys250 Section w500 h140, Current Potion Amounts
+Gui, ICScriptHub:Add, GroupBox, x15 ys275 Section w500 h140, Current Potion Amounts
 Gui, ICScriptHub:Add, Text, xs20 ys+20 w130 +Right, Smalls:
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotCountStatus xs160 y+-13 w60 +Right, Unknown
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotWaxingStatus xs240 y+-13 w240, Unknown
