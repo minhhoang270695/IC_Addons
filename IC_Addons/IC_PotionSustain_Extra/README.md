@@ -70,7 +70,8 @@ This is a checkbox that will force the addon to use a specific sustain bracket. 
 The purpose of this setting is so that people who have bought 4 Event Boons can alternate single potions with the `Anything Available` bracket and thereby not waste potions.
 
 > [!CAUTION]
-> *I will not be held liable for idiots who set a sustain bracket higher than they can support.*
+> *You should only use this setting if you actually know that you need it and why.  
+> I will not be held liable for idiots who set a sustain bracket higher than they can support.*
 
 > [!NOTE]
 > *`Force Specific Sustain Bracket` is mutually exclusive with `Allow Increasing Sustain Bracket`.*
