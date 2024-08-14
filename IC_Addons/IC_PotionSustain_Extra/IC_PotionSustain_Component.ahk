@@ -46,7 +46,7 @@ GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, vg_PS_AutomateThreshMin xs160 y+-17 w60 +Right, 
 Gui, ICScriptHub:Add, Edit, vg_PS_AutomateThreshMax xs230 y+-21 w60 +Right, 
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right vg_PS_SustainBracketHeader, Sustain Bracket:
+Gui, ICScriptHub:Add, Text, xs15 y+10 w135 +Right vg_PS_SustainBracketHeader, Sustain Bracket:
 Gui, ICScriptHub:Add, Text, vg_PS_SustainBracketStatus xs160 y+-13 w130, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Automation Status:
 Gui, ICScriptHub:Add, Text, vg_PS_AutomationStatus xs160 y+-13 w330, Unknown
@@ -57,7 +57,7 @@ Gui, ICScriptHub:Add, Edit, vg_PS_IncreaseBracketThresh xs390 y+-17 w60 +Right,
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_ForceSustainBracket xs15 y+10, Force Specific Sustain Bracket?
 Gui, ICScriptHub:Add, Text, xs200 y+-13 w100 +Right, Sustain Bracket:
-Gui, ICScriptHub:Add, DDL, xs310 y+-17 w140 vg_PS_SpecificSustainBracket, % g_PS_Brackets[1] "||" g_PS_Brackets[2] "|" g_PS_Brackets[3] "|"
+Gui, ICScriptHub:Add, DDL, xs310 y+-17 w140 vg_PS_SpecificSustainBracket, % g_PS_Brackets[1] "||" g_PS_Brackets[2] "|" g_PS_Brackets[3] "|" g_PS_Brackets[4] "|"
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableSmalls xs15 y+20, Disable the use of Small potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableMediums xs245 y+-13, Disable the use of Medium potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableLarges xs15 y+15, Disable the use of Large potions?

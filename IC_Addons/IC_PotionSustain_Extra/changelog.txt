@@ -1,3 +1,6 @@
+14   August 2024 - v0.2.2
+ - Allowing Increase Sustain Bracket to upgrade into "Larges + Others" sustain bracket.
+ - Allowing "Larges + Others" to be selected from the Force Sustain Bracket choice.
 12   August 2024 - v0.2.1
  - Added a new setting that allows forcing a specific sustain bracket. (I will not be held liable for idiots who set a sustain bracket higher than they can support.)
 03   August 2024 - v0.2.0
