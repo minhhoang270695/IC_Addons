@@ -1,6 +1,10 @@
+16   August 2024 - v0.2.3
+ - Changed the Increase Sustain Bracket Threshold into a min and max like the other thresholds. Works in identical way.
+ - Potions that can be chosen by Increase Sustain Bracket are now labelled as `Abundant` in the Current Potion Amounts display.
+ - Removed the `Can Sustain Smalls` info display because Ellywick decided we can't have nice things.
 14   August 2024 - v0.2.2
  - Allowing Increase Sustain Bracket to upgrade into "Larges + Others" sustain bracket.
- - Allowing "Larges + Others" to be selected from the Force Sustain Bracket choice.
+ - Allowing "Larges + Others" to be selected from the Force Sustain Bracket choice. (I will continue to not be held liable for idiots who set a sustain bracket higher than they can support.)
 12   August 2024 - v0.2.1
  - Added a new setting that allows forcing a specific sustain bracket. (I will not be held liable for idiots who set a sustain bracket higher than they can support.)
 03   August 2024 - v0.2.0

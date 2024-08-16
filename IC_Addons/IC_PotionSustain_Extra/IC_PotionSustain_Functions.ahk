@@ -5,7 +5,7 @@ class IC_PotionSustain_Component
 	TimerFunctions := ""
 	SanitySize := 5000
 	
-	DefaultSettings := {"SmallThreshMin":150,"SmallThreshMax":200,"AutomateThreshMin":100,"AutomateThreshMax":150,"Alternate":false,"DisableSmalls":false,"DisableMediums":false,"DisableLarges":false,"DisableHuges":false,"EnableISB":true,"ISBThresh":450,"EnableFSB":false,"FSBType":g_PS_Brackets[1]}
+	DefaultSettings := {"SmallThreshMin":150,"SmallThreshMax":200,"AutomateThreshMin":100,"AutomateThreshMax":150,"Alternate":false,"DisableSmalls":false,"DisableMediums":false,"DisableLarges":false,"DisableHuges":false,"EnableISB":true,"ISBThreshMin":450,"ISBThreshMax":500,"EnableFSB":false,"FSBType":g_PS_Brackets[1]}
 	UserData := ""
 	RunsCount := -1
 	ModronResetZone := -1
@@ -19,7 +19,6 @@ class IC_PotionSustain_Component
 	AutomatePotMinThresh := this.DefaultSettings["AutomateThreshMin"]
 	AutomatePotMaxThresh := this.DefaultSettings["AutomateThreshMax"]
 	ChestSmallPotBuying := false
-	SustainSmallAbility := "Unknown"
 	EnableAlternating := this.DefaultSettings["Alternate"]
 	WaxingPots := {"s":false,"m":false,"l":false,"h":false}
 	Using := "Using"
@@ -30,8 +29,10 @@ class IC_PotionSustain_Component
 	InstanceId := ""
 	FoundHighAreaPot := false
 	EnableISB := this.DefaultSettings["EnableISB"]
-	ISBThresh := this.DefaultSettings["ISBThresh"]
+	ISBThreshMin := this.DefaultSettings["ISBThreshMin"]
+	ISBThreshMax := this.DefaultSettings["ISBThreshMax"]
 	ISBMult := 3
+	ISBWaxingPots := {"s":false,"m":false,"l":false,"h":false}
 	EnableFSB := this.DefaultSettings["EnableFSB"]
 	FSBType := this.DefaultSettings["FSBType"]
 	DisableSmall := this.DefaultSettings["DisableSmalls"]
@@ -120,7 +121,8 @@ class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableLarges, % this.Settings["DisableLarges"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableHuges, % this.Settings["DisableHuges"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_IncreaseSustainBracket, % this.Settings["EnableISB"]
-		GuiControl, ICScriptHub:, g_PS_IncreaseBracketThresh, % this.Settings["ISBThresh"]
+		GuiControl, ICScriptHub:, g_PS_IncreaseBracketThreshMin, % this.Settings["ISBThreshMin"]
+		GuiControl, ICScriptHub:, g_PS_IncreaseBracketThreshMax, % this.Settings["ISBThreshMax"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_ForceSustainBracket, % this.Settings["EnableFSB"]
 		GuiControl, ICScriptHub:ChooseString, g_PS_SpecificSustainBracket, % this.Settings["FSBType"]
 		this.ChestSmallPotMinThresh := this.Settings["SmallThreshMin"]
@@ -133,7 +135,8 @@ class IC_PotionSustain_Component
 		this.DisableLarge := this.Settings["DisableLarges"]
 		this.DisableHuge := this.Settings["DisableHuges"]
 		this.EnableISB := this.Settings["EnableISB"]
-		this.ISBThresh := this.Settings["ISBThresh"]
+		this.ISBThreshMin := this.Settings["ISBThreshMin"]
+		this.ISBThreshMax := this.Settings["ISBThreshMax"]
 		this.EnableFSB := this.Settings["EnableFSB"]
 		this.FSBType := this.Settings["FSBType"]
 		this.UpdateGUI()
@@ -157,7 +160,8 @@ class IC_PotionSustain_Component
 		this.Settings["DisableLarges"] := g_PS_Checkbox_DisableLarges
 		this.Settings["DisableHuges"] := g_PS_Checkbox_DisableHuges
 		this.Settings["EnableISB"] := g_PS_Checkbox_IncreaseSustainBracket
-		this.Settings["ISBThresh"] := g_PS_IncreaseBracketThresh
+		this.Settings["ISBThreshMin"] := g_PS_IncreaseBracketThreshMin
+		this.Settings["ISBThreshMax"] := g_PS_IncreaseBracketThreshMax
 		this.Settings["EnableFSB"] := g_PS_Checkbox_ForceSustainBracket
 		this.Settings["FSBType"] := g_PS_SpecificSustainBracket
 		this.ChestSmallPotMinThresh := g_PS_ChestSmallThreshMin
@@ -170,7 +174,8 @@ class IC_PotionSustain_Component
 		this.DisableLarge := g_PS_Checkbox_DisableLarges
 		this.DisableHuge := g_PS_Checkbox_DisableHuges
 		this.EnableISB := g_PS_Checkbox_IncreaseSustainBracket
-		this.ISBThresh := g_PS_IncreaseBracketThresh
+		this.ISBThreshMin := g_PS_IncreaseBracketThreshMin
+		this.ISBThreshMax := g_PS_IncreaseBracketThreshMax
 		this.EnableFSB := g_PS_Checkbox_ForceSustainBracket
 		this.FSBType := g_PS_SpecificSustainBracket
 		if (!this.EnableAlternating)
@@ -194,36 +199,38 @@ class IC_PotionSustain_Component
 	{
 		local sanityGap := 25
 		local sanityChecked := false
-		if (!this.IsNumber(g_PS_ChestSmallThreshMin) OR g_PS_ChestSmallThreshMin < 1 OR !this.IsNumber(g_PS_ChestSmallThreshMax) OR g_PS_ChestSmallThreshMax < 1 OR !this.IsNumber(g_PS_AutomateThreshMin) OR g_PS_AutomateThreshMin < 1 OR !this.IsNumber(g_PS_AutomateThreshMax) OR g_PS_AutomateThreshMax < 1 OR !this.IsNumber(g_PS_IncreaseBracketThresh) OR g_PS_IncreaseBracketThresh < 1)
+		if (!this.IsNumber(g_PS_ChestSmallThreshMin) OR g_PS_ChestSmallThreshMin < 1 OR !this.IsNumber(g_PS_ChestSmallThreshMax) OR g_PS_ChestSmallThreshMax < 1 OR !this.IsNumber(g_PS_AutomateThreshMin) OR g_PS_AutomateThreshMin < 1 OR !this.IsNumber(g_PS_AutomateThreshMax) OR g_PS_AutomateThreshMax < 1 OR !this.IsNumber(g_PS_IncreaseBracketThreshMin) OR g_PS_IncreaseBracketThreshMin < 1 OR !this.IsNumber(g_PS_IncreaseBracketThreshMax) OR g_PS_IncreaseBracketThreshMax < 1)
 		{
 			g_PS_ChestSmallThreshMin := this.DefaultSettings["SmallThreshMin"]
 			g_PS_ChestSmallThreshMax := this.DefaultSettings["SmallThreshMax"]
 			g_PS_AutomateThreshMin := this.DefaultSettings["AutomateThreshMin"]
 			g_PS_AutomateThreshMax := this.DefaultSettings["AutomateThreshMax"]
-			g_PS_IncreaseBracketThresh := this.DefaultSettings["ISBThresh"]
+			g_PS_IncreaseBracketThreshMin := this.DefaultSettings["ISBThreshMin"]
+			g_PS_IncreaseBracketThreshMax := this.DefaultSettings["ISBThreshMax"]
 			GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMin, % g_PS_ChestSmallThreshMin
 			GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMax, % g_PS_ChestSmallThreshMax
 			GuiControl, ICScriptHub:, g_PS_AutomateThreshMin, % g_PS_AutomateThreshMin
 			GuiControl, ICScriptHub:, g_PS_AutomateThreshMax, % g_PS_AutomateThreshMax
-			GuiControl, ICScriptHub:, g_PS_IncreaseBracketThresh, % g_PS_IncreaseBracketThresh
+			GuiControl, ICScriptHub:, g_PS_IncreaseBracketThreshMin, % g_PS_IncreaseBracketThreshMin
+			GuiControl, ICScriptHub:, g_PS_IncreaseBracketThreshMax, % g_PS_IncreaseBracketThreshMax
 			this.UpdateMainStatus("Save Error. Invalid input found in thresholds. Restored defaults.")
 			sanityChecked := true
 		}
-		if (g_PS_ChestSmallThreshMax < (g_PS_ChestSmallThreshMin)+sanityGap)
+		if (g_PS_ChestSmallThreshMax < g_PS_ChestSmallThreshMin+sanityGap)
 		{
 			g_PS_ChestSmallThreshMax := (g_PS_ChestSmallThreshMin + sanityGap)
 			GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMax, % g_PS_ChestSmallThreshMax
 			this.UpdateMainStatus("Save Error. Small maximum threshold too low vs minimum. Increased.")
 			sanityChecked := true
 		}
-		if (g_PS_AutomateThreshMax < (g_PS_AutomateThreshMin)+sanityGap)
+		if (g_PS_AutomateThreshMax < g_PS_AutomateThreshMin+sanityGap)
 		{
 			g_PS_AutomateThreshMax := (g_PS_AutomateThreshMin + sanityGap)
 			GuiControl, ICScriptHub:, g_PS_AutomateThreshMax, % g_PS_AutomateThreshMax
 			this.UpdateMainStatus("Save Error. Automation maximum threshold too low vs minimum. Increased.")
 			sanityChecked := true
 		}
-		if (g_PS_ChestSmallThreshMin < (g_PS_AutomateThreshMin)+sanityGap)
+		if (g_PS_ChestSmallThreshMin < g_PS_AutomateThreshMin+sanityGap)
 		{
 			g_PS_ChestSmallThreshMin := (g_PS_AutomateThreshMin + sanityGap)
 			GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMin, % g_PS_ChestSmallThreshMin
@@ -242,11 +249,18 @@ class IC_PotionSustain_Component
 			this.UpdateMainStatus("Save Error. All Potions Disabled. Disabling Automate Modron Potions.")
 			sanityChecked := true
 		}
-		if (g_PS_IncreaseBracketThresh < (g_PS_AutomateThreshMax * this.ISBMult))
+		if (g_PS_IncreaseBracketThreshMin < (g_PS_AutomateThreshMax * this.ISBMult))
 		{
-			g_PS_IncreaseBracketThresh := g_PS_AutomateThreshMax * this.ISBMult
-			GuiControl, ICScriptHub:, g_PS_IncreaseBracketThresh, % g_PS_IncreaseBracketThresh
+			g_PS_IncreaseBracketThreshMin := g_PS_AutomateThreshMax * this.ISBMult
+			GuiControl, ICScriptHub:, g_PS_IncreaseBracketThreshMin, % g_PS_IncreaseBracketThreshMin
 			this.UpdateMainStatus("Save Error. ISB threshold too low vs automation maximum. Increased.")
+			sanityChecked := true
+		}
+		if (g_PS_IncreaseBracketThreshMax < g_PS_IncreaseBracketThreshMin+sanityGap)
+		{
+			g_PS_IncreaseBracketThreshMax := (g_PS_IncreaseBracketThreshMin + sanityGap)
+			GuiControl, ICScriptHub:, g_PS_IncreaseBracketThreshMax, % g_PS_IncreaseBracketThreshMax
+			this.UpdateMainStatus("Save Error. ISB maximum threshold too low vs minimum. Increased.")
 			sanityChecked := true
 		}
 		if (g_PS_Checkbox_IncreaseSustainBracket AND g_PS_Checkbox_ForceSustainBracket)
@@ -328,7 +342,6 @@ class IC_PotionSustain_Component
 			try ; avoid thrown errors when comobject is not available.
 			{
 				this.ModronResetZone := g_SF.Memory.GetModronResetArea()
-				this.CalculateSmallPotionSustain()
 				SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
 				if (SharedRunData.PSBGF_Running() == "") ; Addon running check
 				{
@@ -420,25 +433,24 @@ class IC_PotionSustain_Component
 			}
 			return
 		}
+		if (!this.EnableISB)
+		{
+			for k,v in this.PotAmounts
+			{
+				this.ISBWaxingPots[k] := false
+			}
+		}
 		for k,v in this.PotAmounts
 		{
 			if (v <= this.AutomatePotMinThresh)
 				this.WaxingPots[k] := true
 			else if (v >= this.AutomatePotMaxThresh)
 				this.WaxingPots[k] := false
+			if (v <= this.ISBThreshMin)
+				this.ISBWaxingPots[k] := true
+			else if (v >= this.ISBThreshMax)
+				this.ISBWaxingPots[k] := false
 		}
-	}
-	
-	CalculateSmallPotionSustain()
-	{
-		local smallSustain := this.GemHunter > 0 ? this.PotZonesGH["s"] : this.PotZones["s"]
-		local rz := this.ModronResetZone
-		if (rz < 1 OR rz == "")
-			this.SustainSmallAbility := "Unknown"
-		else if (this.ModronResetZone < smallSustain)
-			this.SustainSmallAbility := "Modron reset of z" . rz . " is too low to sustain. " . smallSustain . "+ needed."
-		else
-			this.SustainSmallAbility := "Modron reset of z" . rz . " allows sustaining."
 	}
 	
 	CalculateAutomationBuffs()
@@ -479,7 +491,7 @@ class IC_PotionSustain_Component
 			; Sustaining larges.
 			; Only use if modron reset is 3025+ (or 2290+GH) and large pots are above the minimum threshold and large pots are not disabled.
 			local psIncreased := false
-			if (!this.DisableLarge AND this.EnableISB AND this.PotAmounts["l"] >= this.ISBThresh) {
+			if (!this.DisableLarge AND this.EnableISB AND ((this.PotAmounts["l"] >= this.ISBThreshMin AND !this.ISBWaxingPots["l"]) OR (this.PotAmounts["l"] >= this.ISBThreshMax))) {
 				psCalcAuto := this.CalculateSustainLarges()
 				psIncreased := true
 			}
@@ -489,7 +501,7 @@ class IC_PotionSustain_Component
 			}
 			; Sustaining mediums.
 			; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold and medium pots are not disabled.
-			else if (!this.DisableMedium AND this.EnableISB AND this.PotAmounts["m"] >= this.ISBThresh)
+			else if (!this.DisableMedium AND this.EnableISB AND ((this.PotAmounts["m"] >= this.ISBThreshMin AND !this.ISBWaxingPots["m"]) OR (this.PotAmounts["m"] >= this.ISBThreshMax)))
 			{
 				psCalcAuto := this.CalculateSustainMediums()
 				psIncreased := true
@@ -500,7 +512,7 @@ class IC_PotionSustain_Component
 			}
 			; Sustaining smalls.
 			; Only use if modron reset is 665+ (or 475+GH) and small pots are above the minimum threshold and small pots are not disabled.
-			else if (!this.DisableSmall AND this.EnableISB AND this.PotAmounts["s"] >= this.ISBThresh)
+			else if (!this.DisableSmall AND this.EnableISB AND ((this.PotAmounts["s"] >= this.ISBThreshMin AND !this.ISBWaxingPots["s"]) OR (this.PotAmounts["s"] >= this.ISBThreshMax)))
 			{
 				psCalcAuto := this.CalculateSustainSmalls()
 				psIncreased := true
@@ -762,18 +774,18 @@ class IC_PotionSustain_Component
 	{
 		local waxing := "Unavailable. Restocking."
 		local waning := "Available."
+		local abundant := "Abundant."
 		local blocked := "Blocked by user."
 		GuiControl, ICScriptHub:Text, g_PS_SmallPotCountStatus, % this.PotAmounts["s"]
 		GuiControl, ICScriptHub:Text, g_PS_MediumPotCountStatus, % this.PotAmounts["m"]
 		GuiControl, ICScriptHub:Text, g_PS_LargePotCountStatus, % this.PotAmounts["l"]
 		GuiControl, ICScriptHub:Text, g_PS_HugePotCountStatus, % this.PotAmounts["h"]
 		GuiControl, ICScriptHub:Text, g_PS_GemHunterPotCountStatus, % this.PotAmounts["gh"]
-		GuiControl, ICScriptHub:Text, g_PS_SmallPotWaxingStatus, % this.DisableSmall ? blocked : this.WaxingPots["s"] ? waxing : waning
-		GuiControl, ICScriptHub:Text, g_PS_MediumPotWaxingStatus, % this.DisableMedium ? blocked : this.WaxingPots["m"] ? waxing : waning
-		GuiControl, ICScriptHub:Text, g_PS_LargePotWaxingStatus, % this.DisableLarge ? blocked : this.WaxingPots["l"] ? waxing : waning
-		GuiControl, ICScriptHub:Text, g_PS_HugePotWaxingStatus, % this.DisableHuge ? blocked : this.WaxingPots["h"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_SmallPotWaxingStatus, % this.DisableSmall ? blocked : (!this.ISBWaxingPots["s"] AND this.PotAmounts["s"] >= this.ISBThreshMin) OR (this.PotAmounts["s"] >= this.ISBThreshMax) ? abundant : this.WaxingPots["s"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_MediumPotWaxingStatus, % this.DisableMedium ? blocked : (!this.ISBWaxingPots["m"] AND this.PotAmounts["m"] >= this.ISBThreshMin) OR (this.PotAmounts["m"] >= this.ISBThreshMax) ? abundant : this.WaxingPots["m"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_LargePotWaxingStatus, % this.DisableLarge ? blocked : (!this.ISBWaxingPots["l"] AND this.PotAmounts["l"] >= this.ISBThreshMin) OR (this.PotAmounts["l"] >= this.ISBThreshMax) ? abundant : this.WaxingPots["l"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_HugePotWaxingStatus, % this.DisableHuge ? blocked : (!this.ISBWaxingPots["h"] AND this.PotAmounts["h"] >= this.ISBThreshMin) OR (this.PotAmounts["h"] >= this.ISBThreshMax) ? abundant : this.WaxingPots["h"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_GemHunterStatus, % this.GemHunter > 0 ? "Active: " . (this.FmtSecs(this.GemHunter)) . " remaining." : "Inactive."
-		GuiControl, ICScriptHub:Text, g_PS_AbleSustainSmallStatus, % this.SustainSmallAbility
 		GuiControl, ICScriptHub:Text, g_PS_BuyingSilversStatus, % this.ChestSmallPotBuying ? "Yes." : "No."
 		Gui, Submit, NoHide
 	}
