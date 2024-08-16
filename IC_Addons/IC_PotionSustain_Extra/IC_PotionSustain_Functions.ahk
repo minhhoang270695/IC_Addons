@@ -32,7 +32,7 @@ class IC_PotionSustain_Component
 	ISBThreshMin := this.DefaultSettings["ISBThreshMin"]
 	ISBThreshMax := this.DefaultSettings["ISBThreshMax"]
 	ISBMult := 3
-	ISBWaxingPots := {"s":false,"m":false,"l":false,"h":false}
+	ISBWaxingPots := {"s":true,"m":true,"l":true,"h":true}
 	EnableFSB := this.DefaultSettings["EnableFSB"]
 	FSBType := this.DefaultSettings["FSBType"]
 	DisableSmall := this.DefaultSettings["DisableSmalls"]
@@ -784,7 +784,7 @@ class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:Text, g_PS_SmallPotWaxingStatus, % this.DisableSmall ? blocked : (!this.ISBWaxingPots["s"] AND this.PotAmounts["s"] >= this.ISBThreshMin) OR (this.PotAmounts["s"] >= this.ISBThreshMax) ? abundant : this.WaxingPots["s"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_MediumPotWaxingStatus, % this.DisableMedium ? blocked : (!this.ISBWaxingPots["m"] AND this.PotAmounts["m"] >= this.ISBThreshMin) OR (this.PotAmounts["m"] >= this.ISBThreshMax) ? abundant : this.WaxingPots["m"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_LargePotWaxingStatus, % this.DisableLarge ? blocked : (!this.ISBWaxingPots["l"] AND this.PotAmounts["l"] >= this.ISBThreshMin) OR (this.PotAmounts["l"] >= this.ISBThreshMax) ? abundant : this.WaxingPots["l"] ? waxing : waning
-		GuiControl, ICScriptHub:Text, g_PS_HugePotWaxingStatus, % this.DisableHuge ? blocked : (!this.ISBWaxingPots["h"] AND this.PotAmounts["h"] >= this.ISBThreshMin) OR (this.PotAmounts["h"] >= this.ISBThreshMax) ? abundant : this.WaxingPots["h"] ? waxing : waning
+		GuiControl, ICScriptHub:Text, g_PS_HugePotWaxingStatus, % this.DisableHuge ? blocked : this.WaxingPots["h"] ? waxing : waning
 		GuiControl, ICScriptHub:Text, g_PS_GemHunterStatus, % this.GemHunter > 0 ? "Active: " . (this.FmtSecs(this.GemHunter)) . " remaining." : "Inactive."
 		GuiControl, ICScriptHub:Text, g_PS_BuyingSilversStatus, % this.ChestSmallPotBuying ? "Yes." : "No."
 		Gui, Submit, NoHide

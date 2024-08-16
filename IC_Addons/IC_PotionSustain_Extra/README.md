@@ -63,6 +63,14 @@ This is a checkbox that will allow the addon to temporarily increase your sustai
 > [!NOTE]
 > *`Allow Increasing Sustain Bracket` is mutually exclusive with `Force Specific Sustain Bracket`.*
 
+#### Increasing Sustain Bracket Thresholds (Minimum)
+
+When a potion type amount drops to or below this threshold - the addon will no longer be able to Increase Sustain Bracket to that potion type.
+ 
+#### Increasing Sustain Bracket Thresholds (Maximum)
+
+When a potion type amount increases to or above this threshold - the addon will be able to Increase Sustain Bracket to this potion type.
+
 #### Force Specific Sustain Bracket?
 
 This is a checkbox that will force the addon to use a specific sustain bracket. It will only ever automate potion priorities within this bracket - even if you cannot sustain that bracket.
