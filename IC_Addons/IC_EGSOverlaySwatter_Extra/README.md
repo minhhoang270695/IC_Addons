@@ -1,0 +1,53 @@
+# EGS Overlay Swatter Addon
+
+This is an AddOn that will disable or enable EGS overlay during offline stacking.
+
+___
+
+![EGS Overlay Swatter Addon Preview Image](images/EGSOverlaySwatterAddonPreview.png)
+
+___
+
+## How the AddOn works
+
+The addon searches within the `EGS Install Folder` you have set for any files that look like the EGS Overlay files. If you have the addon set to disable the overlay - it will rename them - adding `.txt` on the end. This stops EGS from being able to find them.
+
+If you choose to then enable the overlay again later - the addon can then undo the change - removing the `.txt` and the EGS can find them again.
+
+The reason for this is very specifically that disabling is not permanent. It can be undone - because in order to buy things in-game - you need to run the game with the overlay enabled.
+
+> [!WARNING]
+> *If you have previously DELETED the Overlay files - obviously the addon will not be able to do anything to repair that. Updating the EGS Launcher or installing EGS games or even verifying some EGS games can force it to re-make the overlay files.*
+
+> [!NOTE]
+> *The addon can only enable or disable the overlay files while the game is closed.*
+
+___
+
+## Settings
+
+### Disable EGS Overlay?
+
+If this is ticked the addon will try to add `.txt` onto the overlay files to disable them during offline stacking.
+
+If this is not ticked then it will try to remove the `.txt` from the overlay files to enable them during offline stacking.
+
+### EGS Install Folder
+
+Set this to wherever you installed the Epic Games Launcher. The default location on Windows tends to be `C:\Program Files (x86)\Epic Games`.
+
+> [!CAUTION]
+> *If your EGS install location is in Program Files or any other Windows protected folder - Script Hub will need to run with Admin privileges to modify the overlay files. This is non-negotiable.*
+
+### Also Check Default Folder?
+
+This will also check `C:\Program Files (x86)\Epic Games` if your EGS Install Folder is different.
+
+> [!NOTE]
+> *This should only be used if the overlay files in your EGS Install Folder are being renamed but the overlay is persisting. It will require admin privileges.*
+
+___
+
+## Info
+
+This will simply display the status of the overlay files and has a list of which files the addon has been able to find.
