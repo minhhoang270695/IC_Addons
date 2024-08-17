@@ -17,3 +17,9 @@ Read the [Potion Sustain README](IC_PotionSustain_Extra/README.md)
 An addon of my own make that attempts to fix your game's `localSettings.json` file when something decides to undo your custom changes.
 
 Read the [Game Settings Fix README](IC_GameSettingsFix_Extra/README.md)
+
+### IC_EGSOverlaySwatter_Extra
+
+An addon that will disable or enable the EGS overlay during offline stacking.
+
+Read the [EGS Overlay Swatter README](IC_EGSOverlaySwatter_Extra/README.md)
