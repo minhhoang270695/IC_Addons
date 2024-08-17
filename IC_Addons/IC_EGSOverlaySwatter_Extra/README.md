@@ -15,12 +15,18 @@ ___
 
 The addon searches within the `EGS Install Folder` you have set for any files that look like the EGS Overlay files. If you have the addon set to disable the overlay - it will rename them - adding `.txt` on the end. This stops EGS from being able to find them.
 
-If you choose to then enable the overlay again later - the addon can then undo the change - removing the `.txt` and the EGS can find them again.
+If you choose to then enable the overlay again later - the addon can then undo the change - removing the `.txt` and EGS can find them again.
 
-The reason for this is very specifically that disabling is not permanent. It can be undone - because in order to buy things in-game - you need to run the game with the overlay enabled.
+The reason for doing it this way is very specifically so disabling is not permanent. It can be undone - because in order to buy things in-game - you need to run the game with the overlay enabled.
+
+The EGS Overlay files look like:  
+```
+EOSOverlayRenderer-Win32-Shipping.exe
+EOSOverlayRenderer-Win64-Shipping.exe
+```
 
 > [!WARNING]
-> *If you have previously DELETED the Overlay files - obviously the addon will not be able to do anything to repair that. Updating the EGS Launcher or installing EGS games or even verifying some EGS games can force it to re-make the overlay files.*
+> *If you have previously DELETED the Overlay files (or renamed them in a different way) - obviously the addon will not be able to do anything to repair that. Updating the EGS Launcher or installing EGS games or even verifying some EGS games can force it to re-make the overlay files.*
 
 > [!NOTE]
 > *The addon can only enable or disable the overlay files while the game is closed.*
