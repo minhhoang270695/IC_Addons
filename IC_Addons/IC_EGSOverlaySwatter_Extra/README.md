@@ -2,6 +2,9 @@
 
 This is an AddOn that will disable or enable EGS overlay during offline stacking.
 
+> [!CAUTION]
+> *Obviously you should not use this addon if you're not running the game on the EGS platform.*
+
 ___
 
 ![EGS Overlay Swatter Addon Preview Image](images/EGSOverlaySwatterAddonPreview.png)
