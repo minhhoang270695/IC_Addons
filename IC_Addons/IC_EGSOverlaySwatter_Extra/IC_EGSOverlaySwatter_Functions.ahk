@@ -1,6 +1,7 @@
 class IC_EGSOverlaySwatter_Component
 {
 	TimerFunctions := {}
+	EGSPlatformID := 21
 	DefaultSettings := {"DisableOverlay":true,"EGSFolder":"C:\Program Files (x86)\Epic Games","CheckDefaultFolder":false}
 	Settings := {}
 	DisableOverlay := this.DefaultSettings["DisableOverlay"]
@@ -9,6 +10,7 @@ class IC_EGSOverlaySwatter_Component
 	EGSFolderExists := true
 	MadeChanges := false
 	Error := 0
+	PlatformID := ""
 
 	; ================================
 	; ===== LOADING AND SETTINGS =====
@@ -126,7 +128,9 @@ class IC_EGSOverlaySwatter_Component
 	
 	UpdateEGSOverlaySwatter()
 	{
-		if (!this.EGSFolderExists)
+		if (this.PlatformID != this.EGSPlatformID)
+			return
+		else if (!this.EGSFolderExists)
 		{
 			this.UpdateMainStatus("Saved EGS Folder Location does not exist.")
 			return
@@ -279,7 +283,7 @@ class IC_EGSOverlaySwatter_Component
 	}
 	
 	; =======================
-	; ===== TIMER STUFF =====
+	; ===== TIMED STUFF =====
 	; =======================
 	
 	; Adds timed functions (typically to be started when briv gem farm is started)
@@ -296,6 +300,27 @@ class IC_EGSOverlaySwatter_Component
 		for k,v in this.TimerFunctions
 		{
 			SetTimer, %k%, %v%, 0
+		}
+	}
+	
+	; Called when briv gem farm is started
+	GetPlatformID()
+	{
+		this.PlatformID := g_SF.Memory.ReadPlatform()
+		if (this.PlatformID != this.EGSPlatformID)
+		{
+			GuiControl, ICScriptHub:Hide, g_EGSOverlaySwatterSave_Clicked
+			GuiControl, ICScriptHub:Hide, g_EGSOS_SettingsGroupBox
+			GuiControl, ICScriptHub:Hide, g_EGSOS_DisableOverlay
+			GuiControl, ICScriptHub:Hide, g_EGSOS_EGSFolderLocationH
+			GuiControl, ICScriptHub:Hide, g_EGSOS_EGSFolderLocation
+			GuiControl, ICScriptHub:Hide, g_EGSOS_CheckDefaultFolder
+			GuiControl, ICScriptHub:Hide, g_EGSOS_InfoGroupBox
+			GuiControl, ICScriptHub:Hide, g_EGSOS_OverlayStatusH
+			GuiControl, ICScriptHub:Hide, g_EGSOS_OverlayStatus
+			GuiControl, ICScriptHub:Hide, g_EGSOS_OverlayFilesList
+			this.StopTimedFunctions()
+			this.UpdateMainStatus("Why have you enabled this addon? You're not on the EGS platform.")
 		}
 	}
 

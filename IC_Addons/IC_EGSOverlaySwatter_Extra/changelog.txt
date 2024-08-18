@@ -1,2 +1,4 @@
+18   August 2024 - v0.0.2
+ - Added a check that disables the addon for people who aren't on EGS.
 17   August 2024 - v0.0.1
  - An addon that will disable or enable the EGS overlay during offline stacking.
