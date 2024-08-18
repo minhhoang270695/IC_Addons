@@ -19,13 +19,11 @@ It defaults to always buying Gold chests until your small potion count falls bel
 
 To do this - the AddOn completely ignores the four Buy and Open settings in the `Briv Gem Farm` addon. It acts like they are all on. It will - however - continue to follow the `Maintain this many gems when buying chests.` setting.
 
-### Settings
-
-#### Small Potion Thresholds (Minimum)
+### Small Potion Thresholds (Minimum)
 
 When the small potion amount drops to or below this threshold - the addon will start buying Silver Chests.
  
-#### Small Potion Thresholds (Maximum)
+### Small Potion Thresholds (Maximum)
 
 If the addon is currently buying Silver chests and the small potion amount increases to or above this threshold - it will start buying Gold Chests again.
 
@@ -42,36 +40,34 @@ The interface will tell you which Alternating combination it's currently using.
 > [!NOTE]
 > *Please be aware that it can only change the potions in the modron during offline stacking - so this will not work at all for purely online runs.*
 
-### Settings
-
-#### Enable automating potions in the modron?
+### Enable automating potions in the modron?
 
 This will tell the addon to start automatically changing the potions set in the modron. It can only do this while the game is off during offline stacking.
 
-#### Modron Potion Thresholds (Minimum)
+### Modron Potion Thresholds (Minimum)
 
 When a potion type amount drops to or below this threshold - the addon will make this potion type unavailable so it can restock.
  
-#### Modron Potion Thresholds (Maximum)
+### Modron Potion Thresholds (Maximum)
 
 If a potion type is not being used so it can restock and the amount of that potion increases to or above this threshold - the addon will make it available for use again.
 
-#### Allow Increasing Sustain Bracket?
+### Allow Increasing Sustain Bracket?
 
 This is a checkbox that will allow the addon to temporarily increase your sustain bracket if the amount of potions for higher brackets exceeds a higher threshold. The minimum for this threshold is three times your Automation Maximum Threshold.
 
 > [!NOTE]
 > *`Allow Increasing Sustain Bracket` is mutually exclusive with `Force Specific Sustain Bracket`.*
 
-#### Increasing Sustain Bracket Thresholds (Minimum)
+### Increasing Sustain Bracket Thresholds (Minimum)
 
 When a potion type amount drops to or below this threshold - the addon will no longer be able to Increase Sustain Bracket to that potion type.
  
-#### Increasing Sustain Bracket Thresholds (Maximum)
+### Increasing Sustain Bracket Thresholds (Maximum)
 
 When a potion type amount increases to or above this threshold - the addon will be able to Increase Sustain Bracket to this potion type.
 
-#### Force Specific Sustain Bracket?
+### Force Specific Sustain Bracket?
 
 This is a checkbox that will force the addon to use a specific sustain bracket. It will only ever automate potion priorities within this bracket - even if you cannot sustain that bracket.
 
@@ -84,7 +80,7 @@ The purpose of this setting is so that people who have bought 4 Event Boons can 
 > [!NOTE]
 > *`Force Specific Sustain Bracket` is mutually exclusive with `Allow Increasing Sustain Bracket`.*
 
-#### Disable the use of [Type] Potions
+### Disable the use of [Type] Potions
 
 These four checkboxes quite literally prevent the addon from being able to automate the selected potion types. It's generally not recommended to use these settings unless you have a very good reason for doing so.
 
