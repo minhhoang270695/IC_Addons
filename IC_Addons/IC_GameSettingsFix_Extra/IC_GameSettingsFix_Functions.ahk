@@ -166,8 +166,19 @@ class IC_GameSettingsFix_Component
 	{
 		local profileName
 		local defaultText := this.CurrentProfile
-		InputBox, profileName, Profile Name, Input the profile name:,,,150,,,,,%defaultText%
-		if (profileName == "")
+		WinGetPos, xPos, yPos,,, 
+		InputBox, profileName, Profile Name, Input the profile name:,,375,129,,,,,%defaultText%
+		isCanceled := ErrorLevel
+		while ((!GUIFunctions.TestInputForAlphaNumericDash(profileName) AND !isCanceled) OR profileName == "")
+		{
+			if (profileName == "")
+				errMsg := "Cannot use an empty name."
+			else
+				errMsg := "Can only contain letters numbers or dashes."
+			InputBox, profileName, Profile Name, %errMsg%`nInput the profile name:,,375,144,,,,,%defaultText%
+			isCanceled := ErrorLevel
+		}
+		if (isCanceled)
 		{
 			this.UpdateMainStatus("Cancelled saving profile.")
 			return
