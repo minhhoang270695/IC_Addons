@@ -1,3 +1,6 @@
+26   August 2024 - v0.1.0
+ - Added profiles that you can swap between. They are entirely optional.
+ - Added a Fix Settings Now button. Will not work while the game is on.
  6   August 2024 - v0.0.6
  - Added tooltips to the settings to explain what some of them are and where to find them in-game.
 11     July 2024 - v0.0.5

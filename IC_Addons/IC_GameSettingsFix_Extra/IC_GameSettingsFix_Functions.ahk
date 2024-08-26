@@ -1,12 +1,13 @@
 class IC_GameSettingsFix_Component
 {
 	TimerFunctions := {}
-	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":4,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true}
+	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":4,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"CurrentProfile":""}
 	Settings := {}
 	GameSettingsFileLocation := ""
 	InstanceID := ""
 	MadeChanges := false
 	FixedCounter := 0
+	CurrentProfile := this.DefaultSettings["CurrentProfile"]
 
 	; ================================
 	; ===== LOADING AND SETTINGS =====
@@ -17,18 +18,21 @@ class IC_GameSettingsFix_Component
 		Global
 		Gui, Submit, NoHide
 		this.LoadSettings()
+		this.UpdateProfilesDDL(this.CurrentProfile)
 		this.CreateTooltips()
 		if (!this.IsGameClosed() AND (this.GameSettingsFileLocation == "" OR !FileExist(this.GameSettingsFileLocation)))
 			this.FindSettingsFile()
 		this.UpdateMainStatus("Waiting for Gem Farm to start.")
 	}
 	
-	LoadSettings()
+	LoadSettings(gsfPathToGetSettings := "")
 	{
 		Global
 		Gui, Submit, NoHide
 		writeSettings := false
-		this.Settings := g_SF.LoadObjectFromJSON(g_GSF_SettingsPath)
+		if (gsfPathToGetSettings == "")
+			gsfPathToGetSettings := g_GSF_SettingsPath
+		this.Settings := g_SF.LoadObjectFromJSON(gsfPathToGetSettings)
 		if(!IsObject(this.Settings))
 		{
 			this.SetDefaultSettings()
@@ -37,7 +41,7 @@ class IC_GameSettingsFix_Component
 		if (this.CheckMissingOrExtraSettings())
 			writeSettings := true
 		if(writeSettings)
-			g_SF.WriteObjectToJSON(g_GSF_SettingsPath, this.Settings)
+			g_SF.WriteObjectToJSON(gsfPathToGetSettings, this.Settings)
 		GuiControl, ICScriptHub:, g_GSF_TargetFramerate, % this.Settings["TargetFramerate"]
 		GuiControl, ICScriptHub:, g_GSF_PercentOfParticlesSpawned, % this.Settings["PercentOfParticlesSpawned"]
 		GuiControl, ICScriptHub:, g_GSF_resolution_x, % this.Settings["resolution_x"]
@@ -48,6 +52,7 @@ class IC_GameSettingsFix_Component
 		GuiControl, ICScriptHub:, g_GSF_UseConsolePortraits, % this.Settings["UseConsolePortraits"]
 		GuiControl, ICScriptHub:, g_GSF_FormationSaveIncludeFeatsCheck, % this.Settings["FormationSaveIncludeFeatsCheck"]
 		GuiControl, ICScriptHub:, g_GSF_NarrowHeroBoxes, % this.Settings["NarrowHeroBoxes"]
+		this.CurrentProfile := this.Settings["CurrentProfile"]
 	}
 	
 	SaveSettings()
@@ -66,6 +71,7 @@ class IC_GameSettingsFix_Component
 		this.Settings["UseConsolePortraits"] := g_GSF_UseConsolePortraits
 		this.Settings["FormationSaveIncludeFeatsCheck"] := g_GSF_FormationSaveIncludeFeatsCheck
 		this.Settings["NarrowHeroBoxes"] := g_GSF_NarrowHeroBoxes
+		this.Settings["CurrentProfile"] := this.CurrentProfile
 		g_SF.WriteObjectToJSON(g_GSF_SettingsPath, this.Settings)
 		if (!sanityChecked)
 			this.UpdateMainStatus("Saved settings.")
@@ -156,6 +162,80 @@ class IC_GameSettingsFix_Component
 		g_MouseToolTips[NarrowBenchTT] := "Settings -> Interface -> Narrow Bench Boxes:`nDetermines whether you can see all champions on the bench on low`nresolutions or not."
 	}
 	
+	SaveProfile()
+	{
+		local profileName
+		local defaultText := this.CurrentProfile
+		InputBox, profileName, Profile Name, Input the profile name:,,,150,,,,,%defaultText%
+		if (profileName == "")
+		{
+			this.UpdateMainStatus("Cancelled saving profile.")
+			return
+		}
+		local profilePath := g_GSF_ProfilesPath . profileName . ".json"
+		if (FileExist(profilePath))
+		{
+			MsgBox, 52, Overwrite?, This profile already exists. Overwrite it?
+			IfMsgBox, No
+			{
+				this.UpdateMainStatus("Cancelled saving profile.")
+				return
+			}
+		}
+		this.CurrentProfile := profileName
+		this.SaveSettings()
+		local profileSettings = {}
+		for k,v in this.Settings
+		{
+			profileSettings.push(k, v)
+		}
+		if (!this.IsFolder(g_GSF_ProfilesPath))
+			FileCreateDir, % g_GSF_ProfilesPath
+		g_SF.WriteObjectToJSON(profilePath, this.Settings)
+		this.UpdateProfilesDDL(profileName)
+		this.UpdateMainStatus("Saved profile: " profileName)
+	}
+	
+	LoadProfile()
+	{
+		Global
+		Gui, Submit, NoHide
+		g_GSF_CurrProfilePath := g_GSF_ProfilesPath g_GSF_Profiles ".json"
+		g_GSF_ProfileSettings := g_SF.LoadObjectFromJSON(g_GSF_CurrProfilePath)
+		this.Settings := {}
+		for k,v in g_GSF_ProfileSettings
+		{
+			this.Settings.push(k, v)
+		}
+		this.LoadSettings(g_GSF_CurrProfilePath)
+		this.SaveSettings()
+		this.UpdateMainStatus("Loaded profile: " g_GSF_Profiles)
+	}
+	
+	DeleteProfile()
+	{
+		Global
+		Gui, Submit, NoHide
+		MsgBox, 52, Delete?, Are you sure you want to delete the '%g_GSF_Profiles%' profile?
+		IfMsgBox, No
+		{
+			this.UpdateMainStatus("Cancelled deleting profile.")
+			return
+		}
+		g_GSF_CurrProfilePath := g_GSF_ProfilesPath g_GSF_Profiles ".json"
+		FileDelete, % g_GSF_CurrProfilePath
+		if (ErrorLevel > 0)
+			this.UpdateMainStatus("Failed to delete profile for unknown reasons.")
+		else
+			this.UpdateMainStatus("Deleted profile: " g_GSF_Profiles)
+		if (g_GSF_Profiles == this.CurrentProfile)
+		{
+			this.CurrentProfile := ""
+			this.SaveSettings()
+		}
+		this.UpdateProfilesDDL(this.CurrentProfile)
+	}
+	
 	; ======================
 	; ===== MAIN STUFF =====
 	; ======================
@@ -167,13 +247,7 @@ class IC_GameSettingsFix_Component
 		{
 			if (this.InstanceID == "")
 				return
-			this.UpdateMainStatus("Game is closed. Verifying settings.")
-			if (this.GameSettingsFileLocation != "" AND FileExist(this.GameSettingsFileLocation))
-			{
-				g_GSF_settingsFile := this.ReadAndEditSettingsString(this.GameSettingsFileLocation)
-				if (this.MadeChanges)
-					this.WriteSettingsStringToFile(g_GSF_settingsFile, this.GameSettingsFileLocation)
-			}
+			this.FixGameSettings()
 			this.InstanceID := ""
 		}
 		else
@@ -182,6 +256,17 @@ class IC_GameSettingsFix_Component
 				this.FindSettingsFile()
 			if (this.InstanceID == "")
 				this.InstanceID := g_SF.Memory.ReadInstanceID()
+		}
+	}
+	
+	FixGameSettings()
+	{
+		this.UpdateMainStatus("Game is closed. Verifying settings.")
+		if (this.GameSettingsFileLocation != "" AND FileExist(this.GameSettingsFileLocation))
+		{
+			g_GSF_settingsFile := this.ReadAndEditSettingsString(this.GameSettingsFileLocation)
+			if (this.MadeChanges)
+				this.WriteSettingsStringToFile(g_GSF_settingsFile, this.GameSettingsFileLocation)
 		}
 	}
 	
@@ -249,6 +334,16 @@ class IC_GameSettingsFix_Component
 		return false
 	}
 	
+	FixSettingsNow()
+	{
+		if (!this.IsGameClosed())
+		{
+			MsgBox, 48, Error, Cannot change settings while the game is running.
+			return
+		}
+		this.FixGameSettings()
+	}
+	
 	; =====================
 	; ===== GUI STUFF =====
 	; =====================
@@ -299,6 +394,25 @@ class IC_GameSettingsFix_Component
 			GuiControl, ICScriptHub:Move, g_GSF_GameSettingsFileLocation, h%heightOffset%
 		}
 		GuiControl, ICScriptHub:, g_GSF_GameSettingsFileLocation, % displayGSFL[1]
+	}
+	
+	UpdateProfilesDDL(nameToSelect := "")
+	{
+		local ddlList := ""
+		local foundName := false
+		for k,v in this.ProfilesList(g_GSF_ProfilesPath)
+		{
+			local profileName := StrReplace(v, ".json", "")
+			ddlList .= profileName "|"
+			if (profileName == nameToSelect)
+			{
+				ddlList .= "|"
+				foundName := true
+			}
+		}
+		GuiControl, ICScriptHub:, g_GSF_Profiles, |
+		GuiControl, ICScriptHub:, g_GSF_Profiles, % ddlList
+		Gui, Submit, NoHide
 	}
 	
 	; =======================
@@ -356,6 +470,23 @@ class IC_GameSettingsFix_Component
 			wrapped .= v
 		}
 		return [wrapped,numNewLinesAdded]
+	}
+	
+	ProfilesList(dir)
+	{
+		local list := []
+		if (!this.IsFolder(dir))
+			return list
+		Loop, Files, %dir%\*.json, DRF
+		{
+			list.push(A_LoopFileName)
+		}
+		return list
+	}
+	
+	IsFolder(inputFolder)
+	{
+		return InStr(FileExist(inputFolder),"D")
 	}
 	
 }

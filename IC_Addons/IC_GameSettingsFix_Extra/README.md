@@ -13,6 +13,31 @@ ___
 
 ___
 
+## Profiles
+
+Profiles allow the option to swap between different settings at will. This means you can save a setup where the game window is really tiny and fast and looks terrible in one profile while another profile could be a higher resolution or fullscreen to have better useability.
+
+> [!NOTE]
+> *Profiles are entirely optional. Using the `Save Settings` button at the top will continue to work and will set whatever you have saved as the current settings - even if you have no profiles saved.*
+
+### Profile
+
+A dropdown list of all profiles that currently exist.
+
+### Save Profile
+
+Saves the current settings to a new profile.
+
+### Load Profile
+
+Loads the settings of the selected profile.
+
+### Delete Profile
+
+Deletes the currently selected profile.
+
+___
+
 ## Settings
 
 ### TargetFramerate
@@ -96,3 +121,12 @@ ___
 ## Info
 
 Just a bit of information telling you how many times the addon has fixed your settings for you during the current session - and the location of your settings file in-case you wish to make any other changes yourself.
+
+___
+
+## On Demand
+
+This contains a button which will let you fix the settings... well... on-demand. You press the button - the settings get fixed.
+
+> [!WARNING]
+> *This will not work if the game is on.*
