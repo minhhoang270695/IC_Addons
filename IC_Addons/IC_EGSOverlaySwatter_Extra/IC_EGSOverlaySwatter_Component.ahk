@@ -26,6 +26,7 @@ GUIFunctions.UseThemeTextColor("InputBoxTextColor")
 Gui, ICScriptHub:Add, Edit, xs25 y+10 w450 r3 vg_EGSOS_EGSFolderLocation, 0
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Checkbox, xs15 y+15 vg_EGSOS_CheckDefaultFolder, Also Check Default Folder?  (C:\Program Files (x86)\Epic Games)
+
 Gui, ICScriptHub:Font, w700
 Gui, ICScriptHub:Add, GroupBox, x15 ys+185 Section w500 h190 vg_EGSOS_InfoGroupBox, Info
 Gui, ICScriptHub:Font, w400
@@ -35,6 +36,16 @@ GUIFunctions.UseThemeTextColor("TableTextColor")
 Gui, ICScriptHub:Add, ListView, xs15 y+15 w470 r5 vg_EGSOS_OverlayFilesList, Overlay Files
 GUIFunctions.UseThemeListViewBackgroundColor("g_EGSOS_OverlayFilesList")
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
+
+Gui, ICScriptHub:Font, w700
+Gui, ICScriptHub:Add, GroupBox, x15 ys+195 Section w500 h65, On Demand
+Gui, ICScriptHub:Font, w400
+Gui, ICScriptHub:Add, Button, xs15 ys25 w150 vg_EGSOverlaySwatterEnableNow_Clicked, `Enable Overlay Now
+buttonFunc := ObjBindMethod(g_EGSOverlaySwatter, "RestoreOverlayFilesNow")
+GuiControl,ICScriptHub: +g, g_EGSOverlaySwatterEnableNow_Clicked, % buttonFunc
+Gui, ICScriptHub:Add, Button, x+10 ys25 w150 vg_EGSOverlaySwatterDisableNow_Clicked, `Disable Overlay Now
+buttonFunc := ObjBindMethod(g_EGSOverlaySwatter, "SwatOverlayFilesNow")
+GuiControl,ICScriptHub: +g, g_EGSOverlaySwatterDisableNow_Clicked, % buttonFunc
 
 if(IsObject(IC_BrivGemFarm_Component))
 {

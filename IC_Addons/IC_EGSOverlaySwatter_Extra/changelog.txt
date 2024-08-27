@@ -1,3 +1,5 @@
+27   August 2024 - v0.0.3
+ - Added two on-demand buttons that will enable or disable the overlay while the game is closed. You can use this to allow you to buy things in-game while the gem farm script is not running.
 18   August 2024 - v0.0.2
  - Added a check that disables the addon for people who aren't on EGS.
 17   August 2024 - v0.0.1

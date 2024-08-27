@@ -60,3 +60,14 @@ ___
 ## Info
 
 This will simply display the status of the overlay files and has a list of which files the addon has been able to find.
+
+___
+
+## On Demand
+
+This contains two buttons which will let you enable or disable the overlay files... well... on-demand. You press one of the buttons and the files get enabled/disabled.
+
+You can use this to allow you to buy things in-game while the gem farm script is not running. Basically - close game - enable overlay - load game and buy something - close game - disable overlay - reload game and restart the script.
+
+> [!WARNING]
+> *These will not work if the game is on.*

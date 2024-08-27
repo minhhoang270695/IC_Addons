@@ -140,39 +140,44 @@ class IC_EGSOverlaySwatter_Component
 		{
 			if (this.InstanceID == "")
 				return
-			this.UpdateMainStatus("Game is closed. Checking Overlay Status.")
-			this.EGSFolderExists := this.IsFolder(this.EGSFolder)
-			overlayFiles := this.FilesList(this.EGSFolder)
-			if (this.CheckDefaultFolder AND this.IsFolder(this.DefaultSettings["EGSFolder"]))
-			{
-				for k,v in this.FilesList(this.DefaultSettings["EGSFolder"])
-				{
-					overlayFiles.push(v)
-				}
-			}
-			if (ObjLength(overlayFiles) == 0)
-			{
-				this.AddFilesToGUIList([])
-				if (this.DisableOverlay)
-					this.UpdateOverlayStatus("No overlay files can be found - already disabled.")
-				else
-					this.UpdateOverlayStatus("Cannot enable overlay because no overlay files exist.")
-			}
-			else
-			{
-				this.ToggleOverlayFiles(overlayFiles)
-				if (this.MadeChanges)
-					this.UpdateMainStatus("EGS Overlay files have been " (this.DisableOverlay ? "disabled" : "enabled") ".")
-				this.UpdateOverlayStatus(this.DisableOverlay ? "Disabled." : "Enabled.")
-				if (this.Error > 0)
-					this.UpdateOverlayStatus("One or more overlay files could not be renamed. Need to run as admin.")
-			}
+			this.SwatOverlayFiles(this.DisableOverlay)
 			this.InstanceID := ""
 		}
 		else
 		{
 			if (this.InstanceID == "")
 				this.InstanceID := g_SF.Memory.ReadInstanceID()
+		}
+	}
+	
+	SwatOverlayFiles(disableTheOverlays)
+	{
+		this.UpdateMainStatus("Game is closed. Checking Overlay Status.")
+		this.EGSFolderExists := this.IsFolder(this.EGSFolder)
+		overlayFiles := this.FilesList(this.EGSFolder)
+		if (this.CheckDefaultFolder AND this.IsFolder(this.DefaultSettings["EGSFolder"]))
+		{
+			for k,v in this.FilesList(this.DefaultSettings["EGSFolder"])
+			{
+				overlayFiles.push(v)
+			}
+		}
+		if (ObjLength(overlayFiles) == 0)
+		{
+			this.AddFilesToGUIList([])
+			if (disableTheOverlays)
+				this.UpdateOverlayStatus("No overlay files can be found - already disabled.")
+			else
+				this.UpdateOverlayStatus("Cannot enable overlay because no overlay files exist.")
+		}
+		else
+		{
+			this.ToggleOverlayFiles(overlayFiles,disableTheOverlays)
+			if (this.MadeChanges)
+				this.UpdateMainStatus("EGS Overlay files have been " (disableTheOverlays ? "disabled" : "enabled") ".")
+			this.UpdateOverlayStatus(disableTheOverlays ? "Disabled." : "Enabled.")
+			if (this.Error > 0)
+				this.UpdateOverlayStatus("One or more overlay files could not be renamed. Need to run as admin.")
 		}
 	}
 	
@@ -210,7 +215,7 @@ class IC_EGSOverlaySwatter_Component
 		return list
 	}
 	
-	ToggleOverlayFiles(overlayFiles)
+	ToggleOverlayFiles(overlayFiles,disableTheOverlays)
 	{
 		if (ObjLength(overlayFiles) == 0)
 			return
@@ -219,7 +224,7 @@ class IC_EGSOverlaySwatter_Component
 		for k,v in overlayFiles
 		{
 			egsosAdded := false
-			if (this.DisableOverlay AND !InStr(v, ".txt")) ; Overlay file is not disabled.
+			if (disableTheOverlays AND !InStr(v, ".txt")) ; Overlay file is not disabled.
 			{
 				vWithTxt := % v ".txt"
 				FileMove, %v%, %vWithTxt%, 1
@@ -232,7 +237,7 @@ class IC_EGSOverlaySwatter_Component
 				else
 					this.Error := 1
 			}
-			else if (!this.DisableOverlay AND InStr(v, ".txt")) ; Overlay is disabled.
+			else if (!disableTheOverlays AND InStr(v, ".txt")) ; Overlay is disabled.
 			{
 				vWithoutTxt := SubStr(v, 1, -4)
 				FileMove, %v%, %vWithoutTxt%, 1
@@ -249,6 +254,26 @@ class IC_EGSOverlaySwatter_Component
 				filesRenamed.push(v)
 		}
 		this.AddFilesToGUIList(filesRenamed)
+	}
+	
+	SwatOverlayFilesNow()
+	{
+		if (!this.IsGameClosed())
+		{
+			MsgBox, 48, Error, Cannot disable the overlay files while the game is running.
+			return
+		}
+		this.SwatOverlayFiles(true)
+	}
+	
+	RestoreOverlayFilesNow()
+	{
+		if (!this.IsGameClosed())
+		{
+			MsgBox, 48, Error, Cannot enable the overlay files while the game is running.
+			return
+		}
+		this.SwatOverlayFiles(false)
 	}
 	
 	; =====================
