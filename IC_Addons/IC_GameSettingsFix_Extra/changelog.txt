@@ -1,16 +1,16 @@
-26   August 2024 - v0.1.0
+26    August 2024 - v0.1.0
  - Added profiles that you can swap between. They are entirely optional.
  - Added a Fix Settings Now button. Will not work while the game is on.
- 6   August 2024 - v0.0.6
+ 6    August 2024 - v0.0.6
  - Added tooltips to the settings to explain what some of them are and where to find them in-game.
-11     July 2024 - v0.0.5
+11      July 2024 - v0.0.5
  - Some very minor optimisation improvements.
-10     July 2024 - v0.0.4
+10      July 2024 - v0.0.4
  - Removed the SoundMuted setting option because that value is forced by user data instead of the localSettings.json.
-10     July 2024 - v0.0.3
+10      July 2024 - v0.0.3
  - Fixed a bug where checkbox settings would not be fixed.
-10     July 2024 - v0.0.2
+10      July 2024 - v0.0.2
  - Added four new settings: resolution_x / resolution_y / resolution_fullscreen / LevelupAmountIndex
  - Fixed a bug where some settings would be fixed and then unfixed by followup checks.
- 9     July 2024 - v0.0.1
+ 9      July 2024 - v0.0.1
  - Initial Release. An addon that will fix your game settings in-case they get reset by the game.

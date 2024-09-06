@@ -10,9 +10,9 @@ global g_GSF_StatusText
 
 Gui, ICScriptHub:Tab, Game Settings Fix
 GUIFunctions.UseThemeTextColor("HeaderTextColor")
-Gui, ICScriptHub:Add, Text, x15 y+15, Game Settings Fix:
+Gui, ICScriptHub:Add, Text, x15 y+15 vg_GSF_Header, Game Settings Fix:
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, Button, x145 y+-15 w100 vg_GameSettingsFixSave_Clicked, `Save Settings
+Gui, ICScriptHub:Add, Button, x145 y+-18 w100 vg_GameSettingsFixSave_Clicked, `Save Settings
 buttonFunc := ObjBindMethod(g_GameSettingsFix, "SaveSettings")
 GuiControl,ICScriptHub: +g, g_GameSettingsFixSave_Clicked, % buttonFunc
 Gui, ICScriptHub:Add, Text, x5 y+10 w130 +Right, Status:
@@ -110,7 +110,7 @@ Gui, ICScriptHub:Add, Text, xs15 y+15 w125, Settings File Location:
 Gui, ICScriptHub:Add, Text, xs35 y+5 w450 vg_GSF_GameSettingsFileLocation, Unknown
 
 Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x15 ys+110 Section w500 h65, On Demand
+Gui, ICScriptHub:Add, GroupBox, x15 ys+110 Section w500 h65 vg_GSF_OnDemandGroupBox, On Demand
 Gui, ICScriptHub:Font, w400
 Gui, ICScriptHub:Add, Button, xs15 ys25 w100 vg_GameSettingsFixForceFix_Clicked, `Fix Settings Now
 buttonFunc := ObjBindMethod(g_GameSettingsFix, "FixSettingsNow")

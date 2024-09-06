@@ -394,17 +394,27 @@ class IC_GameSettingsFix_Component
 		local displayGSFL := this.AddLineBreakToSettingsFileLocation(settingsFileLoc)
 		if (displayGSFL[2] >= 1)
 		{
-			; If a new line was added - increase the height of the 
+			; If a new line was added - increase the height of the info group box and file location text elements.
 			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_GameSettingsFileLocation
 			local rowHeight := posH
 			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_InfoGroupBox
-			local oldHeight := posH
+			local oldInfoHeight := posH
 			local heightOffset := rowHeight * (displayGSFL[2]+1)
-			local newHeight := oldHeight + (heightOffset-rowHeight)
-			GuiControl, ICScriptHub:Move, g_GSF_InfoGroupBox, h%newHeight%
+			local newInfoHeight := oldInfoHeight + (heightOffset-rowHeight)
+			GuiControl, ICScriptHub:Move, g_GSF_InfoGroupBox, h%newInfoHeight%
 			GuiControl, ICScriptHub:Move, g_GSF_GameSettingsFileLocation, h%heightOffset%
+			; Also move down the OnDemand section.
+			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_Header
+			local yTitleOffset := posY - 2
+			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_OnDemandGroupBox
+			local newOnDemandY := posY + heightOffset - yTitleOffset
+			GuiControlGet, pos, ICScriptHub:Pos, g_GameSettingsFixForceFix_Clicked
+			local newOnDemandButtonY := posY + heightOffset - yTitleOffset
+			GuiControl, ICScriptHub:Move, g_GSF_OnDemandGroupbox, y%newOnDemandY%
+			GuiControl, ICScriptHub:Move, g_GameSettingsFixForceFix_Clicked, y%newOnDemandButtonY%
 		}
 		GuiControl, ICScriptHub:, g_GSF_GameSettingsFileLocation, % displayGSFL[1]
+		Gui, Submit, NoHide
 	}
 	
 	UpdateProfilesDDL(nameToSelect := "")
