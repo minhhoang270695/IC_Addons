@@ -290,7 +290,7 @@ class IC_GameSettingsFix_Component
 		if (!FileExist(settingsFileLoc))
 			return
 		this.GameSettingsFileLocation := settingsFileLoc
-		this.ApplySettingsFileLocationGUI(settingsFileLoc)
+		this.AddFileToGUIList(settingsFileLoc)
 	}
 	
 	ReadAndEditSettingsString(g_GSF_settingsFileLoc)
@@ -389,32 +389,12 @@ class IC_GameSettingsFix_Component
 		}
 	}
 	
-	ApplySettingsFileLocationGUI(settingsFileLoc)
+	AddFileToGUIList(settingsFileLoc)
 	{
-		local displayGSFL := this.AddLineBreakToSettingsFileLocation(settingsFileLoc)
-		if (displayGSFL[2] >= 1)
-		{
-			; If a new line was added - increase the height of the info group box and file location text elements.
-			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_GameSettingsFileLocation
-			local rowHeight := posH
-			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_InfoGroupBox
-			local oldInfoHeight := posH
-			local heightOffset := rowHeight * (displayGSFL[2]+1)
-			local newInfoHeight := oldInfoHeight + (heightOffset-rowHeight)
-			GuiControl, ICScriptHub:Move, g_GSF_InfoGroupBox, h%newInfoHeight%
-			GuiControl, ICScriptHub:Move, g_GSF_GameSettingsFileLocation, h%heightOffset%
-			; Also move down the OnDemand section.
-			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_Header
-			local yTitleOffset := posY - 2
-			GuiControlGet, pos, ICScriptHub:Pos, g_GSF_OnDemandGroupBox
-			local newOnDemandY := posY + heightOffset - yTitleOffset
-			GuiControlGet, pos, ICScriptHub:Pos, g_GameSettingsFixForceFix_Clicked
-			local newOnDemandButtonY := posY + heightOffset - yTitleOffset
-			GuiControl, ICScriptHub:Move, g_GSF_OnDemandGroupbox, y%newOnDemandY%
-			GuiControl, ICScriptHub:Move, g_GameSettingsFixForceFix_Clicked, y%newOnDemandButtonY%
-		}
-		GuiControl, ICScriptHub:, g_GSF_GameSettingsFileLocation, % displayGSFL[1]
-		Gui, Submit, NoHide
+		local restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "g_GSF_SettingsFileLocation")
+		LV_Delete()
+		LV_Add(,settingsFileLoc)
+		LV_ModifyCol(1)
 	}
 	
 	UpdateProfilesDDL(nameToSelect := "")
@@ -471,27 +451,6 @@ class IC_GameSettingsFix_Component
 	; ======================
 	; ===== MISC STUFF =====
 	; ======================
-	
-	AddLineBreakToSettingsFileLocation(settingsFileLoc, limit := 80)
-	{
-		local split := StrSplit(settingsFileLoc, "\")
-		local wrapped := ""
-		local numNewLinesAdded := 0
-		local currLimit := limit
-		for k,v in split
-		{
-			if (StrLen(wrapped) + StrLen(v) + 1  >= currLimit)
-			{
-				wrapped .= "`n"
-				numNewLinesAdded++
-				currLimit += limit
-			}
-			if (k > 1)
-				wrapped .= "\"
-			wrapped .= v
-		}
-		return [wrapped,numNewLinesAdded]
-	}
 	
 	ProfilesList(dir)
 	{

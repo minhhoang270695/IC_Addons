@@ -10,7 +10,7 @@ global g_GSF_StatusText
 
 Gui, ICScriptHub:Tab, Game Settings Fix
 GUIFunctions.UseThemeTextColor("HeaderTextColor")
-Gui, ICScriptHub:Add, Text, x15 y+15 vg_GSF_Header, Game Settings Fix:
+Gui, ICScriptHub:Add, Text, x15 y+15, Game Settings Fix:
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
 Gui, ICScriptHub:Add, Button, x145 y+-18 w100 vg_GameSettingsFixSave_Clicked, `Save Settings
 buttonFunc := ObjBindMethod(g_GameSettingsFix, "SaveSettings")
@@ -102,15 +102,17 @@ Gui, ICScriptHub:Add, Checkbox, xs%g_GSF_col2x% y+-13 vg_GSF_NarrowHeroBoxes,
 Gui, ICScriptHub:Add, Text, xs%g_GSF_col3x% y+-13 w%g_GSF_col3w%, Personal Preference
 
 Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x15 ys+305 Section w500 h105 vg_GSF_InfoGroupBox, Info
+Gui, ICScriptHub:Add, GroupBox, x15 ys+305 Section w500 h140, Info
 Gui, ICScriptHub:Font, w400
 Gui, ICScriptHub:Add, Text, xs15 ys+30 w125, Num Times Fixed Settings:
 Gui, ICScriptHub:Add, Text, xs150 y+-13 w200 vg_GSF_NumTimesFixed, 0
-Gui, ICScriptHub:Add, Text, xs15 y+15 w125, Settings File Location:
-Gui, ICScriptHub:Add, Text, xs35 y+5 w450 vg_GSF_GameSettingsFileLocation, Unknown
+GUIFunctions.UseThemeTextColor("TableTextColor")
+Gui, ICScriptHub:Add, ListView, xs15 y+15 w470 r2 vg_GSF_SettingsFileLocation, Settings File Location
+GUIFunctions.UseThemeListViewBackgroundColor("g_GSF_SettingsFileLocation")
+GUIFunctions.UseThemeTextColor("DefaultTextColor")
 
 Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x15 ys+110 Section w500 h65 vg_GSF_OnDemandGroupBox, On Demand
+Gui, ICScriptHub:Add, GroupBox, x15 ys+145 Section w500 h65, On Demand
 Gui, ICScriptHub:Font, w400
 Gui, ICScriptHub:Add, Button, xs15 ys25 w100 vg_GameSettingsFixForceFix_Clicked, `Fix Settings Now
 buttonFunc := ObjBindMethod(g_GameSettingsFix, "FixSettingsNow")
