@@ -1,6 +1,8 @@
-27   August 2024 - v0.0.3
+16 September 2024 - v0.2.4
+ - Added support for saving settings to `g_BrivUserSettingsFromAddons`. Shouldn't affect the vast majority of users.
+27    August 2024 - v0.0.3
  - Added two on-demand buttons that will enable or disable the overlay while the game is closed. You can use this to allow you to buy things in-game while the gem farm script is not running.
-18   August 2024 - v0.0.2
+18    August 2024 - v0.0.2
  - Added a check that disables the addon for people who aren't on EGS.
-17   August 2024 - v0.0.1
+17    August 2024 - v0.0.1
  - An addon that will disable or enable the EGS overlay during offline stacking.
