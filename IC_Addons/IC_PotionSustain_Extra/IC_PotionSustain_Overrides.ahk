@@ -41,6 +41,19 @@ class IC_PotionSustain_SharedData_Class extends IC_SharedData_Class
 	{
 		return g_PSBGF_Response
 	}
+
+    PSBGF_UpdateSettingsFromFile(fileName := "")
+    {
+        if (fileName == "")
+            fileName := IC_PotionSustain_Component.SettingsPath
+        settings := g_SF.LoadObjectFromJSON(fileName)
+        if (!IsObject(settings))
+            return false
+		for k,v in settings
+		{
+			g_BrivUserSettingsFromAddons[ "PSBGF_" k ] := v
+		}
+    }
 	
 }
 

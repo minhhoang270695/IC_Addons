@@ -1,5 +1,6 @@
-class IC_PotionSustain_Component
+Class IC_PotionSustain_Component
 {
+	static SettingsPath := A_LineFile . "\..\PotionSustain_Settings.json"
 	Injected := false
 	Settings := {}
 	TimerFunctions := ""
@@ -101,7 +102,7 @@ class IC_PotionSustain_Component
 	{
 		Gui, Submit, NoHide
 		psWriteSettings := false
-		this.Settings := g_SF.LoadObjectFromJSON(g_PS_SettingsPath)
+		this.Settings := g_SF.LoadObjectFromJSON(this.SettingsPath)
 		if(!IsObject(this.Settings))
 		{
 			this.SetDefaultSettings()
@@ -110,7 +111,7 @@ class IC_PotionSustain_Component
 		if (this.CheckMissingOrExtraSettings())
 			psWriteSettings := true
 		if(psWriteSettings)
-			g_SF.WriteObjectToJSON(g_PS_SettingsPath, this.Settings)
+			g_SF.WriteObjectToJSON(this.SettingsPath, this.Settings)
 		GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMin, % this.Settings["SmallThreshMin"]
 		GuiControl, ICScriptHub:, g_PS_ChestSmallThreshMax, % this.Settings["SmallThreshMax"]
 		GuiControl, ICScriptHub:, g_PS_AutomateThreshMin, % this.Settings["AutomateThreshMin"]
@@ -139,6 +140,7 @@ class IC_PotionSustain_Component
 		this.ISBThreshMax := this.Settings["ISBThreshMax"]
 		this.EnableFSB := this.Settings["EnableFSB"]
 		this.FSBType := this.Settings["FSBType"]
+		this.UpdateSharedSettings()
 		this.UpdateGUI()
 	}
 	
@@ -189,10 +191,19 @@ class IC_PotionSustain_Component
 				}
 			}
 		}
-		g_SF.WriteObjectToJSON(g_PS_SettingsPath, this.Settings)
+		g_SF.WriteObjectToJSON(this.SettingsPath, this.Settings)
+		this.UpdateSharedSettings()
 		if (!sanityChecked)
 			this.UpdateMainStatus("Saved settings.")
 		this.UpdateGUI()
+	}
+	
+	UpdateSharedSettings()
+	{
+		try {
+			SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
+			SharedRunData.PSBGF_UpdateSettingsFromFile()
+		}
 	}
 	
 	SanityCheckSettings()

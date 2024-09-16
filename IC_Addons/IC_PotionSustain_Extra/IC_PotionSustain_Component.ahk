@@ -1,7 +1,6 @@
 #include %A_LineFile%\..\..\..\SharedFunctions\ObjRegisterActive.ahk
 #include %A_LineFile%\..\IC_PotionSustain_Functions.ahk
-
-global g_PS_SettingsPath := A_LineFile . "\..\PotionSustain_Settings.json"
+#include %A_LineFile%\..\IC_PotionSustain_Overrides.ahk
 
 GUIFunctions.AddTab("Potion Sustain")
 global g_PotionSustain := new IC_PotionSustain_Component
