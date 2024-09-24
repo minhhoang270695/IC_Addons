@@ -6,7 +6,7 @@ Class IC_PotionSustain_Component
 	TimerFunctions := ""
 	SanitySize := 5000
 	
-	DefaultSettings := {"SmallThreshMin":150,"SmallThreshMax":200,"AutomateThreshMin":100,"AutomateThreshMax":150,"Alternate":false,"DisableSmalls":false,"DisableMediums":false,"DisableLarges":false,"DisableHuges":false,"EnableISB":true,"ISBThreshMin":450,"ISBThreshMax":500,"EnableFSB":false,"FSBType":g_PS_Brackets[1]}
+	DefaultSettings := {"SmallThreshMin":75,"SmallThreshMax":125,"AutomateThreshMin":50,"AutomateThreshMax":100,"Alternate":false,"DisableSmalls":false,"DisableMediums":false,"DisableLarges":false,"DisableHuges":false,"EnableISB":true,"ISBThreshMin":200,"ISBThreshMax":250,"EnableFSB":false,"FSBType":g_PS_Brackets[1]}
 	UserData := ""
 	RunsCount := -1
 	ModronResetZone := -1
